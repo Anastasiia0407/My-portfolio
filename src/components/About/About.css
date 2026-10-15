@@ -18,7 +18,9 @@
   text-transform: uppercase;
 }
 
-/* 37:52 — final (fully revealed) state; the reveal stage animates it from muted. */
+/* 37:52 — scroll-linked "typed" reveal. useScrollProgress writes --progress (0–1);
+   character --i goes from muted (≈ #a0a0a3) to ink as the reveal front passes it.
+   Without the hook (no JS, reduced motion) the heading is fully ink. */
 .about__heading {
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
@@ -28,6 +30,20 @@
 
 .about__line {
   display: block;
+}
+
+.about__word {
+  white-space: nowrap;
+}
+
+.about__heading[data-progress-active] .about__char {
+  opacity: clamp(var(--opacity-muted), calc(var(--progress, 0) * var(--chars) - var(--i)), 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about__heading .about__char {
+    opacity: 1;
+  }
 }
 
 /* 37:53 — 612 text + 64 gap + 756 photo, bottom-aligned. */

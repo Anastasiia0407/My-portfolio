@@ -1,21 +1,57 @@
+import { useRef } from 'react'
+import type { CSSProperties } from 'react'
+import { useScrollProgress } from '../../hooks/useScrollProgress.ts'
+import { REDUCED_MOTION_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
 import aboutPhoto1x from '../../assets/about-photo@1x.webp'
 import aboutPhoto2x from '../../assets/about-photo@2x.webp'
 import './About.css'
 
-// Figma's three heading lines. Static for now; the reveal stage splits them into characters.
+// Figma's three heading lines (37:52).
 const headingLines = ['I design complex B2B products,', 'shaped by years of using them', 'from the other side of the screen.']
+const headingText = headingLines.join(' ')
+
+// Lines → words → characters, each character numbered in reading order (spaces excluded).
+let charCount = 0
+const headingChars = headingLines.map((line) =>
+  line.split(' ').map((word) => [...word].map((char) => ({ char, index: charCount++ }))),
+)
 
 export default function About() {
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const reducedMotion = useMediaQuery(REDUCED_MOTION_QUERY)
+
+  // Reveal starts when the heading's top is at 85% of the viewport and completes at 35%.
+  useScrollProgress(headingRef, { start: 0.85, end: 0.35, enabled: !reducedMotion })
+
   return (
     <section id="about" className="about on-light" aria-labelledby="about-title">
       <div className="about__intro">
         <p className="about__eyebrow">about</p>
-        <h2 id="about-title" className="about__heading">
-          {headingLines.map((line, index) => (
-            <span key={index} className="about__line">
-              {line}{' '}
-            </span>
-          ))}
+        <h2
+          ref={headingRef}
+          id="about-title"
+          className="about__heading"
+          style={{ '--chars': charCount } as CSSProperties}
+        >
+          {/* Screen readers get the sentence once; the per-character copy is visual only. */}
+          <span className="sr-only">{headingText}</span>
+          <span aria-hidden="true">
+            {headingChars.map((words, line) => (
+              <span key={line} className="about__line">
+                {words.map((chars, word) => (
+                  <span key={word}>
+                    <span className="about__word">
+                      {chars.map(({ char, index }) => (
+                        <span key={index} className="about__char" style={{ '--i': index } as CSSProperties}>
+                          {char}
+                        </span>
+                      ))}
+                    </span>{' '}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </span>
         </h2>
       </div>
       <div className="about__row">

@@ -15,7 +15,7 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 - `src/data/projects.ts` — all Works content. Adding a project, its visuals or a case-study link is a data-only change. `visual` and `caseStudyUrl` are optional: missing visual → placeholder; missing link → CTA shows on hover but is not a link.
 - `src/data/site.ts` — nav anchors, contact links (email / Telegram / LinkedIn), owner name
 - `src/styles/tokens.css` — every colour, size, spacing and motion value. Don't hardcode values in component CSS.
-- `src/hooks/` — `useMediaQuery` (query strings must match the CSS `@media` rules), `useActiveProject` (rAF scroll read → active Works index), `useCursorFollow` (eased CTA follow; writes `--fx/--fy` only)
+- `src/hooks/` — `useMediaQuery` (query strings must match the CSS `@media` rules), `useActiveProject` (rAF scroll read → active Works index), `useCursorFollow` (eased CTA follow; writes `--fx/--fy` only), `useScrollProgress` (writes `--progress` 0–1; drives the About heading reveal via per-character opacity)
 - Works is pinned only at `(min-width: 1024px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh` and `.works__pin` is sticky; otherwise projects stack. The layout switch is pure CSS.
 - `src/main.tsx` client entry (hydrates prerendered HTML); `src/entry-server.tsx` SSR entry. Font imports stay in `main.tsx` only.
 - `design-src/` — **gitignored** raw Figma exports and originals. Only optimised outputs go in `src/assets/`.
