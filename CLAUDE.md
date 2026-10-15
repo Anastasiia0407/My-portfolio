@@ -21,7 +21,10 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 ## Rules
 
 - No secrets, tokens or keys in the repo. The site needs no env vars. Never write temporary Figma asset URLs into code or scripts.
-- Images: AVIF + WebP at 1x/2x within budget; the dithered About photo is lossless WebP/PNG (lossy formats smear the dither).
+- Images: `npm run images` (scripts/build-images.mjs) turns `design-src/figma/` originals into WebP/SVG in `src/assets/` (flat, named `hero-photo.webp`, `work-01-a@2x.webp`, …) and writes `src/data/figma-layout.generated.ts` (hero photo crop/rotation/blend, phone positions). Don't edit the generated file by hand.
+- Hero photo: only the unrotated area the mask window can show is exported, at source resolution; CSS rebuilds the 10.41° rotation, SVG mask and plus-lighter blend from `heroPhotoLayout`.
+- About photo: Figma's own renders with the shaders baked in, lossless WebP (lossy smears the dither). No shader runtime.
+- Projects without visuals use `work-placeholder.svg` (neutral hatched block, same footprint as the project 01 phones). Never add fake screenshots.
 - Motion: animate transform, opacity and filter only; no layout reads/writes per scroll frame (IntersectionObserver for steps, one rAF loop for progress). Muted text is ink at `--opacity-muted`, so reveals animate opacity, not colour.
 - `prefers-reduced-motion`: About text fully dark, Works stacked (not pinned), CTA static, short fades, no smooth scroll.
 - Use `100svh`, not `100vh`. External links open in a new tab with `rel="noopener noreferrer"`.
