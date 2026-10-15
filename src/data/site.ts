@@ -10,7 +10,6 @@ export interface ContactLink {
 }
 
 export const nav: NavItem[] = [
-  { label: 'home', href: '#home' },
   { label: 'works', href: '#works' },
   { label: 'about', href: '#about' },
   { label: 'get in touch', href: '#contact' },
