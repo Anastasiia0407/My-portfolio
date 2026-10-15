@@ -1,0 +1,24 @@
+/* Figma 37:45 */
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  padding: var(--space-section) var(--space-gutter);
+  background: var(--color-cream);
+}
+
+.about__eyebrow {
+  text-transform: uppercase;
+}
+
+.about__heading {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-display-l);
+  line-height: var(--lh-display);
+}
+
+.about__body {
+  max-width: 612px;
+  color: var(--color-muted);
+}

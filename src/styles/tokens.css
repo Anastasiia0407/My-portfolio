@@ -1,0 +1,60 @@
+/*
+ * Design tokens extracted from Figma (fileKey KrK3uJDPRwV4ogpCkaWoiS, frame 37:2, 1512 wide).
+ * The file has no Figma variables; values come from raw fills/text styles.
+ * Fluid values: max = Figma desktop value at 1512, vw slope = value / 1512.
+ */
+:root {
+  /* Colour */
+  --color-ink: #1e1f2d;
+  --color-cream: #f6f4f2;
+  --color-muted: #a0a0a3; /* ≈ ink at 40% opacity over cream */
+  --color-panel: #fafafa;
+  --color-accent: #ff5cb9;
+  --color-white: #ffffff;
+
+  --opacity-muted: 0.4; /* animate ink text 0.4 → 1 instead of muted → ink colour */
+
+  /* Type families */
+  --font-display: 'Onest Variable', system-ui, sans-serif;
+  --font-ui: 'Inter Variable', system-ui, sans-serif;
+
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* Type scale */
+  --fs-display-xl: clamp(44px, 6.35vw, 96px); /* "selected works" */
+  --fs-display-l: clamp(30px, 3.97vw, 60px); /* About heading, "(01)" counter */
+  --fs-name: clamp(18px, 3.97vw, 60px); /* hero name, letters spread across the width */
+  --fs-ui: clamp(16px, 1.59vw, 24px); /* labels, list, body, footer */
+  --fs-nav: clamp(14px, 1.59vw, 24px);
+
+  --lh-display: 1;
+  --lh-ui: calc(28 / 24);
+
+  /* Spacing */
+  --space-gutter: clamp(16px, 2.65vw, 40px);
+  --space-section: clamp(40px, 4.23vw, 64px);
+
+  --gap-xs: 12px;
+  --gap-s: 20px;
+  --gap-m: 32px;
+  --gap-l: 64px;
+  --gap-xl: clamp(56px, 6.35vw, 96px);
+  --gap-xxl: clamp(64px, 7.94vw, 120px);
+
+  /* Shape & size */
+  --radius-pill: 999px;
+  --size-cta: clamp(72px, 7.94vw, 120px);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-color: 400ms;
+  --dur-panel: 600ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-color: 150ms;
+    --dur-panel: 150ms;
+  }
+}

@@ -1,0 +1,21 @@
+/* Figma 37:13 — four items spread across the content width. */
+.nav__list {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-xs);
+}
+
+.nav__link {
+  display: inline-block;
+  color: var(--color-cream);
+  font-size: var(--fs-nav);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color var(--dur-color) var(--ease-out);
+}
+
+.nav__link:hover,
+.nav__link:focus-visible {
+  color: var(--color-accent);
+}

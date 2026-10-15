@@ -1,0 +1,39 @@
+/* Figma 37:56 */
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xl);
+  padding: var(--space-section) var(--space-gutter);
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+.contact__heading {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-display-xl);
+  line-height: var(--lh-display);
+  text-transform: uppercase;
+}
+
+.contact__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--gap-xs) var(--gap-m);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+}
+
+.contact__copyright {
+  color: var(--color-white);
+}
+
+.contact__link {
+  transition: color var(--dur-color) var(--ease-out);
+}
+
+.contact__link:hover,
+.contact__link:focus-visible {
+  color: var(--color-accent);
+}

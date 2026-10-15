@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Environment (no secrets belong in this repo)
+.env*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Raw design exports — only optimised files in src/assets are committed
+design-src/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp

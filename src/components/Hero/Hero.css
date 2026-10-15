@@ -1,0 +1,29 @@
+/* Figma 37:3 */
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100svh;
+  padding: var(--space-gutter) var(--space-gutter) var(--space-section);
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+.hero__title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-s);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+}
+
+.hero__name {
+  font-size: var(--fs-name);
+  line-height: var(--lh-display);
+}
+
+.hero__role {
+  font-size: var(--fs-display-xl);
+  line-height: var(--lh-display);
+}
