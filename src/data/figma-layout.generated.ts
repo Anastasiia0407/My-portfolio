@@ -2,9 +2,9 @@
 
 export const heroPhotoLayout = {
   "nodeIds": {
-    "maskGroup": "37:10",
-    "mask": "37:11",
-    "photo": "37:12"
+    "maskGroup": "58:154",
+    "mask": "58:155",
+    "photo": "58:156"
   },
   "view": {
     "width": 1432,
@@ -13,26 +13,26 @@ export const heroPhotoLayout = {
   "rotationDeg": 10.41,
   "blendMode": "plus-lighter",
   "box": {
-    "x": 65.0095,
-    "y": 204.8604,
+    "x": 65.3142,
+    "y": 203.962,
     "width": 1468.3594,
-    "height": 514.7461
+    "height": 512.6953
   },
   "boxPercent": {
-    "left": 4.5398,
-    "top": 85.3585,
+    "left": 4.561,
+    "top": 84.9842,
     "width": 102.5391,
-    "height": 214.4775
+    "height": 213.623
   },
   "originPercent": {
-    "x": 175.0698,
-    "y": -71.7131
+    "x": 174.2318,
+    "y": -72.8
   },
   "sourceCrop": {
-    "left": 112,
-    "top": 2228,
+    "left": 118,
+    "top": 2230,
     "width": 716,
-    "height": 251,
+    "height": 250,
     "sourceWidth": 2731,
     "sourceHeight": 4096,
     "figmaPxPerSourcePx": 2.0508

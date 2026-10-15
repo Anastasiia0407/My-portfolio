@@ -9,7 +9,7 @@
   color: var(--color-cream);
 }
 
-/* Figma 37:8 — name above the masked "UX/UI DESIGNER" */
+/* Figma 37:8 — name above the masked "UX/UI · PRODUCT DESIGN" */
 .hero__title {
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
   width: 0.25em;
 }
 
-/* Figma 37:10 — the vector is the mask; the ink background is what the photo blends onto. */
+/* Figma 58:154 — the vector is the mask; the ink background is what the photo blends onto. */
 .hero__role {
   position: relative;
   display: block;

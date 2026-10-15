@@ -20,20 +20,20 @@ async function webp(pipeline, name, options) {
 }
 
 /**
- * Hero "UX/UI DESIGNER" photo (Figma 37:12 inside mask group 37:10, window 1432×240).
+ * Hero "UX/UI · PRODUCT DESIGN" photo (Figma 58:156 inside mask group 58:154, window 1432×240).
  * In Figma the photo is a 5600×8400 object-cover layer rotated 10.41° about its centre;
- * its rotated bounding box sits at (-877, -4801) in window coordinates, blended plus-lighter.
+ * its rotated bounding box sits at (-889, -4806) in window coordinates, blended plus-lighter.
  * We export only the unrotated part of the photo that the window can ever show (plus a margin),
  * at source resolution, and record where it sits so CSS can rotate, mask and blend it.
  */
 async function heroPhoto() {
   const angle = 10.41
   const layer = { width: 5600, height: 8400 }
-  const bbox = { x: -877, y: -4801, width: 7025.3276, height: 9273.4396 }
+  const bbox = { x: -889, y: -4806, width: 7025.3276, height: 9273.4396 }
   const view = { width: 1432, height: 240 }
   const margin = 8 // Figma px of slack around the visible area
 
-  const input = sharp(src('hero-photo-37-12.png'))
+  const input = sharp(src('hero-photo-58-156.png'))
   const { width: sw, height: sh } = await input.metadata()
   const cover = Math.max(layer.width / sw, layer.height / sh) // Figma px per source px
   const imageOffset = { x: (layer.width - sw * cover) / 2, y: (layer.height - sh * cover) / 2 }
@@ -72,7 +72,7 @@ async function heroPhoto() {
   await webp(input.extract(crop), 'hero-photo.webp', { quality: 82 })
 
   return {
-    nodeIds: { maskGroup: '37:10', mask: '37:11', photo: '37:12' },
+    nodeIds: { maskGroup: '58:154', mask: '58:155', photo: '58:156' },
     view,
     rotationDeg: angle,
     blendMode: 'plus-lighter',
@@ -147,7 +147,7 @@ async function svg(from, to) {
 const hero = await heroPhoto()
 const works = await phones()
 await aboutPhoto()
-await svg('hero-mask-37-11.svg', 'hero-mask.svg')
+await svg('hero-mask-58-155.svg', 'hero-mask.svg')
 await svg('arrow-40-126.svg', 'arrow-up-right.svg')
 await svg('get-in-touch-44-137.svg', 'get-in-touch.svg')
 

@@ -35,5 +35,5 @@ export const contactLinks = {
 
 export const owner = {
   name: 'Anastasiia Cheban',
-  role: 'UX/UI designer',
+  role: 'UX/UI and product design',
 }

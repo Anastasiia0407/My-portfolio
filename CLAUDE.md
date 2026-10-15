@@ -40,7 +40,7 @@ fileKey `KrK3uJDPRwV4ogpCkaWoiS`, page frame `37:2` (1512 × 3384). No Figma var
 | Node | What |
 |---|---|
 | 37:3 / 37:13 | Hero / nav |
-| 37:11 + 37:12 | "UX/UI DESIGNER" vector mask over rotated photo (plus-lighter) |
+| 58:154 (58:155 + 58:156) | "UX/UI · PRODUCT DESIGN" vector mask over rotated photo (plus-lighter) |
 | 37:18 / 37:27 / 37:31 | Works / project list / visual panel |
 | 39:110 | Project 01 phones composite |
 | 40:125 | Pink CTA button (120px, arrow 40:126) |

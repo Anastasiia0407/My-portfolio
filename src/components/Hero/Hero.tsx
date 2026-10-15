@@ -6,8 +6,8 @@ import heroPhoto from '../../assets/hero-photo.webp'
 import heroMask from '../../assets/hero-mask.svg'
 import './Hero.css'
 
-// Figma composition (37:10): photo rotated about the layer centre, masked by the
-// "UX/UI DESIGNER" vector, blended plus-lighter. Numbers come from build-images.mjs.
+// Figma composition (58:154): photo rotated about the layer centre, masked by the
+// "UX/UI · PRODUCT DESIGN" vector, blended plus-lighter. Numbers come from build-images.mjs.
 const photoStyle = {
   '--photo-left': `${photo.boxPercent.left}%`,
   '--photo-top': `${photo.boxPercent.top}%`,
@@ -30,7 +30,7 @@ export default function Hero() {
       <Nav />
       <h1 className="hero__title">
         <span className="sr-only">
-          {owner.name}, {owner.role}
+          {owner.name} — {owner.role}
         </span>
         <span className="hero__name" aria-hidden="true">
           {letters.map((letter, index) => (
