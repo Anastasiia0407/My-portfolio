@@ -8,14 +8,12 @@
   color: var(--color-cream);
 }
 
-.contact__heading {
-  font-family: var(--font-display);
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-display-xl);
-  line-height: var(--lh-display);
-  text-transform: uppercase;
+.contact__heading-art {
+  width: 100%;
+  height: auto;
 }
 
+/* 37:62 */
 .contact__row {
   display: flex;
   flex-wrap: wrap;
@@ -23,6 +21,7 @@
   gap: var(--gap-xs) var(--gap-m);
   font-weight: var(--fw-semibold);
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .contact__copyright {

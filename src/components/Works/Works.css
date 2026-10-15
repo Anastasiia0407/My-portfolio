@@ -1,13 +1,27 @@
-/* Figma 37:18 */
+/* Figma 37:18 — text column + visual panel bleeding to the right edge. */
 .works {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-m);
-  padding: var(--space-section) var(--space-gutter);
+  display: grid;
+  /* % resolves against the content box (page minus left gutter), so add the gutter back. */
+  grid-template-columns: minmax(0, 1fr) calc((100% + var(--space-gutter)) * var(--works-panel-ratio));
+  column-gap: var(--gap-xs);
+  min-height: 100svh;
+  padding-left: var(--space-gutter);
   background: var(--color-cream);
 }
 
-.works__eyebrow {
+/* 37:23 */
+.works__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--gap-l);
+  padding-block: var(--space-section);
+}
+
+.works__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
   text-transform: uppercase;
 }
 
@@ -16,11 +30,106 @@
   font-weight: var(--fw-semibold);
   font-size: var(--fs-display-xl);
   line-height: var(--lh-display);
-  text-transform: uppercase;
 }
 
+/* 37:27 — muted titles are ink at reduced opacity (≈ #a0a0a3 on cream). */
 .works__list {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
+}
+
+.works__item {
+  display: inline-block;
+  font-weight: var(--fw-medium);
+  opacity: var(--opacity-muted);
+  transition:
+    opacity var(--dur-color) var(--ease-out),
+    font-weight var(--dur-color) var(--ease-out);
+}
+
+.works__item.is-active {
+  font-weight: var(--fw-semibold);
+  opacity: 1;
+}
+
+.works__item:hover,
+.works__item:focus-visible {
+  opacity: 1;
+}
+
+/* 37:31 */
+.works__panel {
+  position: relative;
+  container-type: size;
+  overflow: clip;
+  background: var(--color-panel);
+}
+
+.works__counter {
+  position: absolute;
+  top: var(--space-section);
+  right: var(--space-section);
+  z-index: 1;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-display-l);
+  line-height: var(--lh-display);
+}
+
+/* Stage keeps the Figma panel's 756×982 proportions and fits inside the panel,
+   so visuals keep their relative positions at any panel size. */
+.works__stage {
+  position: absolute;
+  inset: 0;
+  width: min(100cqw, 100cqh * 756 / 982);
+  aspect-ratio: 756 / 982;
+  margin: auto;
+}
+
+.works__visual {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.works__visual.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.works__image {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  max-width: none;
+  filter: grayscale(1);
+  transition: filter var(--dur-panel) var(--ease-out);
+}
+
+.works__image--placeholder {
+  filter: none;
+}
+
+/* 40:125 — hidden at rest; the hover stage shows it. */
+.works__cta {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: grid;
+  place-items: center;
+  width: var(--size-cta);
+  aspect-ratio: 1;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.works__cta-icon {
+  width: calc(100% / 3);
+  height: auto;
 }

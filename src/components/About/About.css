@@ -2,15 +2,23 @@
 .about {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-m);
+  gap: var(--gap-xxl);
   padding: var(--space-section) var(--space-gutter);
   background: var(--color-cream);
+}
+
+/* 37:50 */
+.about__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
 }
 
 .about__eyebrow {
   text-transform: uppercase;
 }
 
+/* 37:52 — final (fully revealed) state; the reveal stage animates it from muted. */
 .about__heading {
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
@@ -18,7 +26,24 @@
   line-height: var(--lh-display);
 }
 
+.about__line {
+  display: block;
+}
+
+/* 37:53 — 612 text + 64 gap + 756 photo, bottom-aligned. */
+.about__row {
+  display: grid;
+  grid-template-columns: minmax(0, 612fr) minmax(0, 756fr);
+  column-gap: var(--gap-l);
+  align-items: end;
+}
+
 .about__body {
-  max-width: 612px;
-  color: var(--color-muted);
+  color: var(--color-ink);
+  opacity: var(--opacity-muted);
+}
+
+.about__photo {
+  width: 100%;
+  height: auto;
 }

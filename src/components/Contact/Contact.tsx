@@ -1,5 +1,6 @@
 import { contactLinks, owner } from '../../data/site.ts'
 import type { ContactLink } from '../../data/site.ts'
+import getInTouch from '../../assets/get-in-touch.svg'
 import './Contact.css'
 
 function FooterLink({ link }: { link: ContactLink }) {
@@ -14,12 +15,13 @@ function FooterLink({ link }: { link: ContactLink }) {
   )
 }
 
-// Stub: the "GET IN TOUCH" vector heading is added in the Contact stage.
 export default function Contact() {
   return (
     <footer id="contact" className="contact" aria-labelledby="contact-title">
+      {/* 44:137 — vector headline; the text equivalent is the h2's sr-only label. */}
       <h2 id="contact-title" className="contact__heading">
-        get in touch
+        <span className="sr-only">Get in touch</span>
+        <img className="contact__heading-art" src={getInTouch} alt="" width={1432} height={200} aria-hidden="true" />
       </h2>
       <div className="contact__row">
         <p className="contact__copyright">© {owner.name}</p>

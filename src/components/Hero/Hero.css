@@ -9,21 +9,48 @@
   color: var(--color-cream);
 }
 
+/* Figma 37:8 — name above the masked "UX/UI DESIGNER" */
 .hero__title {
   display: flex;
   flex-direction: column;
   gap: var(--gap-s);
-  font-family: var(--font-display);
-  font-weight: var(--fw-semibold);
-  text-transform: uppercase;
+  font: inherit;
 }
 
+/* Wide tracking reproduced by spreading the letters across the full width:
+   it can't overflow and has no trailing letter-spacing. */
 .hero__name {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
   font-size: var(--fs-name);
   line-height: var(--lh-display);
 }
 
+.hero__space {
+  width: 0.25em;
+}
+
+/* Figma 37:10 — the vector is the mask; the ink background is what the photo blends onto. */
 .hero__role {
-  font-size: var(--fs-display-xl);
-  line-height: var(--lh-display);
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  background: var(--color-ink);
+  -webkit-mask: var(--mask-url) center / 100% 100% no-repeat;
+  mask: var(--mask-url) center / 100% 100% no-repeat;
+}
+
+.hero__photo {
+  position: absolute;
+  left: var(--photo-left);
+  top: var(--photo-top);
+  width: var(--photo-width);
+  height: var(--photo-height);
+  max-width: none;
+  transform: rotate(var(--photo-rotate));
+  transform-origin: var(--photo-origin);
+  mix-blend-mode: plus-lighter;
 }
