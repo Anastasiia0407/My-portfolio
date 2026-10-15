@@ -1,19 +1,25 @@
-/* Figma 37:18 — text column + visual panel bleeding to the right edge. */
+/* Figma 37:18 — text column + visual panel bleeding to the right edge.
+   Default (below 1024px or reduced motion): not pinned, projects stack in the panel.
+   Pinned mode is the @media block at the end; its query matches PINNED_QUERY in useMediaQuery.ts. */
 .works {
+  position: relative;
+  background: var(--color-cream);
+}
+
+.works__pin {
   display: grid;
   /* % resolves against the content box (page minus left gutter), so add the gutter back. */
   grid-template-columns: minmax(0, 1fr) calc((100% + var(--space-gutter)) * var(--works-panel-ratio));
   column-gap: var(--gap-xs);
   min-height: 100svh;
   padding-left: var(--space-gutter);
-  background: var(--color-cream);
 }
 
 /* 37:23 */
 .works__content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* stacked: list follows the heading; pinned: space-between */
   gap: var(--gap-l);
   padding-block: var(--space-section);
 }
@@ -32,71 +38,102 @@
   line-height: var(--lh-display);
 }
 
-/* 37:27 — muted titles are ink at reduced opacity (≈ #a0a0a3 on cream). */
+/* 37:27 — inactive: Medium, ink at muted opacity (≈ #a0a0a3 on cream); active: SemiBold ink.
+   The two weights are stacked copies that cross-fade, so the change is opacity-only. */
 .works__list {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
 }
 
+/* Both copies share one grid cell, so the link is as wide as the wider (SemiBold) one
+   and neither copy wraps differently from the other. */
 .works__item {
-  display: inline-block;
-  font-weight: var(--fw-medium);
-  opacity: var(--opacity-muted);
-  transition:
-    opacity var(--dur-color) var(--ease-out),
-    font-weight var(--dur-color) var(--ease-out);
+  display: inline-grid;
 }
 
-.works__item.is-active {
+.works__item-text,
+.works__item-strong {
+  grid-area: 1 / 1;
+  transition: opacity var(--dur-color) var(--ease-out);
+}
+
+.works__item-text {
+  font-weight: var(--fw-medium);
+  opacity: var(--opacity-muted);
+}
+
+.works__item-strong {
   font-weight: var(--fw-semibold);
+  opacity: 0;
+}
+
+.works__item.is-active .works__item-text {
+  opacity: 0;
+}
+
+.works__item.is-active .works__item-strong {
   opacity: 1;
 }
 
-.works__item:hover,
-.works__item:focus-visible {
+.works__item:not(.is-active):hover .works__item-text,
+.works__item:not(.is-active):focus-visible .works__item-text {
   opacity: 1;
 }
 
 /* 37:31 */
 .works__panel {
   position: relative;
-  container-type: size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
   overflow: clip;
   background: var(--color-panel);
 }
 
+/* 40:119 — rolling counter; only shown when pinned (stacked figures carry their own number).
+   The clip window has --counter-bleed above and below the line so glyphs that overhang the
+   1em line box aren't cut, and rows are spaced further apart than that so neighbours stay hidden. */
 .works__counter {
+  --counter-bleed: 0.2em;
+  --counter-gap: 0.6em;
+  display: none;
   position: absolute;
-  top: var(--space-section);
+  top: calc(var(--space-section) - var(--counter-bleed));
   right: var(--space-section);
   z-index: 1;
+  height: calc(1lh + 2 * var(--counter-bleed));
+  padding-block: var(--counter-bleed);
+  overflow: clip;
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
   font-size: var(--fs-display-l);
   line-height: var(--lh-display);
 }
 
-/* Stage keeps the Figma panel's 756×982 proportions and fits inside the panel,
-   so visuals keep their relative positions at any panel size. */
-.works__stage {
-  position: absolute;
-  inset: 0;
-  width: min(100cqw, 100cqh * 756 / 982);
-  aspect-ratio: 756 / 982;
-  margin: auto;
+.works__counter-track {
+  display: flex;
+  flex-direction: column;
+  gap: var(--counter-gap);
+  transform: translateY(calc(var(--active) * -1 * (1lh + var(--counter-gap))));
+  transition: transform var(--dur-panel) var(--ease-out);
 }
 
+/* One project's stage, with the Figma panel's 756×982 proportions. */
 .works__visual {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  visibility: hidden;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 756 / 982;
 }
 
-.works__visual.is-active {
-  opacity: 1;
-  visibility: visible;
+.works__visual-number {
+  position: absolute;
+  top: var(--space-section);
+  right: var(--space-section);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-display-l);
+  line-height: var(--lh-display);
 }
 
 .works__image {
@@ -114,11 +151,12 @@
   filter: none;
 }
 
-/* 40:125 — hidden at rest; the hover stage shows it. */
+/* 40:125 — hidden at rest. */
 .works__cta {
   position: absolute;
   left: var(--x);
   top: var(--y);
+  z-index: 2;
   display: grid;
   place-items: center;
   width: var(--size-cta);
@@ -126,10 +164,139 @@
   border-radius: var(--radius-pill);
   background: var(--color-accent);
   opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--dur-color) var(--ease-out),
+    transform var(--dur-color) var(--ease-out);
   pointer-events: none;
 }
 
 .works__cta-icon {
   width: calc(100% / 3);
   height: auto;
+}
+
+/* Colour + CTA at its static position: keyboard focus (title preview or CTA link focus)… */
+.works[data-keyboard-focus] .works__visual[data-state='active'] .works__image,
+.works__visual:focus-within .works__image {
+  filter: none;
+}
+
+.works[data-keyboard-focus] .works__visual[data-state='active'] .works__cta,
+.works__visual:focus-within .works__cta {
+  opacity: 1;
+  transform: none;
+}
+
+/* …touch / no-hover devices: the active project is always in colour, CTA is a tap target… */
+@media (hover: none) {
+  .works__visual[data-state='active'] .works__image {
+    filter: none;
+  }
+
+  .works__visual[data-state='active'] .works__cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  .works__visual[data-state='active'] a.works__cta {
+    pointer-events: auto;
+  }
+}
+
+/* …and hover on a pointer device (stacked: per figure, no follow). */
+@media (hover: hover) {
+  .works__visual:hover .works__image {
+    filter: none;
+  }
+
+  .works__visual:hover .works__cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  .works__visual:hover a.works__cta {
+    pointer-events: auto;
+  }
+}
+
+/* ---------- Pinned mode ---------- */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  /* One viewport of scroll per project while the inner grid is stuck. */
+  .works {
+    height: calc((var(--steps) + 1) * 100svh);
+  }
+
+  .works__pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
+
+  .works__content {
+    justify-content: space-between;
+  }
+
+  .works__panel {
+    display: block;
+    container-type: size;
+  }
+
+  .works__counter {
+    display: block;
+  }
+
+  .works__visual-number {
+    display: none;
+  }
+
+  /* All projects share one stage that fits the panel; the active one is shown. */
+  .works__visual {
+    position: absolute;
+    inset: 0;
+    width: min(100cqw, 100cqh * 756 / 982);
+    margin: auto;
+    transition:
+      opacity var(--dur-panel) var(--ease-out),
+      transform var(--dur-panel) var(--ease-out),
+      visibility 0s linear;
+  }
+
+  .works__visual[data-state='before'],
+  .works__visual[data-state='after'] {
+    opacity: 0;
+    visibility: hidden;
+    transition-property: opacity, transform, visibility;
+    transition-delay: 0s, 0s, var(--dur-panel);
+  }
+
+  .works__visual[data-state='before'] {
+    transform: translateY(-6%);
+  }
+
+  .works__visual[data-state='after'] {
+    transform: translateY(6%);
+  }
+
+  /* Hovering anywhere on the panel colours the active project and shows the CTA. */
+  @media (hover: hover) {
+    .works__panel:hover .works__visual[data-state='active'] .works__image {
+      filter: none;
+    }
+
+    .works__panel:hover .works__visual[data-state='active'] .works__cta {
+      opacity: 1;
+      transform: none;
+    }
+
+    .works__panel:hover .works__visual[data-state='active'] a.works__cta {
+      pointer-events: auto;
+    }
+
+    /* Cursor-follow (useCursorFollow): translate from the static position, no transform easing. */
+    .works__panel.is-following .works__visual[data-state] .works__cta {
+      transform: translate3d(var(--fx, 0), var(--fy, 0), 0);
+      transition: opacity var(--dur-color) var(--ease-out);
+    }
+  }
 }
