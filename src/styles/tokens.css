@@ -48,6 +48,7 @@
   /* Shape & size */
   --radius-pill: 999px;
   --size-cta: clamp(72px, 7.94vw, 120px);
+  --size-touch: 44px; /* minimum tap target for text links */
 
   /* Motion */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

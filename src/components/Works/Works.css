@@ -1,25 +1,17 @@
-/* Figma 37:18 — text column + visual panel bleeding to the right edge.
-   Default (below 1024px or reduced motion): not pinned, projects stack in the panel.
-   Pinned mode is the @media block at the end; its query matches PINNED_QUERY in useMediaQuery.ts. */
+/* Figma 37:18. Three layouts (queries match useMediaQuery.ts):
+   - <1024px: one column of project blocks (caption, visuals, static CTA); the list is hidden.
+   - ≥1024px: text column + visual panel bleeding to the right edge (Figma), and
+     - motion allowed: pinned, one project at a time (last @media block);
+     - reduced motion: the projects stack in the panel. */
 .works {
   position: relative;
   background: var(--color-cream);
 }
 
-.works__pin {
-  display: grid;
-  /* % resolves against the content box (page minus left gutter), so add the gutter back. */
-  grid-template-columns: minmax(0, 1fr) calc((100% + var(--space-gutter)) * var(--works-panel-ratio));
-  column-gap: var(--gap-xs);
-  min-height: 100svh;
-  padding-left: var(--space-gutter);
-}
-
-/* 37:23 */
 .works__content {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* stacked: list follows the heading; pinned: space-between */
+  justify-content: flex-start;
   gap: var(--gap-l);
   padding-block: var(--space-section);
 }
@@ -38,60 +30,55 @@
   line-height: var(--lh-display);
 }
 
-/* 37:27 — inactive: Medium, ink at muted opacity (≈ #a0a0a3 on cream); active: SemiBold ink.
-   The two weights are stacked copies that cross-fade, so the change is opacity-only. */
+/* 37:27 */
 .works__list {
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
 }
 
-/* Both copies share one grid cell, so the link is as wide as the wider (SemiBold) one
-   and neither copy wraps differently from the other. */
-.works__item {
+/* Project label (list item and block caption): inactive Medium, ink at muted opacity
+   (≈ #a0a0a3 on cream); active SemiBold ink. Both copies share one grid cell, so the box
+   fits the wider copy and the change is a cross-fade (opacity only, no reflow). */
+.works__label {
   display: inline-grid;
 }
 
-.works__item-text,
-.works__item-strong {
+.works__label-text,
+.works__label-strong {
   grid-area: 1 / 1;
   transition: opacity var(--dur-color) var(--ease-out);
 }
 
-.works__item-text {
+.works__label-text {
   font-weight: var(--fw-medium);
   opacity: var(--opacity-muted);
 }
 
-.works__item-strong {
+.works__label-strong {
   font-weight: var(--fw-semibold);
   opacity: 0;
 }
 
-.works__item.is-active .works__item-text {
+.works__label.is-active .works__label-text {
   opacity: 0;
 }
 
-.works__item.is-active .works__item-strong {
+.works__label.is-active .works__label-strong {
   opacity: 1;
 }
 
-.works__item:not(.is-active):hover .works__item-text,
-.works__item:not(.is-active):focus-visible .works__item-text {
+.works__item:not(.is-active):hover .works__label-text,
+.works__item:not(.is-active):focus-visible .works__label-text {
   opacity: 1;
 }
 
 /* 37:31 */
 .works__panel {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-xs);
-  overflow: clip;
-  background: var(--color-panel);
 }
 
-/* 40:119 — rolling counter; only shown when pinned (stacked figures carry their own number).
+/* 40:119 — rolling counter; only shown when pinned (stacked stages carry their own number).
    The clip window has --counter-bleed above and below the line so glyphs that overhang the
    1em line box aren't cut, and rows are spaced further apart than that so neighbours stay hidden. */
 .works__counter {
@@ -120,13 +107,15 @@
 }
 
 /* One project's stage, with the Figma panel's 756×982 proportions. */
-.works__visual {
+.works__stage {
   position: relative;
   width: 100%;
   aspect-ratio: 756 / 982;
+  background: var(--color-panel);
 }
 
 .works__visual-number {
+  display: none;
   position: absolute;
   top: var(--space-section);
   right: var(--space-section);
@@ -151,7 +140,7 @@
   filter: none;
 }
 
-/* 40:125 — hidden at rest. */
+/* 40:125 — hidden at rest on desktop. */
 .works__cta {
   position: absolute;
   left: var(--x);
@@ -204,7 +193,7 @@
   }
 }
 
-/* …and hover on a pointer device (stacked: per figure, no follow). */
+/* …and hover on a pointer device (stacked: per project, no follow). */
 @media (hover: hover) {
   .works__visual:hover .works__image {
     filter: none;
@@ -217,6 +206,90 @@
 
   .works__visual:hover a.works__cta {
     pointer-events: auto;
+  }
+}
+
+/* ---------- Below 1024px: stacked project blocks ---------- */
+@media (max-width: 1023px) {
+  .works {
+    padding: var(--space-section) var(--space-gutter);
+  }
+
+  .works__content {
+    padding-block: 0 var(--gap-l);
+  }
+
+  /* Each block carries its own title. */
+  .works__list {
+    display: none;
+  }
+
+  .works__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+  }
+
+  .works__visual {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-s);
+  }
+
+  /* Cap the stage at 80% of the viewport height (matters on tablets) so a block's title
+     and visuals fit on screen together. */
+  .works__stage {
+    max-width: calc(80svh * 756 / 982);
+  }
+
+  /* The project in view (IntersectionObserver) is in colour; its title is dark. */
+  .works__visual[data-state='active'] .works__image {
+    filter: none;
+  }
+
+  /* The CTA is always present at its static Figma position as a tap target. */
+  .works__cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  a.works__cta {
+    pointer-events: auto;
+  }
+}
+
+/* ---------- 1024px and up: Figma's two columns ---------- */
+@media (min-width: 1024px) {
+  .works__pin {
+    display: grid;
+    /* % resolves against the content box (page minus left gutter), so add the gutter back. */
+    grid-template-columns: minmax(0, 1fr) calc((100% + var(--space-gutter)) * var(--works-panel-ratio));
+    column-gap: var(--gap-xs);
+    min-height: 100svh;
+    padding-left: var(--space-gutter);
+  }
+
+  .works__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+    overflow: clip;
+    background: var(--color-panel);
+  }
+
+  /* The list names the project; the caption stays for screen readers only. */
+  .works__caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .works__visual-number {
+    display: block;
   }
 }
 
@@ -254,12 +327,18 @@
   .works__visual {
     position: absolute;
     inset: 0;
-    width: min(100cqw, 100cqh * 756 / 982);
-    margin: auto;
     transition:
       opacity var(--dur-panel) var(--ease-out),
       transform var(--dur-panel) var(--ease-out),
       visibility 0s linear;
+  }
+
+  .works__stage {
+    position: absolute;
+    inset: 0;
+    width: min(100cqw, 100cqh * 756 / 982);
+    margin: auto;
+    background: none;
   }
 
   .works__visual[data-state='before'],

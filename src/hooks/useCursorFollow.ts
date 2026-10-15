@@ -58,13 +58,16 @@ export function useCursorFollow(panel: RefObject<HTMLElement | null>, enabled: b
       window.clearTimeout(leaveTimer)
       hovering = true
       if (!el.classList.contains('is-following')) {
-        // Static position from layout offsets (ignores the CTA's hidden-state scale);
-        // every project shares it. offsetParent chain: CTA → figure → panel.
+        // Static position from layout offsets (ignores the CTA's hidden-state scale and the
+        // figure's slide transform); every project shares it. Sum offsets up to the panel.
         const cta = el.querySelector<HTMLElement>('[data-state="active"] .works__cta')
-        const figure = cta?.offsetParent as HTMLElement | null
-        if (!cta || !figure) return
-        origin.x = figure.offsetLeft + cta.offsetLeft
-        origin.y = figure.offsetTop + cta.offsetTop
+        if (!cta) return
+        origin.x = 0
+        origin.y = 0
+        for (let node: HTMLElement | null = cta; node && node !== el; node = node.offsetParent as HTMLElement | null) {
+          origin.x += node.offsetLeft
+          origin.y += node.offsetTop
+        }
         origin.size = cta.offsetWidth
         aim(event)
         current.x = target.x

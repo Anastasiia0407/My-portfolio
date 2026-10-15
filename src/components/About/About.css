@@ -63,3 +63,17 @@
   width: 100%;
   height: auto;
 }
+
+/* Below 1024px the row stacks text first, photo second: that's the DOM and reading order
+   (heading → paragraph → photo), so what's seen matches what's read and tabbed. */
+@media (max-width: 1023px) {
+  .about__row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--gap-m);
+  }
+
+  /* Figma's forced line breaks only suit the wide layout; let the sentence flow. */
+  .about__line {
+    display: inline;
+  }
+}

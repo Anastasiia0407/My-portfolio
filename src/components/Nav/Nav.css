@@ -5,8 +5,9 @@
   gap: var(--gap-xs);
 }
 
+/* Three short items stay on one row at every width: --fs-nav bottoms out at 14px,
+   where they need ~210px of the 328px available at 360. */
 .nav__link {
-  display: inline-block;
   color: var(--color-cream);
   font-size: var(--fs-nav);
   font-weight: var(--fw-semibold);

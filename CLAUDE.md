@@ -16,7 +16,8 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 - `src/data/site.ts` — nav anchors, contact links (email / Telegram / LinkedIn), owner name
 - `src/styles/tokens.css` — every colour, size, spacing and motion value. Don't hardcode values in component CSS.
 - `src/hooks/` — `useMediaQuery` (query strings must match the CSS `@media` rules), `useActiveProject` (rAF scroll read → active Works index), `useCursorFollow` (eased CTA follow; writes `--fx/--fy` only), `useScrollProgress` (writes `--progress` 0–1; drives the About heading reveal via per-character opacity)
-- Works is pinned only at `(min-width: 1024px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh` and `.works__pin` is sticky; otherwise projects stack. The layout switch is pure CSS.
+- Works is pinned only at `(min-width: 1024px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh` and `.works__pin` is sticky. At ≥1024px with reduced motion the projects stack in the right column. Below 1024px each project is a block (caption, stage, static CTA) and the title list is hidden; the active block comes from an IntersectionObserver. The layout switch is pure CSS.
+- Breakpoints: 1024px (Works/About/Contact layout switch), 640px (footer 2×2 → one column). Type, gutters and spacing are fluid via `clamp()` tokens. Text links use `.touch-target` for a 44px hit area.
 - `src/main.tsx` client entry (hydrates prerendered HTML); `src/entry-server.tsx` SSR entry. Font imports stay in `main.tsx` only.
 - `design-src/` — **gitignored** raw Figma exports and originals. Only optimised outputs go in `src/assets/`.
 

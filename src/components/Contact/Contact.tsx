@@ -6,7 +6,7 @@ import './Contact.css'
 function FooterLink({ link }: { link: ContactLink }) {
   return (
     <a
-      className="contact__link"
+      className="contact__link touch-target"
       href={link.href}
       {...(link.external && { target: '_blank', rel: 'noopener noreferrer' })}
     >

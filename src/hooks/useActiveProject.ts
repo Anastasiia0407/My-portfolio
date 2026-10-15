@@ -16,47 +16,51 @@ export function pinnedStepTop(section: HTMLElement, pin: HTMLElement, index: num
 }
 
 /**
- * Active project from scroll position. One rAF-throttled read per frame, no writes:
- * - pinned: each project owns one step (pin height) of scroll inside the section;
- * - stacked: the last figure whose top has passed the viewport centre.
+ * Active Works project.
+ * - Pinned: each project owns one step (pin height) of scroll inside the section; one
+ *   rAF-throttled rect read per scroll frame, no writes.
+ * - Stacked: IntersectionObserver on the figures against a line at the viewport centre;
+ *   the figure crossing that line is active (no scroll handler).
  */
 export function useActiveProject({ section, pin, figures, count, pinned }: Options): number {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    let frame = 0
-
-    const measure = () => {
-      frame = 0
-      const sectionEl = section.current
-      if (!sectionEl) return
-      let next = 0
-      if (pinned) {
+    if (pinned) {
+      let frame = 0
+      const measure = () => {
+        frame = 0
+        const sectionEl = section.current
+        if (!sectionEl) return
         const step = pin.current?.offsetHeight || window.innerHeight
         const offset = -sectionEl.getBoundingClientRect().top
         // +2px so landing exactly on a step boundary (e.g. after a title click) counts as that step.
-        next = Math.floor((offset + 2) / step)
-      } else {
-        const centre = window.innerHeight / 2
-        figures.current.forEach((figure, i) => {
-          if (figure && figure.getBoundingClientRect().top <= centre) next = i
-        })
+        setIndex(Math.min(count - 1, Math.max(0, Math.floor((offset + 2) / step))))
       }
-      setIndex(Math.min(count - 1, Math.max(0, next)))
+      const schedule = () => {
+        if (!frame) frame = requestAnimationFrame(measure)
+      }
+      schedule()
+      window.addEventListener('scroll', schedule, { passive: true })
+      window.addEventListener('resize', schedule)
+      return () => {
+        cancelAnimationFrame(frame)
+        window.removeEventListener('scroll', schedule)
+        window.removeEventListener('resize', schedule)
+      }
     }
 
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(measure)
-    }
-
-    schedule()
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
-    }
+    const targets = figures.current.filter((el): el is HTMLElement => el !== null)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // With a zero-height root band only the figure under the centre line intersects.
+        const hit = entries.filter((entry) => entry.isIntersecting).at(-1)
+        if (hit) setIndex(targets.indexOf(hit.target as HTMLElement))
+      },
+      { rootMargin: '-50% 0px -50% 0px' },
+    )
+    targets.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
   }, [section, pin, figures, count, pinned])
 
   return index

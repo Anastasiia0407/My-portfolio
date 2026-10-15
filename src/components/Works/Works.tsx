@@ -48,6 +48,19 @@ function ProjectCta({ project }: { project: Project }) {
   )
 }
 
+/** "(01) Title" as two stacked copies (Medium + SemiBold) that cross-fade: opacity only, no reflow. */
+function ProjectLabel({ project }: { project: Project }) {
+  const label = `(${project.number}) ${project.title}`
+  return (
+    <>
+      <span className="works__label-text">{label}</span>
+      <span className="works__label-strong" aria-hidden="true">
+        {label}
+      </span>
+    </>
+  )
+}
+
 function ProjectVisual({
   project,
   state,
@@ -61,35 +74,42 @@ function ProjectVisual({
 }) {
   return (
     <figure ref={figureRef} id={project.id} className="works__visual" data-state={state} aria-hidden={hidden || undefined}>
-      {project.images ? (
-        project.images.map((image) => (
-          <img
-            key={image.src1x}
-            className="works__image"
-            style={place(image.x, image.y, image.width, image.height)}
-            src={image.src1x}
-            srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
-            alt={image.alt}
-            loading="lazy"
-            decoding="async"
-          />
-        ))
-      ) : (
-        <img className="works__image works__image--placeholder" style={placeholderStyle} src={placeholder} alt="" />
-      )}
-      <span className="works__visual-number" aria-hidden="true">
-        ({project.number})
-      </span>
-      <ProjectCta project={project} />
-      <figcaption className="sr-only">{project.title}</figcaption>
+      {/* Visible block title below 1024px; visually hidden on desktop, where the list names the project. */}
+      <figcaption className={`works__caption works__label${state === 'active' ? ' is-active' : ''}`}>
+        <ProjectLabel project={project} />
+      </figcaption>
+      <div className="works__stage">
+        {project.images ? (
+          project.images.map((image) => (
+            <img
+              key={image.src1x}
+              className="works__image"
+              style={place(image.x, image.y, image.width, image.height)}
+              src={image.src1x}
+              srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+              alt={image.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          ))
+        ) : (
+          <img className="works__image works__image--placeholder" style={placeholderStyle} src={placeholder} alt="" />
+        )}
+        <span className="works__visual-number" aria-hidden="true">
+          ({project.number})
+        </span>
+        <ProjectCta project={project} />
+      </div>
     </figure>
   )
 }
 
 /**
- * Pinned (≥1024px, motion allowed): the section is (projects + 1) viewports tall and its
- * inner grid sticks, so each project gets one viewport of scroll. Otherwise the projects
- * stack in the right column. Layout switches in CSS; JS only reads scroll and sets state.
+ * Three layouts, switched in CSS (JS only reads scroll / intersections and sets state):
+ * - ≥1024px, motion allowed: pinned. The section is (projects + 1) viewports tall and its
+ *   inner grid sticks, so each project gets one viewport of scroll.
+ * - ≥1024px, reduced motion: two columns, projects stacked in the right column.
+ * - <1024px: one column of project blocks (title, visuals, static CTA); the list is hidden.
  */
 export default function Works() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -152,27 +172,20 @@ export default function Works() {
             </h2>
           </div>
           <ol className="works__list">
-            {projects.map((project, index) => {
-              const label = `(${project.number}) ${project.title}`
-              return (
-                <li key={project.id}>
-                  <a
-                    className={`works__item${index === activeIndex ? ' is-active' : ''}`}
-                    href={`#${project.id}`}
-                    aria-current={index === activeIndex ? 'step' : undefined}
-                    onClick={goTo(index)}
-                    onFocus={onTitleFocus(index)}
-                    onBlur={() => setFocus(null)}
-                  >
-                    <span className="works__item-text">{label}</span>
-                    {/* SemiBold copy cross-fades over the Medium one: opacity only, no reflow. */}
-                    <span className="works__item-strong" aria-hidden="true">
-                      {label}
-                    </span>
-                  </a>
-                </li>
-              )
-            })}
+            {projects.map((project, index) => (
+              <li key={project.id}>
+                <a
+                  className={`works__item works__label${index === activeIndex ? ' is-active' : ''}`}
+                  href={`#${project.id}`}
+                  aria-current={index === activeIndex ? 'step' : undefined}
+                  onClick={goTo(index)}
+                  onFocus={onTitleFocus(index)}
+                  onBlur={() => setFocus(null)}
+                >
+                  <ProjectLabel project={project} />
+                </a>
+              </li>
+            ))}
           </ol>
         </div>
 

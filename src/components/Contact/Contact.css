@@ -13,10 +13,9 @@
   height: auto;
 }
 
-/* 37:62 */
+/* 37:62 — one row on desktop; 2×2 from 640px; one column below. */
 .contact__row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--gap-xs) var(--gap-m);
   font-weight: var(--fw-semibold);
@@ -35,4 +34,26 @@
 .contact__link:hover,
 .contact__link:focus-visible {
   color: var(--color-accent);
+}
+
+@media (max-width: 1023px) {
+  .contact__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    justify-content: space-between;
+    row-gap: var(--gap-s);
+  }
+}
+
+@media (max-width: 639px) {
+  .contact__row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--gap-xs);
+  }
+
+  /* Links first, sign-off last; © isn't focusable, so tab order is unaffected. */
+  .contact__copyright {
+    order: 1;
+    margin-top: var(--gap-s);
+  }
 }
