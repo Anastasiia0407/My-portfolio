@@ -24,11 +24,13 @@
   /* Type scale */
   --fs-display-xl: clamp(44px, 6.35vw, 96px); /* "selected works" */
   --fs-display-l: clamp(30px, 3.97vw, 60px); /* About heading, "(01)" counter */
-  --fs-name: clamp(18px, 3.97vw, 60px); /* hero name, letters spread across the width */
+  --fs-display-m: clamp(24px, 2.65vw, 40px); /* About paragraph (Onest 40/48) */
+  --fs-name: clamp(18px, 3.97vw, 60px); /* hero tagline, letters spread across the width */
   --fs-ui: clamp(16px, 1.59vw, 24px); /* labels, list, body, footer */
   --fs-nav: clamp(14px, 1.59vw, 24px);
 
   --lh-display: 1;
+  --lh-display-m: calc(48 / 40);
   --lh-ui: calc(28 / 24);
 
   /* Spacing */

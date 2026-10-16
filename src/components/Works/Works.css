@@ -20,10 +20,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap-m);
-  text-transform: uppercase;
+}
+
+/* 37:25 */
+.works__eyebrow {
+  color: var(--color-muted);
 }
 
 .works__title {
+  text-transform: uppercase;
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
   font-size: var(--fs-display-xl);

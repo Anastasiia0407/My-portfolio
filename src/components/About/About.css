@@ -1,79 +1,40 @@
-/* Figma 37:45 */
+/* Figma 62:245 — full-height section, content at the bottom. */
 .about {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-xxl);
-  padding: var(--space-section) var(--space-gutter);
+  justify-content: flex-end;
+  gap: var(--gap-m);
+  min-height: 100svh;
+  padding: var(--space-gutter);
   background: var(--color-cream);
 }
 
-/* 37:50 */
-.about__intro {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-m);
+/* 62:246 */
+.about__label {
+  font: inherit;
+  color: var(--color-muted);
 }
 
-.about__eyebrow {
-  text-transform: uppercase;
-}
-
-/* 37:52 — scroll-linked "typed" reveal. useScrollProgress writes --progress (0–1);
+/* 62:247 — scroll-linked "typed" reveal. useScrollProgress writes --progress (0–1);
    character --i goes from muted (≈ #a0a0a3) to ink as the reveal front passes it.
-   Without the hook (no JS, reduced motion) the heading is fully ink. */
-.about__heading {
+   Without the hook (no JS, reduced motion) the paragraph is fully ink. */
+.about__text {
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
-  font-size: var(--fs-display-l);
-  line-height: var(--lh-display);
-}
-
-.about__line {
-  display: block;
+  font-size: var(--fs-display-m);
+  line-height: var(--lh-display-m);
 }
 
 .about__word {
   white-space: nowrap;
 }
 
-.about__heading[data-progress-active] .about__char {
+.about__text[data-progress-active] .about__char {
   opacity: clamp(var(--opacity-muted), calc(var(--progress, 0) * var(--chars) - var(--i)), 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about__heading .about__char {
+  .about__text .about__char {
     opacity: 1;
-  }
-}
-
-/* 37:53 — 612 text + 64 gap + 756 photo, bottom-aligned. */
-.about__row {
-  display: grid;
-  grid-template-columns: minmax(0, 612fr) minmax(0, 756fr);
-  column-gap: var(--gap-l);
-  align-items: end;
-}
-
-.about__body {
-  color: var(--color-ink);
-  opacity: var(--opacity-muted);
-}
-
-.about__photo {
-  width: 100%;
-  height: auto;
-}
-
-/* Below 1024px the row stacks text first, photo second: that's the DOM and reading order
-   (heading → paragraph → photo), so what's seen matches what's read and tabbed. */
-@media (max-width: 1023px) {
-  .about__row {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: var(--gap-m);
-  }
-
-  /* Figma's forced line breaks only suit the wide layout; let the sentence flow. */
-  .about__line {
-    display: inline;
   }
 }

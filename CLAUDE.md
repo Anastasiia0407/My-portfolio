@@ -15,9 +15,10 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 - `src/data/projects.ts` — all Works content. Adding a project, its visuals or a case-study link is a data-only change. `visual` and `caseStudyUrl` are optional: missing visual → placeholder; missing link → CTA shows on hover but is not a link.
 - `src/data/site.ts` — nav anchors, contact links (email / Telegram / LinkedIn), owner name
 - `src/styles/tokens.css` — every colour, size, spacing and motion value. Don't hardcode values in component CSS.
-- `src/hooks/` — `useMediaQuery` (query strings must match the CSS `@media` rules), `useActiveProject` (rAF scroll read → active Works index), `useCursorFollow` (eased CTA follow; writes `--fx/--fy` only), `useScrollProgress` (writes `--progress` 0–1; drives the About heading reveal via per-character opacity)
+- `src/hooks/` — `useMediaQuery` (query strings must match the CSS `@media` rules), `useActiveProject` (rAF scroll read → active Works index), `useCursorFollow` (eased CTA follow; writes `--fx/--fy` only), `useScrollProgress` (writes `--progress` 0–1; drives the About paragraph reveal via per-character opacity)
 - Works is pinned only at `(min-width: 1024px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh` and `.works__pin` is sticky. At ≥1024px with reduced motion the projects stack in the right column. Below 1024px each project is a block (caption, stage, static CTA) and the title list is hidden; the active block comes from an IntersectionObserver. The layout switch is pure CSS.
-- Breakpoints: 1024px (Works/About/Contact layout switch), 640px (footer 2×2 → one column). Type, gutters and spacing are fluid via `clamp()` tokens. Text links use `.touch-target` for a 44px hit area.
+- Section order: Hero → About → Works → Contact.
+- Breakpoints: 1024px (Works/Contact layout switch), 640px (footer 2×2 → one column). Type, gutters and spacing are fluid via `clamp()` tokens. Text links use `.touch-target` for a 44px hit area.
 - `src/main.tsx` client entry (hydrates prerendered HTML); `src/entry-server.tsx` SSR entry. Font imports stay in `main.tsx` only.
 - `design-src/` — **gitignored** raw Figma exports and originals. Only optimised outputs go in `src/assets/`.
 
@@ -25,8 +26,7 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 
 - No secrets, tokens or keys in the repo. The site needs no env vars. Never write temporary Figma asset URLs into code or scripts.
 - Images: `npm run images` (scripts/build-images.mjs) turns `design-src/figma/` originals into WebP/SVG in `src/assets/` (flat, named `hero-photo.webp`, `work-01-a@2x.webp`, …) and writes `src/data/figma-layout.generated.ts` (hero photo crop/rotation/blend, phone positions). Don't edit the generated file by hand.
-- Hero photo: only the unrotated area the mask window can show is exported, at source resolution; CSS rebuilds the 10.41° rotation, SVG mask and plus-lighter blend from `heroPhotoLayout`.
-- About photo: Figma's own renders with the shaders baked in, lossless WebP (lossy smears the dither). No shader runtime.
+- Hero photo: only the unrotated area the mask window can show is exported, at source resolution; CSS rebuilds the 10.41° rotation, SVG mask and plus-lighter blend from `heroPhotoLayout`. The Figma layer has a colour adjustment that Figma only exports at low resolution, so the script fits a per-channel tone curve (original → Figma preview) and applies it to the full-resolution crop.
 - Projects without visuals use `work-placeholder.svg` (neutral hatched block, same footprint as the project 01 phones). Never add fake screenshots.
 - Motion: animate transform, opacity and filter only; no layout reads/writes per scroll frame (IntersectionObserver for steps, one rAF loop for progress). Muted text is ink at `--opacity-muted`, so reveals animate opacity, not colour.
 - `prefers-reduced-motion`: About text fully dark, Works stacked (not pinned), CTA static, short fades, no smooth scroll.
@@ -35,14 +35,15 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 
 ## Figma
 
-fileKey `KrK3uJDPRwV4ogpCkaWoiS`, page frame `37:2` (1512 × 3384). No Figma variables, no motion data.
+fileKey `KrK3uJDPRwV4ogpCkaWoiS`, page frame `37:2` (1512 × 3337). No Figma variables, no motion data.
 
 | Node | What |
 |---|---|
-| 37:3 / 37:13 | Hero / nav |
-| 58:154 (58:155 + 58:156) | "UX/UI · PRODUCT DESIGN" vector mask over rotated photo (plus-lighter) |
+| 37:3 / 37:13 | Hero / nav (About, Works, Get in touch) |
+| 61:182 | Tracked tagline "UX/UI · PRODUCT" |
+| 61:183 (61:184 + 61:185) | "DESIGNER" vector mask over rotated photo (plus-lighter) |
+| 62:245 / 62:246 / 62:247 | About / "Who I am" / revealed paragraph |
 | 37:18 / 37:27 / 37:31 | Works / project list / visual panel |
 | 39:110 | Project 01 phones composite |
 | 40:125 | Pink CTA button (120px, arrow 40:126) |
-| 37:45 / 37:52 / 37:55 | About / animated heading / photo with baked shader |
-| 37:56 / 44:137 / 37:62 | Contact / "GET IN TOUCH" vector / footer links |
+| 37:56 / 61:192 / 37:62 | Contact / "GET IN TOUCH" vector / footer links |

@@ -2,40 +2,40 @@
 
 export const heroPhotoLayout = {
   "nodeIds": {
-    "maskGroup": "58:154",
-    "mask": "58:155",
-    "photo": "58:156"
+    "maskGroup": "61:183",
+    "mask": "61:184",
+    "photo": "61:185"
   },
   "view": {
     "width": 1432,
-    "height": 240
+    "height": 200
   },
   "rotationDeg": 10.41,
   "blendMode": "plus-lighter",
   "box": {
-    "x": 65.3142,
-    "y": 203.962,
-    "width": 1468.3594,
-    "height": 512.6953
+    "x": 68.6427,
+    "y": 186.1884,
+    "width": 1463.3683,
+    "height": 473.1491
   },
   "boxPercent": {
-    "left": 4.561,
-    "top": 84.9842,
-    "width": 102.5391,
-    "height": 213.623
+    "left": 4.7935,
+    "top": 93.0942,
+    "width": 102.1905,
+    "height": 236.5745
   },
   "originPercent": {
-    "x": 174.2318,
-    "y": -72.8
+    "x": 168.281,
+    "y": -82.2785
   },
   "sourceCrop": {
-    "left": 118,
-    "top": 2230,
-    "width": 716,
-    "height": 250,
+    "left": 132,
+    "top": 2243,
+    "width": 733,
+    "height": 237,
     "sourceWidth": 2731,
     "sourceHeight": 4096,
-    "figmaPxPerSourcePx": 2.0508
+    "figmaPxPerSourcePx": 1.9964
   }
 } as const
 

@@ -37,7 +37,7 @@ export const projects: Project[] = [
   {
     id: 'project-01',
     number: '01',
-    title: 'Web App Menu-Subscription What to Eat',
+    title: 'What to Eat - menu subscription web app',
     images: [
       { src1x: work01a1x, src2x: work01a2x, alt: 'Weekly menu screen of the What to Eat app', ...phoneA },
       { src1x: work01b1x, src2x: work01b2x, alt: 'Shopping list screen of the What to Eat app', ...phoneB },
@@ -46,11 +46,11 @@ export const projects: Project[] = [
   {
     id: 'project-02',
     number: '02',
-    title: 'AI SaaS platform SocialTap',
+    title: 'SocialTap - AI SaaS marketplace',
   },
   {
     id: 'project-03',
     number: '03',
-    title: 'TMS platform for a logistics company',
+    title: 'TMS - logistics platform (concept)',
   },
 ]

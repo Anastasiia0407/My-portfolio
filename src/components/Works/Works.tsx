@@ -166,7 +166,7 @@ export default function Works() {
       <div ref={pinRef} className="works__pin">
         <div className="works__content">
           <div className="works__intro">
-            <p className="works__eyebrow">real problems, useful products</p>
+            <p className="works__eyebrow">Real problems, useful products</p>
             <h2 id="works-title" className="works__title">
               selected works
             </h2>

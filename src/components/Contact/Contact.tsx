@@ -18,10 +18,10 @@ function FooterLink({ link }: { link: ContactLink }) {
 export default function Contact() {
   return (
     <footer id="contact" className="contact" aria-labelledby="contact-title">
-      {/* 44:137 — vector headline; the text equivalent is the h2's sr-only label. */}
+      {/* 61:192 — vector headline; the text equivalent is the h2's sr-only label. */}
       <h2 id="contact-title" className="contact__heading">
         <span className="sr-only">Get in touch</span>
-        <img className="contact__heading-art" src={getInTouch} alt="" width={1432} height={200} aria-hidden="true" />
+        <img className="contact__heading-art" src={getInTouch} alt="" width={1432} height={139} aria-hidden="true" />
       </h2>
       <div className="contact__row">
         <p className="contact__copyright">© {owner.name}</p>

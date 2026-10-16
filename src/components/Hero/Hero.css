@@ -9,7 +9,7 @@
   color: var(--color-cream);
 }
 
-/* Figma 37:8 — name above the masked "UX/UI · PRODUCT DESIGN" */
+/* Figma 61:181 — tagline above the masked "DESIGNER" */
 .hero__title {
   display: flex;
   flex-direction: column;
@@ -17,11 +17,14 @@
   font: inherit;
 }
 
-/* Wide tracking reproduced by spreading the letters across the full width:
-   it can't overflow and has no trailing letter-spacing. */
-.hero__name {
+/* 61:182 — the wide tracking (62.4px at 60px) is reproduced by spreading the letters across a
+   centred box as wide as Figma's tracked line (1387 of 1432px): it can't overflow and has no
+   trailing letter-spacing, and the tracking shrinks with the box on narrow screens. */
+.hero__tagline {
   display: flex;
   justify-content: space-between;
+  width: calc(100% * 1387 / 1432);
+  margin-inline: auto;
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
   font-size: var(--fs-name);
@@ -32,7 +35,7 @@
   width: 0.25em;
 }
 
-/* Figma 58:154 — the vector is the mask; the ink background is what the photo blends onto. */
+/* Figma 61:183 — the vector is the mask; the ink background is what the photo blends onto. */
 .hero__role {
   position: relative;
   display: block;

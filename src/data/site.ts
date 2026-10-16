@@ -10,8 +10,8 @@ export interface ContactLink {
 }
 
 export const nav: NavItem[] = [
-  { label: 'works', href: '#works' },
   { label: 'about', href: '#about' },
+  { label: 'works', href: '#works' },
   { label: 'get in touch', href: '#contact' },
 ]
 
@@ -35,5 +35,7 @@ export const contactLinks = {
 
 export const owner = {
   name: 'Anastasiia Cheban',
-  role: 'UX/UI and product design',
+  role: 'UX/UI and product designer',
+  /** Hero tagline above the masked "DESIGNER" (Figma 61:182). */
+  tagline: 'UX/UI · PRODUCT',
 }

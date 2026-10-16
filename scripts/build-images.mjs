@@ -20,20 +20,54 @@ async function webp(pipeline, name, options) {
 }
 
 /**
- * Hero "UX/UI · PRODUCT DESIGN" photo (Figma 58:156 inside mask group 58:154, window 1432×240).
- * In Figma the photo is a 5600×8400 object-cover layer rotated 10.41° about its centre;
- * its rotated bounding box sits at (-889, -4806) in window coordinates, blended plus-lighter.
+ * Per-channel 256-entry lookup table mapping `originalPath` colours to `adjustedPath` colours,
+ * fitted on the two images at the adjusted image's size, smoothed and made monotonic.
+ */
+async function toneCurve(originalPath, adjustedPath) {
+  const adjusted = sharp(adjustedPath).removeAlpha()
+  const { width, height } = await adjusted.metadata()
+  const a = await adjusted.raw().toBuffer()
+  const o = await sharp(originalPath).removeAlpha().resize(width, height).raw().toBuffer()
+  return [0, 1, 2].map((c) => {
+    const sum = new Float64Array(256)
+    const count = new Float64Array(256)
+    for (let i = c; i < o.length; i += 3) {
+      sum[o[i]] += a[i]
+      count[o[i]]++
+    }
+    // Weighted average over a ±4 window fills sparse levels; then force monotonic.
+    const lut = new Uint8Array(256)
+    let previous = 0
+    for (let v = 0; v < 256; v++) {
+      let s = 0
+      let n = 0
+      for (let k = Math.max(0, v - 4); k <= Math.min(255, v + 4); k++) {
+        s += sum[k]
+        n += count[k]
+      }
+      const value = n ? s / n : v
+      previous = Math.max(previous, Math.round(value))
+      lut[v] = Math.min(255, previous)
+    }
+    return lut
+  })
+}
+
+/**
+ * Hero "DESIGNER" photo (Figma 61:185 inside mask group 61:183, window 1432×200).
+ * In Figma the photo is a 5451.53×8177.29 object-cover layer rotated 10.41° about its centre;
+ * its rotated bounding box sits at (-888.32, -4716.9) in window coordinates, blended plus-lighter.
  * We export only the unrotated part of the photo that the window can ever show (plus a margin),
  * at source resolution, and record where it sits so CSS can rotate, mask and blend it.
  */
 async function heroPhoto() {
   const angle = 10.41
-  const layer = { width: 5600, height: 8400 }
-  const bbox = { x: -889, y: -4806, width: 7025.3276, height: 9273.4396 }
-  const view = { width: 1432, height: 240 }
+  const layer = { width: 5451.53, height: 8177.294 }
+  const bbox = { x: -888.32, y: -4716.9, width: 6839.068, height: 9027.577 }
+  const view = { width: 1432, height: 200 }
   const margin = 8 // Figma px of slack around the visible area
 
-  const input = sharp(src('hero-photo-58-156.png'))
+  const input = sharp(src('hero-photo-61-185.png'))
   const { width: sw, height: sh } = await input.metadata()
   const cover = Math.max(layer.width / sw, layer.height / sh) // Figma px per source px
   const imageOffset = { x: (layer.width - sw * cover) / 2, y: (layer.height - sh * cover) / 2 }
@@ -69,10 +103,16 @@ async function heroPhoto() {
   }
   const origin = { x: centre.x - box.x, y: centre.y - box.y }
 
-  await webp(input.extract(crop), 'hero-photo.webp', { quality: 82 })
+  // The layer has a Figma colour adjustment (cooler than the original). Figma only exports the
+  // adjusted image at low resolution, so fit a per-channel tone curve original → adjusted
+  // and apply it to the full-resolution crop.
+  const curve = await toneCurve(src('hero-photo-61-185.png'), src('hero-photo-61-185-preview.png'))
+  const raw = await input.clone().extract(crop).removeAlpha().raw().toBuffer({ resolveWithObject: true })
+  for (let i = 0; i < raw.data.length; i++) raw.data[i] = curve[i % 3][raw.data[i]]
+  await webp(sharp(raw.data, { raw: raw.info }), 'hero-photo.webp', { quality: 82 })
 
   return {
-    nodeIds: { maskGroup: '58:154', mask: '58:155', photo: '58:156' },
+    nodeIds: { maskGroup: '61:183', mask: '61:184', photo: '61:185' },
     view,
     rotationDeg: angle,
     blendMode: 'plus-lighter',
@@ -121,16 +161,6 @@ async function phones() {
   return { panel: { nodeId: '37:31', width: 756, height: 982 }, phones: result }
 }
 
-/**
- * About photo 37:55: Figma's own renders with the gradient-map + Bayer dither shaders baked in
- * (1x via get_screenshot, 2x via download_assets). Lossless keeps every dither pixel and stays
- * within budget; lossy WebP smears the pattern.
- */
-async function aboutPhoto() {
-  await webp(sharp(src('about-photo-37-55@1x.png')).removeAlpha(), 'about-photo@1x.webp', { lossless: true })
-  await webp(sharp(src('about-photo-37-55@2x.png')).removeAlpha(), 'about-photo@2x.webp', { lossless: true })
-}
-
 /** Strip Figma-only attributes; keep root width/height/viewBox and the drawing untouched. */
 async function svg(from, to) {
   const raw = await readFile(src(from), 'utf8')
@@ -146,10 +176,9 @@ async function svg(from, to) {
 
 const hero = await heroPhoto()
 const works = await phones()
-await aboutPhoto()
-await svg('hero-mask-58-155.svg', 'hero-mask.svg')
+await svg('hero-mask-61-184.svg', 'hero-mask.svg')
 await svg('arrow-40-126.svg', 'arrow-up-right.svg')
-await svg('get-in-touch-44-137.svg', 'get-in-touch.svg')
+await svg('get-in-touch-61-192.svg', 'get-in-touch.svg')
 
 await writeFile(
   join(root, 'src/data/figma-layout.generated.ts'),
