@@ -30,7 +30,7 @@
   --fs-nav: clamp(14px, 1.59vw, 24px);
 
   --lh-display: 1;
-  --lh-display-m: calc(48 / 40);
+  --lh-display-m: clamp(30px, 3.175vw, 48px); /* 48 at 1512 → 30 at 24px type (ratio 1.2 → 1.25) */
   --lh-ui: calc(28 / 24);
 
   /* Spacing */

@@ -1,12 +1,19 @@
-/* Figma 62:245 — full-height section, content at the bottom. */
+/* Figma 62:245 — full-height section, content at the bottom. Below 1024px the height comes
+   from the content and padding, so the paragraph is never squeezed into one viewport. */
 .about {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--gap-m);
-  min-height: 100svh;
-  padding: var(--space-gutter);
+  padding: var(--space-section) var(--space-gutter);
   background: var(--color-cream);
+}
+
+@media (min-width: 1024px) {
+  .about {
+    min-height: 100svh;
+    padding: var(--space-gutter);
+  }
 }
 
 /* 62:246 */
