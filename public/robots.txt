@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO(domain): add once the final domain is known
+# Sitemap: https://YOUR-DOMAIN/sitemap.xml

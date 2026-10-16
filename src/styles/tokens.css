@@ -42,7 +42,6 @@
   --gap-m: 32px;
   --gap-l: 64px;
   --gap-xl: clamp(56px, 6.35vw, 96px);
-  --gap-xxl: clamp(64px, 7.94vw, 120px);
 
   /* Layout */
   --works-panel-ratio: 0.5; /* panel width / page width: 756 / 1512 */
