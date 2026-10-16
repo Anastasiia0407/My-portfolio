@@ -1,0 +1,111 @@
+/* Figma 66:323 (menu) / 67:371 (close): 40×40 at (16, 16). Two 30.9px lines, 2.5px stroke, at
+   y 13.9 and 26.1 — i.e. ±6.1 from the centre — that rotate ±45° into the close "X". */
+.menu-button {
+  position: absolute;
+  top: var(--m-gutter);
+  left: var(--m-gutter);
+  z-index: 20;
+  width: var(--m-size-button);
+  height: var(--m-size-button);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-cream);
+  cursor: pointer;
+}
+
+.menu-button__line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(30.9 * var(--m));
+  height: calc(2.5 * var(--m));
+  margin: calc(-1.25 * var(--m)) 0 0 calc(-15.45 * var(--m));
+  border-radius: var(--radius-pill);
+  background: currentColor;
+  transform: translateY(calc(-6.1 * var(--m)));
+  transition: transform var(--dur-menu) var(--ease-menu);
+}
+
+.menu-button__line + .menu-button__line {
+  transform: translateY(calc(6.1 * var(--m)));
+}
+
+.menu-button[data-open] .menu-button__line {
+  transform: rotate(45deg);
+}
+
+.menu-button[data-open] .menu-button__line + .menu-button__line {
+  transform: rotate(-45deg);
+}
+
+/* 66:274 — full-screen blurred overlay, items centred. */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(56 * var(--m)) var(--m-gutter) calc(40 * var(--m));
+  background: var(--color-menu-scrim);
+  -webkit-backdrop-filter: blur(var(--m-blur-menu));
+  backdrop-filter: blur(var(--m-blur-menu));
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-menu) var(--ease-menu),
+    visibility 0s linear var(--dur-menu);
+}
+
+.menu[data-open] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--dur-menu) var(--ease-menu),
+    visibility 0s linear 0s;
+}
+
+.menu__list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--m-gap-l);
+}
+
+.menu__link {
+  color: var(--color-cream);
+  font-family: var(--font-ui);
+  font-weight: var(--fw-semibold);
+  font-size: var(--m-fs-display);
+  line-height: var(--m-lh-display);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menu__link:hover {
+    color: var(--color-accent);
+  }
+}
+
+.menu__link:focus-visible {
+  color: var(--color-accent);
+}
+
+/* Reduced motion: no morph, no fade — the icon and overlay switch instantly. */
+@media (prefers-reduced-motion: reduce) {
+  .menu-button__line,
+  .menu,
+  .menu[data-open] {
+    transition: none;
+  }
+}
+
+/* The menu exists only below 1024px; the inline nav takes over from there. */
+@media (min-width: 1024px) {
+  .menu-button,
+  .menu {
+    display: none;
+  }
+}

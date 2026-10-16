@@ -1,36 +1,70 @@
 import { useRef, useState } from 'react'
 import type { CSSProperties, FocusEvent, MouseEvent } from 'react'
 import { projects } from '../../data/projects.ts'
-import type { Project } from '../../data/projects.ts'
-import { work01Layout } from '../../data/figma-layout.generated.ts'
+import type { Placement, Project, Rect } from '../../data/projects.ts'
+import { work01Phones, worksStages } from '../../data/figma-layout.generated.ts'
 import { useActiveProject, pinnedStepTop } from '../../hooks/useActiveProject.ts'
 import { useCursorFollow } from '../../hooks/useCursorFollow.ts'
-import { FINE_HOVER_QUERY, PINNED_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
+import {
+  DESKTOP_QUERY,
+  FINE_HOVER_QUERY,
+  PINNED_QUERY,
+  REDUCED_MOTION_QUERY,
+  useMediaQuery,
+} from '../../hooks/useMediaQuery.ts'
 import placeholder from '../../assets/work-placeholder.svg'
 import arrow from '../../assets/arrow-up-right.svg'
 import './Works.css'
 
-const { panel } = work01Layout
+const pct = (value: number, of: number) => `${(value / of) * 100}%`
 
-/** Position on the stage, as % of the Figma panel (756×982). */
-function place(x: number, y: number, width: number, height: number) {
+/** Desktop box as --x/--y/--w/--h and mobile box as --mx/--my/--mw/--mh, in % of each stage. */
+function place({ desktop: d, mobile: m }: Placement) {
+  const { desktop: ds, mobile: ms } = worksStages
   return {
-    '--x': `${(x / panel.width) * 100}%`,
-    '--y': `${(y / panel.height) * 100}%`,
-    '--w': `${(width / panel.width) * 100}%`,
-    '--h': `${(height / panel.height) * 100}%`,
+    '--x': pct(d.x, ds.width),
+    '--y': pct(d.y, ds.height),
+    '--w': pct(d.width, ds.width),
+    '--h': pct(d.height, ds.height),
+    '--mx': pct(m.x, ms.width),
+    '--my': pct(m.y, ms.height),
+    '--mw': pct(m.width, ms.width),
+    '--mh': pct(m.height, ms.height),
   } as CSSProperties
 }
 
-// Placeholder covers the same footprint as the project 01 phones.
-const [first, last] = [work01Layout.phones[0], work01Layout.phones[work01Layout.phones.length - 1]]
-const placeholderStyle = place(first.x, first.y, last.x + last.width - first.x, last.y + last.height - first.y)
+// The placeholder covers the same footprint as the project 01 phones, on each stage.
+const footprint = (boxes: readonly Rect[]): Rect => {
+  const x = Math.min(...boxes.map((b) => b.x))
+  const y = Math.min(...boxes.map((b) => b.y))
+  return {
+    x,
+    y,
+    width: Math.max(...boxes.map((b) => b.x + b.width)) - x,
+    height: Math.max(...boxes.map((b) => b.y + b.height)) - y,
+  }
+}
+const placeholderStyle = place({
+  desktop: footprint(work01Phones.map((p) => p.desktop)),
+  mobile: footprint(work01Phones.map((p) => p.mobile)),
+})
 
 // Static CTA position from Figma (40:125); the cursor-follow translates it from here.
-const ctaStyle = { '--x': `${(224 / panel.width) * 100}%`, '--y': `${(642 / panel.height) * 100}%` } as CSSProperties
+const ctaStyle = {
+  '--x': pct(224, worksStages.desktop.width),
+  '--y': pct(642, worksStages.desktop.height),
+} as CSSProperties
+
+const stageStyle = {
+  '--stage-w': worksStages.desktop.width,
+  '--stage-mw': worksStages.mobile.width,
+  '--stage-ratio': `${worksStages.desktop.width} / ${worksStages.desktop.height}`,
+  '--stage-mratio': `${worksStages.mobile.width} / ${worksStages.mobile.height}`,
+} as CSSProperties
 
 type VisualState = 'before' | 'active' | 'after'
 
+/** Desktop CTA (hover / keyboard / desktop touch). Hidden below 1024px, where the card itself is the link. */
 function ProjectCta({ project }: { project: Project }) {
   const icon = <img className="works__cta-icon" src={arrow} alt="" width={40} height={40} />
   // No case study yet: still shown on hover, but not a link and not focusable.
@@ -73,33 +107,57 @@ function ProjectVisual({
   figureRef: (el: HTMLElement | null) => void
 }) {
   return (
-    <figure ref={figureRef} id={project.id} className="works__visual" data-state={state} aria-hidden={hidden || undefined}>
-      {/* Visible block title below 1024px; visually hidden on desktop, where the list names the project. */}
-      <figcaption className={`works__caption works__label${state === 'active' ? ' is-active' : ''}`}>
-        <ProjectLabel project={project} />
-      </figcaption>
-      <div className="works__stage">
+    <figure
+      ref={figureRef}
+      id={project.id}
+      className="works__visual"
+      data-state={state}
+      data-counter={project.counter ?? 'top'}
+      aria-hidden={hidden || undefined}
+    >
+      <div className="works__stage" style={stageStyle}>
+        {project.band && <div className="works__band works__image" style={place(project.band)} />}
         {project.images ? (
-          project.images.map((image) => (
-            <img
-              key={image.src1x}
-              className="works__image"
-              style={place(image.x, image.y, image.width, image.height)}
-              src={image.src1x}
-              srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
-              alt={image.alt}
-              loading="lazy"
-              decoding="async"
-            />
-          ))
+          project.images.map((image) =>
+            image.framed ? (
+              <div key={image.src1x} className="works__frame works__image" style={place(image.placement)}>
+                <img
+                  className="works__frame-image"
+                  src={image.src1x}
+                  srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+                  alt={image.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            ) : (
+              <img
+                key={image.src1x}
+                className="works__image"
+                style={place(image.placement)}
+                src={image.src1x}
+                srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+                alt={image.alt}
+                loading="lazy"
+                decoding="async"
+              />
+            ),
+          )
         ) : (
           <img className="works__image works__image--placeholder" style={placeholderStyle} src={placeholder} alt="" />
         )}
-        <span className="works__visual-number" aria-hidden="true">
+        <span className="works__number" aria-hidden="true">
           ({project.number})
         </span>
         <ProjectCta project={project} />
       </div>
+      {/* Visible card title below 1024px; visually hidden on desktop, where the list names the project. */}
+      <figcaption className={`works__caption works__label${state === 'active' ? ' is-active' : ''}`}>
+        <ProjectLabel project={project} />
+      </figcaption>
+      {project.caseStudyUrl && (
+        <a className="works__card-link" href={project.caseStudyUrl} aria-label={`Open case study: ${project.title}`} />
+      )}
     </figure>
   )
 }
@@ -109,7 +167,7 @@ function ProjectVisual({
  * - ≥1024px, motion allowed: pinned. The section is (projects + 1) viewports tall and its
  *   inner grid sticks, so each project gets one viewport of scroll.
  * - ≥1024px, reduced motion: two columns, projects stacked in the right column.
- * - <1024px: one column of project blocks (title, visuals, static CTA); the list is hidden.
+ * - <1024px: one card per project (visual, then title). No hover, no active state.
  */
 export default function Works() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -117,6 +175,7 @@ export default function Works() {
   const panelRef = useRef<HTMLDivElement>(null)
   const figuresRef = useRef<(HTMLElement | null)[]>([])
 
+  const desktop = useMediaQuery(DESKTOP_QUERY)
   const pinned = useMediaQuery(PINNED_QUERY)
   const fineHover = useMediaQuery(FINE_HOVER_QUERY)
   const reducedMotion = useMediaQuery(REDUCED_MOTION_QUERY)
@@ -127,6 +186,7 @@ export default function Works() {
     figures: figuresRef,
     count: projects.length,
     pinned,
+    stacked: desktop && !pinned,
   })
 
   // Keyboard focus on a title previews that project until the scroll position changes.
@@ -161,7 +221,7 @@ export default function Works() {
       className="works on-light"
       aria-labelledby="works-title"
       data-keyboard-focus={keyboardFocus || undefined}
-      style={{ '--steps': projects.length, '--active': activeIndex } as CSSProperties}
+      style={{ '--steps': projects.length } as CSSProperties}
     >
       <div ref={pinRef} className="works__pin">
         <div className="works__content">
@@ -190,13 +250,6 @@ export default function Works() {
         </div>
 
         <div ref={panelRef} className="works__panel">
-          <p className="works__counter" aria-hidden="true">
-            <span className="works__counter-track">
-              {projects.map((project) => (
-                <span key={project.id}>({project.number})</span>
-              ))}
-            </span>
-          </p>
           {projects.map((project, index) => (
             <ProjectVisual
               key={project.id}

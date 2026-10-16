@@ -60,11 +60,12 @@ ul {
 }
 
 /* Text link with a --size-touch tall hit area that doesn't change the layout:
-   the padding grows the box, the negative margin gives the space back. */
+   the padding grows the box, the negative margin gives the space back.
+   Lines already taller than the target get neither. */
 .touch-target {
   display: inline-block;
-  padding-block: calc((var(--size-touch) - 1lh) / 2);
-  margin-block: calc((1lh - var(--size-touch)) / 2);
+  padding-block: max(0px, calc((var(--size-touch) - 1lh) / 2));
+  margin-block: min(0px, calc((1lh - var(--size-touch)) / 2));
 }
 
 .sr-only {

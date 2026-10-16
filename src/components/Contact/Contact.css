@@ -1,9 +1,7 @@
-/* Figma 37:56 */
+/* Figma 37:56 (desktop) / 66:310 (mobile) */
 .contact {
   display: flex;
   flex-direction: column;
-  gap: var(--gap-xl);
-  padding: var(--space-section) var(--space-gutter);
   background: var(--color-ink);
   color: var(--color-cream);
 }
@@ -13,47 +11,65 @@
   height: auto;
 }
 
-/* 37:62 — one row on desktop; 2×2 from 640px; one column below. */
+/* 37:62 / 66:317 */
 .contact__row {
   display: flex;
-  justify-content: space-between;
-  gap: var(--gap-xs) var(--gap-m);
   font-weight: var(--fw-semibold);
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .contact__copyright {
   color: var(--color-white);
+  white-space: nowrap;
 }
 
 .contact__link {
   transition: color var(--dur-color) var(--ease-out);
 }
 
-.contact__link:hover,
 .contact__link:focus-visible {
   color: var(--color-accent);
 }
 
-@media (max-width: 1023px) {
-  .contact__row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, max-content));
-    justify-content: space-between;
-    row-gap: var(--gap-s);
+@media (hover: hover) and (pointer: fine) {
+  .contact__link:hover {
+    color: var(--color-accent);
   }
 }
 
-@media (max-width: 639px) {
-  .contact__row {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: var(--gap-xs);
+/* Mobile: links stacked 16/24 with 4px between them (each keeps a 44px hit area via .touch-target),
+   then "© Anastasiia Cheban" 14/20 last, 32px below. */
+@media (max-width: 1023px) {
+  .contact {
+    gap: var(--m-gap-l);
+    padding: var(--m-section) var(--m-gutter) var(--m-gutter);
   }
 
-  /* Links first, sign-off last; © isn't focusable, so tab order is unaffected. */
+  .contact__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--m-gap-xxs);
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-link);
+  }
+
   .contact__copyright {
     order: 1;
-    margin-top: var(--gap-s);
+    margin-top: calc(var(--m-gap-l) - var(--m-gap-xxs));
+    font-size: var(--m-fs-small);
+    line-height: var(--m-lh-label);
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact {
+    gap: var(--gap-xl);
+    padding: var(--space-section) var(--space-gutter);
+  }
+
+  .contact__row {
+    justify-content: space-between;
+    gap: var(--gap-xs) var(--gap-m);
+    white-space: nowrap;
   }
 }

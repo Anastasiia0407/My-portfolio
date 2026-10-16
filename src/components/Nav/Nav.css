@@ -1,12 +1,10 @@
-/* Figma 37:13 — four items spread across the content width. */
+/* Figma 37:13 — three items spread across the content width (1024px and up). */
 .nav__list {
   display: flex;
   justify-content: space-between;
   gap: var(--gap-xs);
 }
 
-/* Three short items stay on one row at every width: --fs-nav bottoms out at 14px,
-   where they need ~210px of the 328px available at 360. */
 .nav__link {
   color: var(--color-cream);
   font-size: var(--fs-nav);
@@ -17,7 +15,19 @@
   transition: color var(--dur-color) var(--ease-out);
 }
 
-.nav__link:hover,
 .nav__link:focus-visible {
   color: var(--color-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav__link:hover {
+    color: var(--color-accent);
+  }
+}
+
+/* Below 1024px the mobile menu replaces the inline nav. */
+@media (max-width: 1023px) {
+  .nav {
+    display: none;
+  }
 }

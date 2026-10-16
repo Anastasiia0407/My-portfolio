@@ -1,35 +1,24 @@
-/* Figma 62:245 — full-height section, content at the bottom. Below 1024px the height comes
-   from the content and padding, so the paragraph is never squeezed into one viewport. */
+/* Figma 62:245 (desktop) / 66:278 (mobile) — full-height section, content at the bottom. */
 .about {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: var(--gap-m);
-  padding: var(--space-section) var(--space-gutter);
+  min-height: 100svh;
   background: var(--color-cream);
 }
 
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100svh;
-    padding: var(--space-gutter);
-  }
-}
-
-/* 62:246 */
+/* 62:246 / 66:279 */
 .about__label {
   font: inherit;
   color: var(--color-muted);
 }
 
-/* 62:247 — scroll-linked "typed" reveal. useScrollProgress writes --progress (0–1);
+/* 62:247 / 66:280 — scroll-linked "typed" reveal. useScrollProgress writes --progress (0–1);
    character --i goes from muted (≈ #a0a0a3) to ink as the reveal front passes it.
    Without the hook (no JS, reduced motion) the paragraph is fully ink. */
 .about__text {
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
-  font-size: var(--fs-display-m);
-  line-height: var(--lh-display-m);
 }
 
 .about__word {
@@ -43,5 +32,34 @@
 @media (prefers-reduced-motion: reduce) {
   .about__text .about__char {
     opacity: 1;
+  }
+}
+
+@media (max-width: 1023px) {
+  .about {
+    gap: var(--m-gap-xs);
+    padding: var(--m-section) var(--m-gutter);
+  }
+
+  .about__label {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
+  }
+
+  .about__text {
+    font-size: var(--m-fs-about);
+    line-height: var(--m-lh-about);
+  }
+}
+
+@media (min-width: 1024px) {
+  .about {
+    gap: var(--gap-m);
+    padding: var(--space-gutter);
+  }
+
+  .about__text {
+    font-size: var(--fs-display-m);
+    line-height: var(--lh-display-m);
   }
 }

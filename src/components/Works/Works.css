@@ -1,50 +1,25 @@
-/* Figma 37:18. Three layouts (queries match useMediaQuery.ts):
-   - <1024px: one column of project blocks (caption, visuals, static CTA); the list is hidden.
-   - ≥1024px: text column + visual panel bleeding to the right edge (Figma), and
-     - motion allowed: pinned, one project at a time (last @media block);
+/* Figma 37:18 (desktop) / 66:281 (mobile). Layouts (queries match useMediaQuery.ts):
+   - <1024px: cards (visual, then title); no hover, no active state, no CTA, always in colour.
+   - ≥1024px: text column + visual panel bleeding to the right edge, and
+     - motion allowed: pinned, one project at a time;
      - reduced motion: the projects stack in the panel. */
 .works {
   position: relative;
   background: var(--color-cream);
 }
 
-.works__content {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: var(--gap-l);
-  padding-block: var(--space-section);
+.works__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
 }
 
-.works__intro {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-m);
-}
-
-/* 37:25 */
 .works__eyebrow {
   color: var(--color-muted);
 }
 
-.works__title {
-  text-transform: uppercase;
-  font-family: var(--font-display);
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-display-xl);
-  line-height: var(--lh-display);
-}
-
-/* 37:27 */
-.works__list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-xs);
-}
-
-/* Project label (list item and block caption): inactive Medium, ink at muted opacity
-   (≈ #a0a0a3 on cream); active SemiBold ink. Both copies share one grid cell, so the box
-   fits the wider copy and the change is a cross-fade (opacity only, no reflow). */
+/* Project label (desktop list item and card title) as two stacked copies, Medium and SemiBold,
+   in one grid cell: the box fits the wider copy and the weight change is a cross-fade. */
 .works__label {
   display: inline-grid;
 }
@@ -52,214 +27,136 @@
 .works__label-text,
 .works__label-strong {
   grid-area: 1 / 1;
-  transition: opacity var(--dur-color) var(--ease-out);
-}
-
-.works__label-text {
-  font-weight: var(--fw-medium);
-  opacity: var(--opacity-muted);
 }
 
 .works__label-strong {
   font-weight: var(--fw-semibold);
-  opacity: 0;
 }
 
-.works__label.is-active .works__label-text {
-  opacity: 0;
-}
-
-.works__label.is-active .works__label-strong {
-  opacity: 1;
-}
-
-.works__item:not(.is-active):hover .works__label-text,
-.works__item:not(.is-active):focus-visible .works__label-text {
-  opacity: 1;
-}
-
-/* 37:31 */
-.works__panel {
-  position: relative;
-}
-
-/* 40:119 — rolling counter; only shown when pinned (stacked stages carry their own number).
-   The clip window has --counter-bleed above and below the line so glyphs that overhang the
-   1em line box aren't cut, and rows are spaced further apart than that so neighbours stay hidden. */
-.works__counter {
-  --counter-bleed: 0.2em;
-  --counter-gap: 0.6em;
-  display: none;
-  position: absolute;
-  top: calc(var(--space-section) - var(--counter-bleed));
-  right: var(--space-section);
-  z-index: 1;
-  height: calc(1lh + 2 * var(--counter-bleed));
-  padding-block: var(--counter-bleed);
-  overflow: clip;
-  font-family: var(--font-display);
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-display-l);
-  line-height: var(--lh-display);
-}
-
-.works__counter-track {
-  display: flex;
-  flex-direction: column;
-  gap: var(--counter-gap);
-  transform: translateY(calc(var(--active) * -1 * (1lh + var(--counter-gap))));
-  transition: transform var(--dur-panel) var(--ease-out);
-}
-
-/* One project's stage, with the Figma panel's 756×982 proportions. */
+/* One project's stage. Placements are % of the stage; the stage clips what extends past it.
+   --su is one Figma px of the stage, for borders and shadows that scale with it. */
 .works__stage {
   position: relative;
-  width: 100%;
-  aspect-ratio: 756 / 982;
+  overflow: clip;
+  container-type: inline-size;
   background: var(--color-panel);
-}
-
-.works__visual-number {
-  display: none;
-  position: absolute;
-  top: var(--space-section);
-  right: var(--space-section);
-  font-family: var(--font-display);
-  font-weight: var(--fw-semibold);
-  font-size: var(--fs-display-l);
-  line-height: var(--lh-display);
 }
 
 .works__image {
   position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--w);
-  height: var(--h);
   max-width: none;
-  filter: grayscale(1);
-  transition: filter var(--dur-panel) var(--ease-out);
 }
 
-.works__image--placeholder {
-  filter: none;
+/* Project 03: teal band (75:44) and the dashboard in a rounded frame (75:45) with an outside stroke,
+   drawn as a box-shadow spread so it sits outside the image box like Figma's stroke. */
+.works__band {
+  background: linear-gradient(122.04deg, var(--color-teal-from) 0.7%, var(--color-teal-to) 108.51%);
+  border-style: solid;
+  border-color: var(--color-band-border);
 }
 
-/* 40:125 — hidden at rest on desktop. */
-.works__cta {
+.works__frame {
+  box-shadow: 0 0 0 var(--frame-stroke) var(--color-frame-border);
+}
+
+.works__frame-image {
   position: absolute;
-  left: var(--x);
-  top: var(--y);
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: var(--size-cta);
-  aspect-ratio: 1;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  opacity: 0;
-  transform: scale(0.6);
-  transition:
-    opacity var(--dur-color) var(--ease-out),
-    transform var(--dur-color) var(--ease-out);
-  pointer-events: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
 }
 
-.works__cta-icon {
-  width: calc(100% / 3);
-  height: auto;
-}
-
-/* Colour + CTA at its static position: keyboard focus (title preview or CTA link focus)… */
-.works[data-keyboard-focus] .works__visual[data-state='active'] .works__image,
-.works__visual:focus-within .works__image {
-  filter: none;
-}
-
-.works[data-keyboard-focus] .works__visual[data-state='active'] .works__cta,
-.works__visual:focus-within .works__cta {
-  opacity: 1;
-  transform: none;
-}
-
-/* …touch / no-hover devices: the active project is always in colour, CTA is a tap target… */
-@media (hover: none) {
-  .works__visual[data-state='active'] .works__image {
-    filter: none;
-  }
-
-  .works__visual[data-state='active'] .works__cta {
-    opacity: 1;
-    transform: none;
-  }
-
-  .works__visual[data-state='active'] a.works__cta {
-    pointer-events: auto;
-  }
-}
-
-/* …and hover on a pointer device (stacked: per project, no follow). */
-@media (hover: hover) {
-  .works__visual:hover .works__image {
-    filter: none;
-  }
-
-  .works__visual:hover .works__cta {
-    opacity: 1;
-    transform: none;
-  }
-
-  .works__visual:hover a.works__cta {
-    pointer-events: auto;
-  }
-}
-
-/* ---------- Below 1024px: stacked project blocks ---------- */
+/* ---------- Below 1024px: cards (66:325) ---------- */
 @media (max-width: 1023px) {
   .works {
-    padding: var(--space-section) var(--space-gutter);
+    padding: var(--m-section) var(--m-gutter);
   }
 
-  .works__content {
-    padding-block: 0 var(--gap-l);
+  .works__pin {
+    display: flex;
+    flex-direction: column;
+    gap: var(--m-gap-m);
   }
 
-  /* Each block carries its own title. */
-  .works__list {
+  .works__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--m-gap-xs);
+  }
+
+  .works__eyebrow {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
+  }
+
+  .works__title {
+    font-size: var(--m-fs-display);
+    line-height: var(--m-lh-display);
+  }
+
+  .works__list,
+  .works__number,
+  .works__cta {
     display: none;
   }
 
   .works__panel {
     display: flex;
     flex-direction: column;
-    gap: var(--gap-xl);
+    gap: var(--m-gap-m);
   }
 
   .works__visual {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--gap-s);
+    gap: var(--m-gap-s);
   }
 
-  /* Cap the stage at 80% of the viewport height (matters on tablets) so a block's title
-     and visuals fit on screen together. */
   .works__stage {
-    max-width: calc(80svh * 756 / 982);
+    --su: calc(100cqw / var(--stage-mw));
+    width: 100%;
+    aspect-ratio: var(--stage-mratio);
   }
 
-  /* The project in view (IntersectionObserver) is in colour; its title is dark. */
-  .works__visual[data-state='active'] .works__image {
-    filter: none;
+  .works__image {
+    left: var(--mx);
+    top: var(--my);
+    width: var(--mw);
+    height: var(--mh);
   }
 
-  /* The CTA is always present at its static Figma position as a tap target. */
-  .works__cta {
-    opacity: 1;
-    transform: none;
+  .works__band {
+    border-width: calc(0.5 * var(--su));
+    box-shadow: 0 calc(6 * var(--su)) calc(28 * var(--su)) var(--color-band-shadow);
   }
 
-  a.works__cta {
-    pointer-events: auto;
+  .works__frame {
+    --frame-stroke: calc(9.6 * var(--su));
+    border-radius: calc(18 * var(--su));
+  }
+
+  .works__frame-image {
+    border-radius: calc(18 * var(--su));
+  }
+
+  /* Every title is dark SemiBold: no active state on mobile. */
+  .works__caption {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
+    color: var(--color-ink);
+  }
+
+  .works__caption .works__label-text {
+    visibility: hidden;
+  }
+
+  /* When the project has a case study, the whole card is the link. */
+  .works__card-link {
+    position: absolute;
+    inset: 0;
   }
 }
 
@@ -274,7 +171,62 @@
     padding-left: var(--space-gutter);
   }
 
+  /* 37:23 */
+  .works__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--gap-l);
+    padding-block: var(--space-section);
+  }
+
+  .works__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-m);
+  }
+
+  .works__title {
+    font-size: var(--fs-display-xl);
+    line-height: var(--lh-display);
+  }
+
+  /* 37:27 — inactive: Medium, ink at muted opacity (≈ #a0a0a3 on cream); active: SemiBold ink. */
+  .works__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+  }
+
+  .works__label-text,
+  .works__label-strong {
+    transition: opacity var(--dur-color) var(--ease-out);
+  }
+
+  .works__label-text {
+    font-weight: var(--fw-medium);
+    opacity: var(--opacity-muted);
+  }
+
+  .works__label-strong {
+    opacity: 0;
+  }
+
+  .works__label.is-active .works__label-text {
+    opacity: 0;
+  }
+
+  .works__label.is-active .works__label-strong {
+    opacity: 1;
+  }
+
+  .works__item:not(.is-active):focus-visible .works__label-text {
+    opacity: 1;
+  }
+
+  /* 37:31 */
   .works__panel {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--gap-xs);
@@ -293,8 +245,131 @@
     white-space: nowrap;
   }
 
-  .works__visual-number {
-    display: block;
+  .works__card-link {
+    display: none;
+  }
+
+  .works__stage {
+    --su: calc(100cqw / var(--stage-w));
+    width: 100%;
+    aspect-ratio: var(--stage-ratio);
+  }
+
+  .works__image {
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+    filter: grayscale(1);
+    transition: filter var(--dur-panel) var(--ease-out);
+  }
+
+  .works__image--placeholder {
+    filter: none;
+  }
+
+  .works__band {
+    border-width: var(--su);
+    box-shadow: 0 calc(12 * var(--su)) calc(56 * var(--su)) var(--color-band-shadow);
+  }
+
+  .works__frame {
+    --frame-stroke: calc(19.2 * var(--su));
+    border-radius: calc(36 * var(--su));
+  }
+
+  .works__frame-image {
+    border-radius: calc(36 * var(--su));
+  }
+
+  /* 40:119 / 73:890 — "(0X)" top-right, or bottom-right per project (projects.ts `counter`). */
+  .works__number {
+    position: absolute;
+    top: calc(64 / 982 * 100%);
+    right: calc(64 / 756 * 100%);
+    z-index: 1;
+    font-family: var(--font-display);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-display-l);
+    line-height: var(--lh-display);
+  }
+
+  .works__visual[data-counter='bottom'] .works__number {
+    top: auto;
+    bottom: calc(64 / 982 * 100%);
+  }
+
+  /* 40:125 — hidden at rest. */
+  .works__cta {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: var(--size-cta);
+    aspect-ratio: 1;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity var(--dur-color) var(--ease-out),
+      transform var(--dur-color) var(--ease-out);
+    pointer-events: none;
+  }
+
+  .works__cta-icon {
+    width: calc(100% / 3);
+    height: auto;
+  }
+
+  /* Colour + CTA at its static position: keyboard focus (title preview or CTA link focus)… */
+  .works[data-keyboard-focus] .works__visual[data-state='active'] .works__image,
+  .works__visual:focus-within .works__image {
+    filter: none;
+  }
+
+  .works[data-keyboard-focus] .works__visual[data-state='active'] .works__cta,
+  .works__visual:focus-within .works__cta {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* …desktop-width touch screens: the active project is in colour and the CTA is a tap target… */
+@media (min-width: 1024px) and (not ((hover: hover) and (pointer: fine))) {
+  .works__visual[data-state='active'] .works__image {
+    filter: none;
+  }
+
+  .works__visual[data-state='active'] .works__cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  .works__visual[data-state='active'] a.works__cta {
+    pointer-events: auto;
+  }
+}
+
+/* …and hover with a mouse (stacked: per project, no follow). Every hover effect is gated here. */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .works__item:not(.is-active):hover .works__label-text {
+    opacity: 1;
+  }
+
+  .works__visual:hover .works__image {
+    filter: none;
+  }
+
+  .works__visual:hover .works__cta {
+    opacity: 1;
+    transform: none;
+  }
+
+  .works__visual:hover a.works__cta {
+    pointer-events: auto;
   }
 }
 
@@ -320,14 +395,6 @@
     container-type: size;
   }
 
-  .works__counter {
-    display: block;
-  }
-
-  .works__visual-number {
-    display: none;
-  }
-
   /* All projects share one stage that fits the panel; the active one is shown. */
   .works__visual {
     position: absolute;
@@ -343,7 +410,6 @@
     inset: 0;
     width: min(100cqw, 100cqh * 756 / 982);
     margin: auto;
-    background: none;
   }
 
   .works__visual[data-state='before'],
@@ -361,26 +427,26 @@
   .works__visual[data-state='after'] {
     transform: translateY(6%);
   }
+}
 
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
   /* Hovering anywhere on the panel colours the active project and shows the CTA. */
-  @media (hover: hover) {
-    .works__panel:hover .works__visual[data-state='active'] .works__image {
-      filter: none;
-    }
+  .works__panel:hover .works__visual[data-state='active'] .works__image {
+    filter: none;
+  }
 
-    .works__panel:hover .works__visual[data-state='active'] .works__cta {
-      opacity: 1;
-      transform: none;
-    }
+  .works__panel:hover .works__visual[data-state='active'] .works__cta {
+    opacity: 1;
+    transform: none;
+  }
 
-    .works__panel:hover .works__visual[data-state='active'] a.works__cta {
-      pointer-events: auto;
-    }
+  .works__panel:hover .works__visual[data-state='active'] a.works__cta {
+    pointer-events: auto;
+  }
 
-    /* Cursor-follow (useCursorFollow): translate from the static position, no transform easing. */
-    .works__panel.is-following .works__visual[data-state] .works__cta {
-      transform: translate3d(var(--fx, 0), var(--fy, 0), 0);
-      transition: opacity var(--dur-color) var(--ease-out);
-    }
+  /* Cursor-follow (useCursorFollow): translate from the static position, no transform easing. */
+  .works__panel.is-following .works__visual[data-state] .works__cta {
+    transform: translate3d(var(--fx, 0), var(--fy, 0), 0);
+    transition: opacity var(--dur-color) var(--ease-out);
   }
 }

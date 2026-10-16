@@ -7,7 +7,10 @@ interface Options {
   pin: RefObject<HTMLElement | null>
   figures: RefObject<(HTMLElement | null)[]>
   count: number
+  /** Desktop with motion: scroll-driven steps. */
   pinned: boolean
+  /** Desktop with reduced motion: stacked figures, active one via IntersectionObserver. */
+  stacked: boolean
 }
 
 /** Scroll offset inside the section where project `index` becomes active (pinned mode). */
@@ -21,8 +24,9 @@ export function pinnedStepTop(section: HTMLElement, pin: HTMLElement, index: num
  *   rAF-throttled rect read per scroll frame, no writes.
  * - Stacked: IntersectionObserver on the figures against a line at the viewport centre;
  *   the figure crossing that line is active (no scroll handler).
+ * Below 1024px there is no active state, so neither runs.
  */
-export function useActiveProject({ section, pin, figures, count, pinned }: Options): number {
+export function useActiveProject({ section, pin, figures, count, pinned, stacked }: Options): number {
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
@@ -50,6 +54,8 @@ export function useActiveProject({ section, pin, figures, count, pinned }: Optio
       }
     }
 
+    if (!stacked) return
+
     const targets = figures.current.filter((el): el is HTMLElement => el !== null)
     const observer = new IntersectionObserver(
       (entries) => {
@@ -61,7 +67,7 @@ export function useActiveProject({ section, pin, figures, count, pinned }: Optio
     )
     targets.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
-  }, [section, pin, figures, count, pinned])
+  }, [section, pin, figures, count, pinned, stacked])
 
   return index
 }

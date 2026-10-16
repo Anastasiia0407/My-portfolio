@@ -35,11 +35,12 @@
   width: 0.25em;
 }
 
-/* Figma 61:183 — the vector is the mask; the ink background is what the photo blends onto. */
+/* Figma 61:183 / 66:271 — the vector is the mask; the ink background is what the photo blends onto. */
 .hero__role {
   position: relative;
   display: block;
   width: 100%;
+  aspect-ratio: var(--mask-ratio);
   overflow: hidden;
   background: var(--color-ink);
   -webkit-mask: var(--mask-url) center / 100% 100% no-repeat;
@@ -56,4 +57,54 @@
   transform: rotate(var(--photo-rotate));
   transform-origin: var(--photo-origin);
   mix-blend-mode: plus-lighter;
+}
+
+/* ---------- Below 1024px (Figma 66:264, 393 × 852) ---------- */
+@media (max-width: 1023px) {
+  .hero {
+    position: relative;
+    display: block;
+    padding: 0;
+  }
+
+  .hero__tagline,
+  .hero__role:not(.hero__role-m) {
+    display: none;
+  }
+
+  /* 66:270 — one tracked line, 16px above the bottom. letter-spacing also follows the last
+     letter, so the same amount of padding on the left keeps the visible text centred. */
+  /* Above "DESIGNER": in Figma the tagline's last letters overlap the bottom of the "D". */
+  .hero__tagline-m {
+    position: absolute;
+    z-index: 1;
+    right: var(--m-gutter);
+    bottom: var(--m-gutter);
+    left: var(--m-gutter);
+    padding-left: var(--m-track-tagline);
+    font-family: var(--font-display);
+    font-weight: var(--fw-semibold);
+    font-size: var(--m-fs-tagline);
+    line-height: var(--m-lh-tagline);
+    letter-spacing: var(--m-track-tagline);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* 66:271 — vertical "DESIGNER" on the right, from the top down to 24px above the bottom;
+     on short screens it shrinks to the hero height, keeping its proportions. */
+  .hero__role-m {
+    position: absolute;
+    top: 0;
+    right: calc(16.475 * var(--m));
+    width: auto;
+    height: min(calc(828 * var(--m)), calc(100svh - 24 * var(--m)));
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero__tagline-m,
+  .hero__role-m {
+    display: none;
+  }
 }

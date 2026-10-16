@@ -39,28 +39,135 @@ export const heroPhotoLayout = {
   }
 } as const
 
-export const work01Layout = {
-  "panel": {
+export const heroPhotoMobileLayout = {
+  "nodeIds": {
+    "maskGroup": "66:271",
+    "mask": "66:272",
+    "photo": "66:273"
+  },
+  "view": {
+    "width": 114.525,
+    "height": 828
+  },
+  "rotationDeg": -79.59,
+  "blendMode": "plus-lighter",
+  "box": {
+    "x": -1543.6375,
+    "y": -415.0169,
+    "width": 852.3788,
+    "height": 279.1483
+  },
+  "boxPercent": {
+    "left": -1347.8607,
+    "top": -50.1228,
+    "width": 744.2732,
+    "height": 33.7136
+  },
+  "originPercent": {
+    "x": 167.4528,
+    "y": -79.0123
+  },
+  "sourceCrop": {
+    "left": 123,
+    "top": 2240,
+    "width": 742,
+    "height": 243,
+    "sourceWidth": 2731,
+    "sourceHeight": 4096,
+    "figmaPxPerSourcePx": 1.1488
+  }
+} as const
+
+/** Works visual stages: desktop panel and mobile card, in Figma px. */
+export const worksStages = {
+  "desktop": {
     "nodeId": "37:31",
     "width": 756,
     "height": 982
   },
-  "phones": [
-    {
-      "name": "work-01-a",
-      "nodeId": "39:111",
+  "mobile": {
+    "nodeId": "66:294",
+    "width": 361,
+    "height": 490
+  }
+} as const
+
+export const work01Phones = [
+  {
+    "name": "work-01-a",
+    "nodeIds": [
+      "39:111",
+      "66:298"
+    ],
+    "desktop": {
       "x": 84.4001,
       "y": 153,
       "width": 259.8,
       "height": 617.2
     },
-    {
-      "name": "work-01-b",
-      "nodeId": "39:115",
+    "mobile": {
+      "x": 43.0003,
+      "y": 21.0001,
+      "width": 144.0266,
+      "height": 342.0317
+    }
+  },
+  {
+    "name": "work-01-b",
+    "nodeIds": [
+      "39:115",
+      "66:302"
+    ],
+    "desktop": {
       "x": 412.4002,
       "y": 317.8,
       "width": 260,
       "height": 617.2
+    },
+    "mobile": {
+      "x": 167.0001,
+      "y": 116.0001,
+      "width": 144.1375,
+      "height": 342.0317
     }
-  ]
+  }
+] as const
+
+export const work03Layout = {
+  "nodeIds": {
+    "panel": "72:857",
+    "band": "75:44",
+    "image": "75:45",
+    "mobilePanel": "66:341",
+    "mobileBand": "75:53",
+    "mobileImage": "75:54"
+  },
+  "band": {
+    "desktop": {
+      "x": 0,
+      "y": 0,
+      "width": 756,
+      "height": 440
+    },
+    "mobile": {
+      "x": 0,
+      "y": 0,
+      "width": 378,
+      "height": 220
+    }
+  },
+  "image": {
+    "desktop": {
+      "x": 100,
+      "y": 100,
+      "width": 1200,
+      "height": 780
+    },
+    "mobile": {
+      "x": 50,
+      "y": 50,
+      "width": 600,
+      "height": 390
+    }
+  }
 } as const

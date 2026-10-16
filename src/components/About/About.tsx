@@ -4,9 +4,9 @@ import { useScrollProgress } from '../../hooks/useScrollProgress.ts'
 import { REDUCED_MOTION_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
 import './About.css'
 
-// Figma 62:247. The frame shows a mid-reveal state: the first clause dark, the rest grey.
+// Figma 62:247 (desktop) / 66:280 (mobile). The frames show a mid-reveal state: the first clause dark, the rest grey.
 const aboutText =
-  'Hi, I’m Anastasiia Cheban, I turn complex problems into clear, usable products. First what the business and its users actually need, then user flows, design systems and interfaces. Every product gets my full attention, as if it were my own. With AI in my workflow, I take ideas from first sketch to a working product.'
+  'Hi, I’m Anastasiia Cheban, I turn complex problems into clear, usable products. Every product gets my full attention, as if it were my own. With AI in my workflow, I take ideas from first sketch to a working product.'
 
 // Words → characters, each character numbered in reading order (spaces excluded).
 let charCount = 0

@@ -1,26 +1,33 @@
 import type { CSSProperties } from 'react'
 import Nav from '../Nav/Nav.tsx'
+import MobileMenu from '../MobileMenu/MobileMenu.tsx'
 import { owner } from '../../data/site.ts'
-import { heroPhotoLayout as photo } from '../../data/figma-layout.generated.ts'
+import { heroPhotoLayout, heroPhotoMobileLayout } from '../../data/figma-layout.generated.ts'
 import heroPhoto from '../../assets/hero-photo.webp'
+import heroPhotoMobile from '../../assets/hero-photo-mobile.webp'
 import heroMask from '../../assets/hero-mask.svg'
+import heroMaskMobile from '../../assets/hero-mask-mobile.svg'
 import './Hero.css'
 
-// Figma composition (61:183): photo rotated about the layer centre, masked by the
-// "DESIGNER" vector, blended plus-lighter. Numbers come from build-images.mjs.
-const photoStyle = {
-  '--photo-left': `${photo.boxPercent.left}%`,
-  '--photo-top': `${photo.boxPercent.top}%`,
-  '--photo-width': `${photo.boxPercent.width}%`,
-  '--photo-height': `${photo.boxPercent.height}%`,
-  '--photo-origin': `${photo.originPercent.x}% ${photo.originPercent.y}%`,
-  '--photo-rotate': `${photo.rotationDeg}deg`,
-} as CSSProperties
+type PhotoLayout = typeof heroPhotoLayout | typeof heroPhotoMobileLayout
 
-const maskStyle = {
-  '--mask-url': `url("${heroMask}")`,
-  aspectRatio: `${photo.view.width} / ${photo.view.height}`,
-} as CSSProperties
+// Figma composition (desktop 61:183, mobile 66:271): photo rotated about the layer centre,
+// masked by the "DESIGNER" vector, blended plus-lighter. Numbers come from build-images.mjs.
+const photoStyle = (layout: PhotoLayout) =>
+  ({
+    '--photo-left': `${layout.boxPercent.left}%`,
+    '--photo-top': `${layout.boxPercent.top}%`,
+    '--photo-width': `${layout.boxPercent.width}%`,
+    '--photo-height': `${layout.boxPercent.height}%`,
+    '--photo-origin': `${layout.originPercent.x}% ${layout.originPercent.y}%`,
+    '--photo-rotate': `${layout.rotationDeg}deg`,
+  }) as CSSProperties
+
+const maskStyle = (layout: PhotoLayout, mask: string) =>
+  ({
+    '--mask-url': `url("${mask}")`,
+    '--mask-ratio': `${layout.view.width} / ${layout.view.height}`,
+  }) as CSSProperties
 
 export default function Hero() {
   const letters = [...owner.tagline]
@@ -28,10 +35,12 @@ export default function Hero() {
   return (
     <header id="home" className="hero">
       <Nav />
+      <MobileMenu />
       <h1 className="hero__title">
         <span className="sr-only">
           {owner.name}, {owner.role}
         </span>
+        {/* Desktop (61:182): letters spread across the line. */}
         <span className="hero__tagline" aria-hidden="true">
           {letters.map((letter, index) => (
             <span key={index} className={letter === ' ' ? 'hero__space' : undefined}>
@@ -39,8 +48,25 @@ export default function Hero() {
             </span>
           ))}
         </span>
-        <span className="hero__role" style={maskStyle} aria-hidden="true">
-          <img className="hero__photo" style={photoStyle} src={heroPhoto} alt="" decoding="async" />
+        {/* Mobile (66:270): one tracked line, no spaces around the dot. */}
+        <span className="hero__tagline-m" aria-hidden="true">
+          {owner.tagline.replaceAll(' ', '')}
+        </span>
+        <span className="hero__role" style={maskStyle(heroPhotoLayout, heroMask)} aria-hidden="true">
+          <img className="hero__photo" style={photoStyle(heroPhotoLayout)} src={heroPhoto} alt="" decoding="async" />
+        </span>
+        <span
+          className="hero__role hero__role-m"
+          style={maskStyle(heroPhotoMobileLayout, heroMaskMobile)}
+          aria-hidden="true"
+        >
+          <img
+            className="hero__photo"
+            style={photoStyle(heroPhotoMobileLayout)}
+            src={heroPhotoMobile}
+            alt=""
+            decoding="async"
+          />
         </span>
       </h1>
     </header>
