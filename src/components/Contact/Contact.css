@@ -39,7 +39,7 @@
 
 /* Mobile: links stacked 16/24 with 4px between them (each keeps a 44px hit area via .touch-target),
    then "© Anastasiia Cheban" 14/20 last, 32px below. */
-@media (max-width: 1023px) {
+@media (max-width: 759px) {
   .contact {
     gap: var(--m-gap-l);
     padding: var(--m-section) var(--m-gutter) var(--m-gutter);
@@ -61,7 +61,7 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 760px) {
   .contact {
     gap: var(--gap-xl);
     padding: var(--space-section) var(--space-gutter);

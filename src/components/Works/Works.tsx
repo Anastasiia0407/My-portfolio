@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import type { CSSProperties, FocusEvent, MouseEvent } from 'react'
 import { projects } from '../../data/projects.ts'
-import type { Placement, Project, Rect } from '../../data/projects.ts'
-import { work01Phones, worksStages } from '../../data/figma-layout.generated.ts'
+import type { Placement, Project, ProjectImage } from '../../data/projects.ts'
+import { worksStages } from '../../data/figma-layout.generated.ts'
 import { useActiveProject, pinnedStepTop } from '../../hooks/useActiveProject.ts'
 import { useCursorFollow } from '../../hooks/useCursorFollow.ts'
 import {
@@ -12,7 +12,6 @@ import {
   REDUCED_MOTION_QUERY,
   useMediaQuery,
 } from '../../hooks/useMediaQuery.ts'
-import placeholder from '../../assets/work-placeholder.svg'
 import arrow from '../../assets/arrow-up-right.svg'
 import './Works.css'
 
@@ -33,21 +32,20 @@ function place({ desktop: d, mobile: m }: Placement) {
   } as CSSProperties
 }
 
-// The placeholder covers the same footprint as the project 01 phones, on each stage.
-const footprint = (boxes: readonly Rect[]): Rect => {
-  const x = Math.min(...boxes.map((b) => b.x))
-  const y = Math.min(...boxes.map((b) => b.y))
+/** Placement plus rotation and frame geometry (Figma px of each stage) as custom properties. */
+function imageStyle({ placement, rotation, frame, src1x }: ProjectImage) {
   return {
-    x,
-    y,
-    width: Math.max(...boxes.map((b) => b.x + b.width)) - x,
-    height: Math.max(...boxes.map((b) => b.y + b.height)) - y,
-  }
+    ...place(placement),
+    ...(rotation && { '--rot': `${rotation}deg` }),
+    ...(frame && {
+      '--stroke': frame.desktop.stroke,
+      '--radius': frame.desktop.radius,
+      '--mstroke': frame.mobile.stroke,
+      '--mradius': frame.mobile.radius,
+      '--frame-src': `url("${src1x}")`,
+    }),
+  } as CSSProperties
 }
-const placeholderStyle = place({
-  desktop: footprint(work01Phones.map((p) => p.desktop)),
-  mobile: footprint(work01Phones.map((p) => p.mobile)),
-})
 
 // Static CTA position from Figma (40:125); the cursor-follow translates it from here.
 const ctaStyle = {
@@ -64,7 +62,7 @@ const stageStyle = {
 
 type VisualState = 'before' | 'active' | 'after'
 
-/** Desktop CTA (hover / keyboard / desktop touch). Hidden below 1024px, where the card itself is the link. */
+/** Desktop CTA (mouse hover / keyboard). Not shown below 760px or on touch screens, where the visual itself is the link. */
 function ProjectCta({ project }: { project: Project }) {
   const icon = <img className="works__cta-icon" src={arrow} alt="" width={40} height={40} />
   // No case study yet: still shown on hover, but not a link and not focusable.
@@ -117,41 +115,42 @@ function ProjectVisual({
     >
       <div className="works__stage" style={stageStyle}>
         {project.band && <div className="works__band works__image" style={place(project.band)} />}
-        {project.images ? (
-          project.images.map((image) =>
-            image.framed ? (
-              <div key={image.src1x} className="works__frame works__image" style={place(image.placement)}>
-                <img
-                  className="works__frame-image"
-                  src={image.src1x}
-                  srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
-                  alt={image.alt}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            ) : (
+        {project.images.map((image) =>
+          image.frame ? (
+            <div
+              key={image.src1x}
+              className="works__frame works__image"
+              data-frame={image.frame.kind}
+              style={imageStyle(image)}
+            >
               <img
-                key={image.src1x}
-                className="works__image"
-                style={place(image.placement)}
+                className="works__frame-image"
                 src={image.src1x}
                 srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
                 alt={image.alt}
                 loading="lazy"
                 decoding="async"
               />
-            ),
-          )
-        ) : (
-          <img className="works__image works__image--placeholder" style={placeholderStyle} src={placeholder} alt="" />
+            </div>
+          ) : (
+            <img
+              key={image.src1x}
+              className="works__image"
+              style={imageStyle(image)}
+              src={image.src1x}
+              srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+              alt={image.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          ),
         )}
         <span className="works__number" aria-hidden="true">
           ({project.number})
         </span>
         <ProjectCta project={project} />
       </div>
-      {/* Visible card title below 1024px; visually hidden on desktop, where the list names the project. */}
+      {/* Visible card title below 760px; visually hidden on desktop, where the list names the project. */}
       <figcaption className={`works__caption works__label${state === 'active' ? ' is-active' : ''}`}>
         <ProjectLabel project={project} />
       </figcaption>
@@ -164,10 +163,10 @@ function ProjectVisual({
 
 /**
  * Three layouts, switched in CSS (JS only reads scroll / intersections and sets state):
- * - ≥1024px, motion allowed: pinned. The section is (projects + 1) viewports tall and its
+ * - ≥760px, motion allowed: pinned. The section is (projects + 1) viewports tall and its
  *   inner grid sticks, so each project gets one viewport of scroll.
- * - ≥1024px, reduced motion: two columns, projects stacked in the right column.
- * - <1024px: one card per project (visual, then title). No hover, no active state.
+ * - ≥760px, reduced motion: two columns, projects stacked in the right column.
+ * - <760px: one card per project (visual, then title). No hover, no active state.
  */
 export default function Works() {
   const sectionRef = useRef<HTMLElement>(null)

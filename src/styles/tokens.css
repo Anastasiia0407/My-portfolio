@@ -20,6 +20,12 @@
   /* Frame stroke as rendered by Figma (its export says rgb(221 228 227 / 0.12) but the stroke has a
      background blur); solved from the render over both the panel and the teal band. */
   --color-frame-border: rgb(215 218 220 / 0.8);
+  /* Project 02 glass frame (89:8413 / 89:8415). Figma draws it with a glass effect (its export
+     says 12% pink); these tints are fitted to Figma's renders of 75:69 (desktop) and 66:327
+     (mobile), which differ. The blur is in stage px. */
+  --color-glass-tint: rgb(150 100 130 / 0.35);
+  --color-glass-tint-m: rgb(80 50 70 / 0.6);
+  --glass-blur: 16;
 
   /* Mobile menu (66:362) */
   --color-menu-scrim: rgb(246 244 242 / 0.02);
@@ -71,41 +77,39 @@
   --dur-menu: 300ms;
 
   /*
-   * Mobile (below 1024px, Figma 66:263 at 393 wide). --m is one Figma px: every mobile size is
-   * "Figma value × --m", so the layout scales proportionally with the viewport from 320 to 767.
-   * From 768 to 1023 the scale is capped at 1.6 so tablets keep the mobile layout without giant type.
+   * Mobile (below 760px, Figma 66:263 at 393 wide). --m is one Figma px at 393: the hero type,
+   * "DESIGNER", "SELECTED WORKS", the menu items and the card visuals scale with the viewport
+   * from 320 to 759 ("Figma value × --m"). Body text, labels, titles, footer, paddings, gaps and
+   * the menu button keep their fixed Figma sizes.
    */
   --m: calc(100vw / 393);
-  --m-text-min: 12px;
 
-  --m-gutter: calc(16 * var(--m));
-  --m-section: calc(32 * var(--m));
-  --m-gap-xxs: calc(4 * var(--m));
-  --m-gap-xs: calc(12 * var(--m));
-  --m-gap-s: calc(16 * var(--m));
-  --m-gap-m: calc(24 * var(--m));
-  --m-gap-l: calc(32 * var(--m));
+  /* Fixed */
+  --m-gutter: 16px;
+  --m-section: 32px;
+  --m-gap-xxs: 4px;
+  --m-gap-xs: 12px;
+  --m-gap-s: 16px;
+  --m-gap-m: 24px;
+  --m-gap-l: 32px;
 
-  --m-fs-label: max(var(--m-text-min), calc(16 * var(--m))); /* labels, card titles: Inter 16 */
-  --m-lh-label: calc(20 * var(--m));
-  --m-lh-link: calc(24 * var(--m)); /* footer links 16/24 */
-  --m-fs-small: max(var(--m-text-min), calc(14 * var(--m))); /* © 14/20 */
-  --m-fs-about: calc(28 * var(--m));
-  --m-lh-about: calc(32 * var(--m));
+  --m-fs-label: 16px; /* labels, card titles: Inter 16/20 */
+  --m-lh-label: 20px;
+  --m-lh-link: 24px; /* footer links 16/24 */
+  --m-fs-small: 14px; /* © 14/20 */
+  --m-fs-about: 28px; /* About paragraph 28/32 */
+  --m-lh-about: 32px;
+  --m-size-button: 40px;
+  --m-blur-menu: 52px;
+
+  /* Scaled */
   --m-fs-display: calc(40 * var(--m)); /* SELECTED WORKS, menu items: 40/48 */
   --m-lh-display: calc(48 * var(--m));
   --m-fs-tagline: calc(32 * var(--m)); /* UX/UI·PRODUCT: 32/40, tracking 7.68 */
   --m-lh-tagline: calc(40 * var(--m));
   --m-track-tagline: calc(7.68 * var(--m));
-  --m-size-button: calc(40 * var(--m));
-  --m-blur-menu: calc(52 * var(--m));
 }
 
-@media (min-width: 768px) {
-  :root {
-    --m: 1.6px;
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   :root {

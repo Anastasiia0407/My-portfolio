@@ -24,7 +24,7 @@ export function pinnedStepTop(section: HTMLElement, pin: HTMLElement, index: num
  *   rAF-throttled rect read per scroll frame, no writes.
  * - Stacked: IntersectionObserver on the figures against a line at the viewport centre;
  *   the figure crossing that line is active (no scroll handler).
- * Below 1024px there is no active state, so neither runs.
+ * below 760px there is no active state, so neither runs.
  */
 export function useActiveProject({ section, pin, figures, count, pinned, stacked }: Options): number {
   const [index, setIndex] = useState(0)

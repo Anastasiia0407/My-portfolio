@@ -133,6 +133,46 @@ export const work01Phones = [
   }
 ] as const
 
+export const work02Layout = {
+  "nodeIds": {
+    "panel": "75:69",
+    "a": "89:8415",
+    "b": "89:8413",
+    "mobileCard": "66:327",
+    "mobileA": "89:8417",
+    "mobileB": "89:8419"
+  },
+  "a": {
+    "desktop": {
+      "x": 96,
+      "y": 172,
+      "width": 1200,
+      "height": 775.78
+    },
+    "mobile": {
+      "x": 80,
+      "y": 56,
+      "width": 600,
+      "height": 388
+    }
+  },
+  "b": {
+    "rotationDeg": -12,
+    "desktop": {
+      "x": 87.5355,
+      "y": 436.2713,
+      "width": 1200,
+      "height": 775.78
+    },
+    "mobile": {
+      "x": 61.7678,
+      "y": 188.1356,
+      "width": 600,
+      "height": 387.89
+    }
+  }
+} as const
+
 export const work03Layout = {
   "nodeIds": {
     "panel": "72:857",

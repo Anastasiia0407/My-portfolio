@@ -59,8 +59,8 @@
   mix-blend-mode: plus-lighter;
 }
 
-/* ---------- Below 1024px (Figma 66:264, 393 × 852) ---------- */
-@media (max-width: 1023px) {
+/* ---------- below 760px (Figma 66:264, 393 × 852) ---------- */
+@media (max-width: 759px) {
   .hero {
     position: relative;
     display: block;
@@ -72,37 +72,38 @@
     display: none;
   }
 
-  /* 66:270 — one tracked line, 16px above the bottom. letter-spacing also follows the last
-     letter, so the same amount of padding on the left keeps the visible text centred. */
-  /* Above "DESIGNER": in Figma the tagline's last letters overlap the bottom of the "D". */
+  /* 66:270 — one tracked line, right-aligned and anchored to the right edge: its last letter is
+     always 16px from the viewport edge, so it grows or shrinks towards the left. letter-spacing
+     also follows the last letter, so the box extends that much past the 16px line. Its distance
+     from the hero bottom scales with the viewport (16px at 393). Above "DESIGNER" if they meet. */
   .hero__tagline-m {
     position: absolute;
     z-index: 1;
-    right: var(--m-gutter);
-    bottom: var(--m-gutter);
-    left: var(--m-gutter);
-    padding-left: var(--m-track-tagline);
+    right: calc(var(--m-gutter) - var(--m-track-tagline));
+    bottom: calc(16 * var(--m));
     font-family: var(--font-display);
     font-weight: var(--fw-semibold);
     font-size: var(--m-fs-tagline);
     line-height: var(--m-lh-tagline);
     letter-spacing: var(--m-track-tagline);
-    text-align: center;
+    text-align: right;
     white-space: nowrap;
   }
 
-  /* 66:271 — vertical "DESIGNER" on the right, from the top down to 24px above the bottom;
-     on short screens it shrinks to the hero height, keeping its proportions. */
+  /* 66:271 — vertical "DESIGNER", anchored bottom-right: the start of the word is 16px above the
+     hero bottom and its right edge is 16px from the viewport edge. Height is the proportional size
+     or the space between 16px top and bottom margins, whichever is smaller; the width follows the
+     114.525 : 828 ratio, so mask and photo scale together. */
   .hero__role-m {
     position: absolute;
-    top: 0;
-    right: calc(16.475 * var(--m));
+    right: var(--m-gutter);
+    bottom: var(--m-gutter);
     width: auto;
-    height: min(calc(828 * var(--m)), calc(100svh - 24 * var(--m)));
+    height: min(calc(828 * var(--m)), calc(100svh - 2 * var(--m-gutter)));
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 760px) {
   .hero__tagline-m,
   .hero__role-m {
     display: none;

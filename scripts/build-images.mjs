@@ -188,6 +188,32 @@ async function dashboard() {
   }
 }
 
+/**
+ * Project 02 (desktop 75:69, mobile 66:327): two 4096×2648 screenshots in glass-edged frames.
+ * Image 25 (89:8415, desktop) and image 26 (89:8417, mobile) are the same picture (608f4).
+ * Image 24 (89:8413 / 89:8419) is rotated −12°; boxes below are the UNROTATED image boxes
+ * (Figma's rotated bounding box is 1335.07×1008.32 at (20, 320) desktop, 667.54×504.16 at (28, 130) mobile).
+ */
+async function socialTap() {
+  const size = { width: 1200, height: 775.78 }
+  for (const [name, file] of [['work-02-a', 'work-02-a-89-8415.png'], ['work-02-b', 'work-02-b-89-8413.png']]) {
+    for (const scale of [1, 2]) {
+      const pipeline = sharp(src(file)).resize(Math.round(size.width * scale), Math.round(size.height * scale), { fit: 'cover' })
+      await webp(pipeline, `${name}@${scale}x.webp`, { quality: 82 })
+    }
+  }
+  const unrotated = (bx, by, bw, bh, w, h) => rect(bx + bw / 2 - w / 2, by + bh / 2 - h / 2, w, h)
+  return {
+    nodeIds: { panel: '75:69', a: '89:8415', b: '89:8413', mobileCard: '66:327', mobileA: '89:8417', mobileB: '89:8419' },
+    a: { desktop: rect(96, 172, 1200, 775.78), mobile: rect(80, 56, 600, 388) },
+    b: {
+      rotationDeg: -12,
+      desktop: unrotated(20, 320, 1335.0711, 1008.3226, 1200, 775.78),
+      mobile: unrotated(28, 130, 667.5356, 504.1613, 600, 387.89),
+    },
+  }
+}
+
 /** The mobile mask vector 66:272 is drawn horizontally and rotated −90° in Figma: bake that rotation. */
 async function verticalMask(from, to) {
   const raw = await readFile(src(from), 'utf8')
@@ -236,6 +262,7 @@ const heroMobile = await heroPhoto({
   output: 'hero-photo-mobile.webp',
 })
 const phoneLayout = await phones()
+const work02 = await socialTap()
 const work03 = await dashboard()
 await svg('hero-mask-61-184.svg', 'hero-mask.svg')
 await verticalMask('hero-mask-mobile-66-272.svg', 'hero-mask-mobile.svg')
@@ -255,6 +282,7 @@ await writeFile(
     `/** Works visual stages: desktop panel and mobile card, in Figma px. */\n` +
     `export const worksStages = ${JSON.stringify(stages, null, 2)} as const\n\n` +
     `export const work01Phones = ${JSON.stringify(phoneLayout, null, 2)} as const\n\n` +
+    `export const work02Layout = ${JSON.stringify(work02, null, 2)} as const\n\n` +
     `export const work03Layout = ${JSON.stringify(work03, null, 2)} as const\n`,
 )
 console.log('src/data/figma-layout.generated.ts')

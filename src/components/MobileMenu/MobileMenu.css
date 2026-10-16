@@ -18,17 +18,17 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: calc(30.9 * var(--m));
-  height: calc(2.5 * var(--m));
-  margin: calc(-1.25 * var(--m)) 0 0 calc(-15.45 * var(--m));
+  width: 30.9px;
+  height: 2.5px;
+  margin: -1.25px 0 0 -15.45px;
   border-radius: var(--radius-pill);
   background: currentColor;
-  transform: translateY(calc(-6.1 * var(--m)));
+  transform: translateY(-6.1px);
   transition: transform var(--dur-menu) var(--ease-menu);
 }
 
 .menu-button__line + .menu-button__line {
-  transform: translateY(calc(6.1 * var(--m)));
+  transform: translateY(6.1px);
 }
 
 .menu-button[data-open] .menu-button__line {
@@ -47,7 +47,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(56 * var(--m)) var(--m-gutter) calc(40 * var(--m));
+  padding: 56px var(--m-gutter) 40px;
   background: var(--color-menu-scrim);
   -webkit-backdrop-filter: blur(var(--m-blur-menu));
   backdrop-filter: blur(var(--m-blur-menu));
@@ -102,8 +102,8 @@
   }
 }
 
-/* The menu exists only below 1024px; the inline nav takes over from there. */
-@media (min-width: 1024px) {
+/* The menu exists only below 760px; the inline nav takes over from there. */
+@media (min-width: 760px) {
   .menu-button,
   .menu {
     display: none;

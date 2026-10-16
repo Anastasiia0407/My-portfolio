@@ -15,17 +15,17 @@ Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properti
 
 Section order: **Hero → About → Works → Contact** (`src/App.tsx`). Anchors `#home` (Hero, not in the nav), `#about`, `#works`, `#contact`; nav order About, Works, Get in touch.
 
-Two designs: desktop (Figma 37:2, 1512 wide) from 1024px, mobile (66:263, 393 wide) below. Mobile sizes are "Figma value × `--m`" where `--m = 100vw / 393` up to 767px and is capped at 1.6px from 768 to 1023 (tokens `--m-*`; text never below 12px).
+Two designs: desktop (Figma 37:2, 1512 wide) from 760px, mobile (66:263, 393 wide) below. On mobile `--m = 100vw / 393` (one Figma px at 393). Scaled with `--m`: the hero tagline and "DESIGNER", "SELECTED WORKS", the menu items, and the card visuals (361:490). Fixed: About 28/32, labels and card titles 16/20, footer 16/24 and © 14/20, paddings and gaps, the 40px menu button (tokens `--m-*`). There is no tablet layout: 760–1023 gets the desktop layout, fluid.
 
-- **Hero** (`components/Hero`, Figma 37:3 / 66:264): the page `h1` (screen-reader text "Anastasiia Cheban, UX/UI and product designer"). Desktop: tracked tagline "UX/UI · PRODUCT" = letters spread across a box 1387/1432 of the headline width; masked "DESIGNER" = `hero-mask.svg` as CSS mask over `hero-photo.webp`, rotated/positioned from `heroPhotoLayout`, blended `plus-lighter` over ink. Mobile: one tracked line "UX/UI·PRODUCT" at the bottom and a vertical "DESIGNER" (`hero-mask-mobile.svg` + `hero-photo-mobile.webp`, `heroPhotoMobileLayout`, −79.59°) on the right, capped to the hero height.
-- **Mobile menu** (`components/MobileMenu`, 66:362, below 1024px only): button with two CSS lines that rotate into an X, full-screen blurred overlay. Open: scroll locked, `main`/`footer` inert, focus trapped in button + links, Escape closes and returns focus; a link closes, scrolls and focuses its section. Reduced motion: no morph or fade. The inline `Nav` is desktop-only.
+- **Hero** (`components/Hero`, Figma 37:3 / 66:264): the page `h1` (screen-reader text "Anastasiia Cheban, UX/UI and product designer"). Desktop: tracked tagline "UX/UI · PRODUCT" = letters spread across a box 1387/1432 of the headline width; masked "DESIGNER" = `hero-mask.svg` as CSS mask over `hero-photo.webp`, rotated/positioned from `heroPhotoLayout`, blended `plus-lighter` over ink. Mobile: "UX/UI·PRODUCT" right-aligned, its last letter 16px from the right edge; a vertical "DESIGNER" (`hero-mask-mobile.svg` + `hero-photo-mobile.webp`, `heroPhotoMobileLayout`, −79.59°) anchored 16px from the bottom and right, height `min(828 × --m, 100svh − 32px)`. The two overlap at the bottom, as in Figma.
+- **Mobile menu** (`components/MobileMenu`, 66:362, below 760px only): button with two CSS lines that rotate into an X, full-screen blurred overlay. Open: scroll locked, `main`/`footer` inert, focus trapped in button + links, Escape closes and returns focus; a link closes, scrolls and focuses its section. Reduced motion: no morph or fade. The inline `Nav` is desktop-only.
 - **About** (`components/About`, 62:245 / 66:278): `h2` "Who I am" + paragraph with a scroll-linked per-character reveal (`useScrollProgress`, start 0.95 / end 0.25 of the viewport). Full height, content at the bottom.
-- **Works** (`components/Works`, 37:18): rendered from `projects.ts`. Pinned only at `(min-width: 1024px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh`, `.works__pin` is sticky, `useActiveProject` maps scroll to the active project (title, rolling counter, panel). Each panel shows its own "(0X)" (top-right, or bottom-right when the project's `counter` is `bottom`). Hovering the panel colours the active visuals and `useCursorFollow` moves the CTA. ≥1024px with reduced motion: projects stack in the panel. <1024px: one card per project (visual, then dark title), always in colour, no CTA, no hover, no active state; with a case-study URL the whole card is a link. The layout switch is pure CSS.
-- **Contact** (`components/Contact`, 37:56 / 66:310): footer with the "GET IN TOUCH" vector (`h2`, text "Get in touch") and links from `site.ts`. One row ≥1024px; below, links stacked 16/24 and © last.
+- **Works** (`components/Works`, 37:18): rendered from `projects.ts`. Pinned only at `(min-width: 760px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh`, `.works__pin` is sticky, `useActiveProject` maps scroll to the active project (title, panel). Each panel shows its own "(0X)" (top-right, or bottom-right when the project's `counter` is `bottom`). Hovering the panel colours the active visuals and `useCursorFollow` moves the CTA. ≥760px with reduced motion: projects stack in the panel. <760px: one card per project (visual, then dark title), always in colour, no CTA, no hover, no active state; with a case-study URL the whole card is a link. The layout switch is pure CSS.
+- **Contact** (`components/Contact`, 37:56 / 66:310): footer with the "GET IN TOUCH" vector (`h2`, text "Get in touch") and links from `site.ts`. One row ≥760px; below, links stacked 16/24 and © last.
 
 ## Data
 
-- `src/data/projects.ts` — all Works content. Adding a project, its images or a case-study link is a data-only change. Each image/band has a `placement` with a `desktop` box (756×982 panel) and a `mobile` box (361×490 card), in Figma px; the stage clips overflow. Optional: `images` (none → `work-placeholder.svg`), `framed` (rounded screenshot with an outside stroke), `band` (teal gradient), `counter` (`top`/`bottom`), `caseStudyUrl` (none → desktop CTA shows but isn't a link, mobile card isn't a link).
+- `src/data/projects.ts` — all Works content. Adding a project, its images or a case-study link is a data-only change. One structure for every project: `images[]` in paint order, each with a `placement` (`desktop` box in the 756×982 panel, `mobile` box in the 361×490 card; Figma px, unrotated), optional `rotation` (deg) and optional `frame` (`solid` ring or `glass` edge; outside stroke and radius per layout). Optional per project: `band` (teal gradient), `counter` (`top`/`bottom`), `caseStudyUrl` (none → the desktop CTA shows on hover but isn't a link; cards and touch visuals aren't links). The stage clips overflow.
 - `src/data/site.ts` — nav items, contact links (mailto / Telegram / LinkedIn; `external` adds `target="_blank" rel="noopener noreferrer"`), owner name/role/tagline.
 - `src/data/figma-layout.generated.ts` — generated by `npm run images`; never edit by hand.
 
@@ -38,18 +38,19 @@ Two designs: desktop (Figma 37:2, 1512 wide) from 1024px, mobile (66:263, 393 wi
 ## Hooks (`src/hooks/`)
 
 - `useMediaQuery` + `DESKTOP_QUERY` / `PINNED_QUERY` / `FINE_HOVER_QUERY` / `REDUCED_MOTION_QUERY` — strings must match the CSS `@media` rules.
-- `useActiveProject` — pinned: one rAF-throttled rect read per scroll frame; desktop reduced motion: IntersectionObserver on a centre line; below 1024px: off.
+- `useActiveProject` — pinned: one rAF-throttled rect read per scroll frame; desktop reduced motion: IntersectionObserver on a centre line; below 760px: off.
 - `useCursorFollow` — eased CTA follow inside the Works panel; writes only `--fx/--fy` and `is-following`.
 - `useScrollProgress` — writes `--progress` (0–1) on an element; drives the About reveal.
 
 ## Rules
 
 - Motion: transform, opacity and filter only; no layout writes on scroll. `prefers-reduced-motion`: no pinning, no reveal (text fully dark), no cursor follow, no menu morph, short fades, no smooth scroll.
-- Every hover effect is gated by `@media (hover: hover) and (pointer: fine)`; on touch nothing depends on hover.
+- Every hover effect is gated by `@media (hover: hover) and (pointer: fine)`. On touch at any width: visuals always in colour, no pink button or cursor-follow, and the active visual (desktop) or the card (mobile) is the tap target when a case study exists.
+- Frames: Figma's code export lists inside borders, but its renders use OUTSIDE strokes. Project 02's ring is a Figma glass effect, approximated by a blurred copy of the image edge under a tint fitted to Figma's renders (`--color-glass-tint` desktop, `--color-glass-tint-m` mobile).
 - Use `100svh`, not `100vh`.
 - No secrets, tokens or keys in the repo; the site needs no env vars. Never write temporary Figma asset URLs into code or scripts.
 - `design-src/` is **gitignored** (Figma originals, check renders). Only optimised outputs go in `src/assets/` and `public/`.
-- Images: the hero photo export is the unrotated area the mask can show, at source resolution, with a fitted tone curve for the Figma colour adjustment. Projects without visuals use the placeholder; never add fake screenshots.
+- Images: the hero photo export is the unrotated area the mask can show, at source resolution, with a fitted tone curve for the Figma colour adjustment. Never add fake screenshots; a project without images shows an empty panel.
 - `public/`: `favicon.svg` (AC monogram), `apple-touch-icon.png` (180px), `og.jpg` (1200×630, a static capture of the Hero with the headline centred).
 - Meta lives in `index.html`. TODO: canonical, `og:url` and an absolute `og:image` once the final domain is known.
 - Commit and push only when the owner asks.
@@ -67,7 +68,8 @@ fileKey `KrK3uJDPRwV4ogpCkaWoiS`, page frame `37:2` (1512 × 3337). No Figma var
 | 37:18 / 37:27 / 37:31 | Works / project list / visual panel |
 | 39:111, 39:115 | Project 01 phones |
 | 40:125 | Pink CTA button (120px, arrow 40:126) |
+| 75:69 / 89:8415 / 89:8413 | Project 02 panel / image 25 / image 24 (−12°) |
 | 72:857 / 75:44 / 75:45 / 73:890 | Project 03 panel / teal band / dashboard / bottom "(03)" |
 | 37:56 / 61:192 / 37:62 | Contact / "GET IN TOUCH" vector / footer links |
-| 66:263 | Mobile page (393 wide): 66:264 Hero (66:270 tagline, 66:271 vertical mask), 66:278 About, 66:281 Works (cards 66:325 / 66:326 / 66:340), 66:310 Contact |
+| 66:263 | Mobile page (393 wide): 66:264 Hero (66:270 tagline, 66:271 vertical mask), 66:278 About, 66:281 Works (cards 66:325 / 66:326 with 89:8417 + 89:8419 / 66:340), 66:310 Contact |
 | 66:362 | Mobile menu open |

@@ -35,7 +35,7 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 759px) {
   .about {
     gap: var(--m-gap-xs);
     padding: var(--m-section) var(--m-gutter);
@@ -52,7 +52,7 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 760px) {
   .about {
     gap: var(--gap-m);
     padding: var(--space-gutter);

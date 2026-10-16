@@ -2,11 +2,15 @@
  * All Works content. Adding a project, its visuals or its case-study link
  * is a change to this file only.
  */
-import { work01Phones, work03Layout } from './figma-layout.generated.ts'
+import { work01Phones, work02Layout, work03Layout } from './figma-layout.generated.ts'
 import work01a1x from '../assets/work-01-a@1x.webp'
 import work01a2x from '../assets/work-01-a@2x.webp'
 import work01b1x from '../assets/work-01-b@1x.webp'
 import work01b2x from '../assets/work-01-b@2x.webp'
+import work02a1x from '../assets/work-02-a@1x.webp'
+import work02a2x from '../assets/work-02-a@2x.webp'
+import work02b1x from '../assets/work-02-b@1x.webp'
+import work02b2x from '../assets/work-02-b@2x.webp'
 import work031x from '../assets/work-03@1x.webp'
 import work032x from '../assets/work-03@2x.webp'
 
@@ -27,13 +31,26 @@ export interface Placement {
   mobile: Rect
 }
 
+/**
+ * Rounded frame drawn OUTSIDE the image box (Figma outside stroke), in Figma px of each stage.
+ * - `solid`: a flat ring (project 03, 75:45).
+ * - `glass`: a 12% pink tint over a blurred copy of the image's own edge (project 02, 89:8413/8415).
+ */
+export interface Frame {
+  kind: 'solid' | 'glass'
+  desktop: { stroke: number; radius: number }
+  mobile: { stroke: number; radius: number }
+}
+
 export interface ProjectImage {
   src1x: string
   src2x: string
   alt: string
+  /** The unrotated image box. */
   placement: Placement
-  /** Screenshot in a rounded, translucent-bordered frame (project 03's dashboard, 75:45). */
-  framed?: boolean
+  /** Degrees, about the box centre (clockwise positive, like CSS). */
+  rotation?: number
+  frame?: Frame
 }
 
 export interface Project {
@@ -41,17 +58,23 @@ export interface Project {
   /** Display number, e.g. "01". */
   number: string
   title: string
-  /** Desktop "(0X)" counter corner. Default top-right; 03 sits bottom-right (73:890). */
+  /** Desktop "(0X)" counter corner: top-right (default) or bottom-right (73:890). */
   counter?: 'top' | 'bottom'
   /** Teal gradient band behind the visuals (75:44 / 75:53), built in CSS. */
   band?: Placement
-  /** Missing until visuals are exported; the stage shows the neutral placeholder. */
-  images?: ProjectImage[]
+  /** In paint order: later images sit above earlier ones. */
+  images: ProjectImage[]
   /** Missing until the case study exists; then nothing links to it. */
   caseStudyUrl?: string
 }
 
 const [phoneA, phoneB] = work01Phones
+
+const glassFrame: Frame = {
+  kind: 'glass',
+  desktop: { stroke: 12, radius: 10.547 },
+  mobile: { stroke: 12, radius: 10.547 },
+}
 
 export const projects: Project[] = [
   {
@@ -67,6 +90,23 @@ export const projects: Project[] = [
     id: 'project-02',
     number: '02',
     title: 'SocialTap - AI SaaS marketplace',
+    images: [
+      {
+        src1x: work02a1x,
+        src2x: work02a2x,
+        alt: 'Campaign discovery screen of the SocialTap marketplace',
+        placement: work02Layout.a,
+        frame: glassFrame,
+      },
+      {
+        src1x: work02b1x,
+        src2x: work02b2x,
+        alt: 'Creator discovery screen of the SocialTap marketplace',
+        placement: work02Layout.b,
+        rotation: work02Layout.b.rotationDeg,
+        frame: glassFrame,
+      },
+    ],
   },
   {
     id: 'project-03',
@@ -80,7 +120,7 @@ export const projects: Project[] = [
         src2x: work032x,
         alt: 'Dashboard of the TMS logistics platform: shipment counts, shipment status chart and tasks',
         placement: work03Layout.image,
-        framed: true,
+        frame: { kind: 'solid', desktop: { stroke: 19.2, radius: 36 }, mobile: { stroke: 9.6, radius: 18 } },
       },
     ],
   },

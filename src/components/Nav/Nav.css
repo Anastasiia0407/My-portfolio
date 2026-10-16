@@ -1,4 +1,4 @@
-/* Figma 37:13 — three items spread across the content width (1024px and up). */
+/* Figma 37:13 — three items spread across the content width (760px and up). */
 .nav__list {
   display: flex;
   justify-content: space-between;
@@ -25,8 +25,8 @@
   }
 }
 
-/* Below 1024px the mobile menu replaces the inline nav. */
-@media (max-width: 1023px) {
+/* below 760px the mobile menu replaces the inline nav. */
+@media (max-width: 759px) {
   .nav {
     display: none;
   }

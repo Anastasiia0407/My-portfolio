@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react'
 
 /** Keep in sync with the matching @media rules in component CSS. */
-export const DESKTOP_QUERY = '(min-width: 1024px)'
-export const PINNED_QUERY = '(min-width: 1024px) and (prefers-reduced-motion: no-preference)'
+export const DESKTOP_QUERY = '(min-width: 760px)'
+export const PINNED_QUERY = '(min-width: 760px) and (prefers-reduced-motion: no-preference)'
 export const FINE_HOVER_QUERY = '(hover: hover) and (pointer: fine)'
 export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 

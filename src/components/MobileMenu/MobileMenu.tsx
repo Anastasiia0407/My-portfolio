@@ -5,7 +5,7 @@ import { DESKTOP_QUERY, REDUCED_MOTION_QUERY } from '../../hooks/useMediaQuery.t
 import './MobileMenu.css'
 
 /**
- * Mobile menu (Figma 66:362), below 1024px only. The button's two lines morph into an "X";
+ * Mobile menu (Figma 66:362), below 760px only. The button's two lines morph into an "X";
  * the overlay fades in. While open: page scroll is locked, the rest of the page is inert,
  * focus is trapped in [button + links], and Escape closes and returns focus to the button.
  */
