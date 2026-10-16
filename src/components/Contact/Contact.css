@@ -73,3 +73,13 @@
     white-space: nowrap;
   }
 }
+
+/* 760–1023: the four items don't fit one row at 760, so the row becomes 2 × 2 in DOM order —
+   © and email, then Telegram and LinkedIn — with the same desktop type and colours. */
+@media (min-width: 760px) and (max-width: 1023px) {
+  .contact__row {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    row-gap: var(--gap-s);
+  }
+}
