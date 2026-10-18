@@ -1,10 +1,19 @@
-/* Figma 62:245 (desktop) / 66:278 (mobile) — full-height section, content at the bottom. */
+/* Figma 62:245 (desktop) / 66:278 (mobile). The section is a scroll track; its inner block is
+   pinned (sticky, one viewport tall, content at the bottom) while the reveal runs, the same native
+   approach as Works. Track = one viewport + --about-pin-length viewports of reveal scroll. */
 .about {
+  position: relative;
+  height: calc((1 + var(--about-pin-length)) * 100svh);
+  background: var(--color-cream);
+}
+
+.about__pin {
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: 100svh;
-  background: var(--color-cream);
+  height: 100svh;
 }
 
 /* 62:246 / 66:279 */
@@ -13,7 +22,7 @@
   color: var(--color-muted);
 }
 
-/* 62:247 / 66:280 — scroll-linked "typed" reveal. useScrollProgress writes --progress (0–1);
+/* 62:247 / 66:280 — scroll-linked "typed" reveal. usePinProgress writes --progress (0–1);
    character --i goes from muted (≈ #a0a0a3) to ink as the reveal front passes it.
    Without the hook (no JS, reduced motion) the paragraph is fully ink. */
 .about__text {
@@ -29,14 +38,25 @@
   opacity: clamp(var(--opacity-muted), calc(var(--progress, 0) * var(--chars) - var(--i)), 1);
 }
 
+/* Reduced motion: no track, no pin; the section scrolls normally and the text is fully ink. */
 @media (prefers-reduced-motion: reduce) {
+  .about {
+    height: auto;
+  }
+
+  .about__pin {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+  }
+
   .about__text .about__char {
     opacity: 1;
   }
 }
 
 @media (max-width: 759px) {
-  .about {
+  .about__pin {
     gap: var(--m-gap-xs);
     padding: var(--m-section) var(--m-gutter);
   }
@@ -53,7 +73,7 @@
 }
 
 @media (min-width: 760px) {
-  .about {
+  .about__pin {
     gap: var(--gap-m);
     padding: var(--space-gutter);
   }

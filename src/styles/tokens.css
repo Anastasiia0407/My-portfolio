@@ -76,6 +76,9 @@
   --dur-panel: 600ms;
   --dur-menu: 300ms;
 
+  /* About pin: viewports of scroll for the full text reveal (desktop; mobile below). Tune the pace here. */
+  --about-pin-length: 1.5;
+
   /*
    * Mobile (below 760px, Figma 66:263 at 393 wide). --m is one Figma px at 393: the hero type,
    * "DESIGNER", "SELECTED WORKS", the menu items and the card visuals scale with the viewport
@@ -110,6 +113,11 @@
   --m-track-tagline: calc(7.68 * var(--m));
 }
 
+@media (max-width: 759px) {
+  :root {
+    --about-pin-length: 1.2;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   :root {
