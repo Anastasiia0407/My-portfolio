@@ -235,9 +235,9 @@ export default function Works() {
               <li key={project.id}>
                 <a
                   className={`works__item works__label${index === activeIndex ? ' is-active' : ''}`}
-                  href={`#${project.id}`}
+                  href={project.caseStudyUrl ?? `#${project.id}`}
                   aria-current={index === activeIndex ? 'step' : undefined}
-                  onClick={goTo(index)}
+                  onClick={project.caseStudyUrl ? undefined : goTo(index)}
                   onFocus={onTitleFocus(index)}
                   onBlur={() => setFocus(null)}
                 >

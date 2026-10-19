@@ -1,0 +1,14 @@
+/* Character --i goes from muted (ink at --opacity-muted ≈ #a0a0a3) to ink as the reveal front passes it. */
+.reveal-text__word {
+  white-space: nowrap;
+}
+
+.reveal-text[data-progress-active] .reveal-text__char {
+  opacity: clamp(var(--opacity-muted), calc(var(--progress, 0) * var(--chars) - var(--i)), 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-text .reveal-text__char {
+    opacity: 1;
+  }
+}

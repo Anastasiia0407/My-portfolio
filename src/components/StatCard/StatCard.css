@@ -1,0 +1,45 @@
+/* 113:12868: #fafafa card, padding 32, 16 between number, text and source. */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-case-stat);
+  padding: var(--space-case-card);
+  background: var(--color-panel);
+}
+
+.stat-card__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-stat);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.stat-card__text {
+  flex: 1;
+  font-size: var(--fs-body-l);
+  line-height: var(--lh-body-l);
+}
+
+.stat-card__source {
+  align-self: flex-start;
+  color: var(--color-muted);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  transition: color var(--dur-color) var(--ease-out);
+}
+
+a.stat-card__source {
+  padding-block: max(0px, calc((var(--size-touch) - 1lh) / 2));
+  margin-block: min(0px, calc((1lh - var(--size-touch)) / 2));
+}
+
+a.stat-card__source:focus-visible {
+  color: var(--color-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.stat-card__source:hover {
+    color: var(--color-accent);
+  }
+}

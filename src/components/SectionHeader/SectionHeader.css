@@ -1,0 +1,51 @@
+.section-header__titles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  min-width: 0;
+}
+
+/* 117:13230: Inter Medium 24/28, muted */
+.section-header__eyebrow {
+  color: var(--color-muted);
+}
+
+/* 117:13231: Onest SemiBold 64/68, uppercase */
+.section-header__heading {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-h);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-display-h);
+  text-transform: uppercase;
+}
+
+/* Lines Figma breaks by hand. */
+.section-header__line {
+  display: block;
+}
+
+.section-header__body {
+  color: var(--color-muted);
+}
+
+/* "Header row": heading column 644, body 756, 32 apart, centred vertically. */
+@media (min-width: 760px) {
+  .section-header--split {
+    display: grid;
+    grid-template-columns: minmax(0, 644fr) minmax(0, 756fr);
+    gap: var(--gap-m);
+    align-items: center;
+  }
+}
+
+@media (max-width: 759px) {
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--m-gap-m);
+  }
+
+  .section-header__titles {
+    gap: var(--m-gap-xs);
+  }
+}

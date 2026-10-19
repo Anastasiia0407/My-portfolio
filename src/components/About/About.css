@@ -22,23 +22,14 @@
   color: var(--color-muted);
 }
 
-/* 62:247 / 66:280 — scroll-linked "typed" reveal. usePinProgress writes --progress (0–1);
-   character --i goes from muted (≈ #a0a0a3) to ink as the reveal front passes it.
+/* 62:247 / 66:280 — RevealText; usePinProgress writes --progress (0–1) while pinned.
    Without the hook (no JS, reduced motion) the paragraph is fully ink. */
 .about__text {
   font-family: var(--font-display);
   font-weight: var(--fw-semibold);
 }
 
-.about__word {
-  white-space: nowrap;
-}
-
-.about__text[data-progress-active] .about__char {
-  opacity: clamp(var(--opacity-muted), calc(var(--progress, 0) * var(--chars) - var(--i)), 1);
-}
-
-/* Reduced motion: no track, no pin; the section scrolls normally and the text is fully ink. */
+/* Reduced motion: no track, no pin; the section scrolls normally (RevealText keeps the text fully ink). */
 @media (prefers-reduced-motion: reduce) {
   .about {
     height: auto;
@@ -48,10 +39,6 @@
     position: static;
     height: auto;
     min-height: 100svh;
-  }
-
-  .about__text .about__char {
-    opacity: 1;
   }
 }
 

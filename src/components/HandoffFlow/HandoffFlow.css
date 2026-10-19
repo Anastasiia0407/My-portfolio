@@ -1,0 +1,74 @@
+/* Inside a Stage: sizes in --u (Figma px of the stage). Steps 364 wide, arrows 48px, 24 apart. */
+.handoff {
+  display: flex;
+  align-items: center;
+  gap: calc(24 * var(--u));
+}
+
+.handoff__step {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+  min-width: 0;
+  padding: calc(28 * var(--u)) calc(32 * var(--u));
+  background: var(--color-cream);
+  box-shadow: var(--shadow-card);
+}
+
+.handoff__step[data-tone='dark'] {
+  background: var(--color-ink);
+}
+
+.handoff__title {
+  font-size: max(12px, calc(24 * var(--u)));
+  font-weight: var(--fw-semibold);
+  line-height: calc(28 / 24);
+}
+
+.handoff__text {
+  color: var(--color-ink-60);
+  font-size: max(11px, calc(20 * var(--u)));
+  line-height: calc(26 / 20);
+}
+
+.handoff__step[data-tone='dark'] .handoff__title {
+  color: var(--color-cream);
+}
+
+.handoff__step[data-tone='dark'] .handoff__text {
+  color: var(--color-cream-60);
+}
+
+.handoff__arrow {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: calc(48 * var(--u));
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+}
+
+/* No mobile design yet: the steps stack, arrows point down. */
+@media (max-width: 759px) {
+  .handoff {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--m-gap-xxs);
+  }
+
+  .handoff__step {
+    padding: var(--m-gap-s);
+  }
+
+  .handoff__title,
+  .handoff__text {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
+  }
+
+  .handoff__arrow {
+    align-self: center;
+    font-size: var(--m-fs-about);
+    rotate: 90deg;
+  }
+}

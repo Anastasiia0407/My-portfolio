@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import type { CSSProperties } from 'react'
+import RevealText from '../RevealText/RevealText.tsx'
+import { revealLength } from '../RevealText/revealLength.ts'
 import { usePinProgress } from '../../hooks/usePinProgress.ts'
 import { REDUCED_MOTION_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
 import './About.css'
@@ -11,10 +12,8 @@ const aboutText =
 // The reveal starts from the Figma state: this first clause already dark.
 const leadText = 'Hi, I’m Anastasiia Cheban,'
 
-// Words → characters, each character numbered in reading order (spaces excluded).
-let charCount = 0
-const aboutWords = aboutText.split(' ').map((word) => [...word].map((char) => ({ char, index: charCount++ })))
-const leadChars = leadText.replaceAll(' ', '').length
+const aboutLength = revealLength(aboutText)
+const leadLength = revealLength(leadText)
 
 export default function About() {
   const trackRef = useRef<HTMLElement>(null)
@@ -24,7 +23,7 @@ export default function About() {
 
   // The section pins (sticky inside a taller track, see About.css) and the scroll through the pinned
   // range drives the reveal: the lead clause dark at the pin start, every character dark at release.
-  usePinProgress({ track: trackRef, pin: pinRef, target: textRef, from: leadChars / charCount, enabled: !reducedMotion })
+  usePinProgress({ track: trackRef, pin: pinRef, target: textRef, from: leadLength / aboutLength, enabled: !reducedMotion })
 
   return (
     <section ref={trackRef} id="about" className="about on-light" aria-labelledby="about-title">
@@ -32,23 +31,7 @@ export default function About() {
         <h2 id="about-title" className="about__label">
           Who I am
         </h2>
-        <p ref={textRef} className="about__text" style={{ '--chars': charCount } as CSSProperties}>
-          {/* Screen readers get the paragraph once; the per-character copy is visual only. */}
-          <span className="sr-only">{aboutText}</span>
-          <span aria-hidden="true">
-            {aboutWords.map((chars, word) => (
-              <span key={word}>
-                <span className="about__word">
-                  {chars.map(({ char, index }) => (
-                    <span key={index} className="about__char" style={{ '--i': index } as CSSProperties}>
-                      {char}
-                    </span>
-                  ))}
-                </span>{' '}
-              </span>
-            ))}
-          </span>
-        </p>
+        <RevealText ref={textRef} className="about__text" text={aboutText} />
       </div>
     </section>
   )

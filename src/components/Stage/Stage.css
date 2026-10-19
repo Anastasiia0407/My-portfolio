@@ -1,0 +1,104 @@
+/* --u: one Figma px of the stage (1432 wide on desktop); cqw resolves against .stage for every child. */
+.stage {
+  --u: calc(100cqw / var(--stage-w));
+  position: relative;
+  container-type: inline-size;
+}
+
+.stage__canvas {
+  position: relative;
+  aspect-ratio: var(--stage-w) / var(--stage-h);
+  overflow: hidden;
+}
+
+.stage--panel .stage__canvas {
+  background: var(--color-panel);
+}
+
+/* Hero stage 113:12841: teal gradient (same as the project 03 band). */
+.stage--teal .stage__canvas {
+  background: linear-gradient(var(--color-teal-from), var(--color-teal-to));
+}
+
+.stage__item {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+}
+
+/* Figma draws these frames as OUTSIDE strokes: the image fills its box, the ring sits around it. */
+.stage-shot {
+  max-width: none;
+  object-fit: cover;
+  border-radius: calc(var(--r) * var(--u));
+  box-shadow: 0 0 0 calc(var(--s) * var(--u)) var(--color-band-border);
+}
+
+.margin-note {
+  display: flex;
+  align-items: center;
+  gap: 0.625em;
+  width: max-content;
+  max-width: 100%;
+  padding: 0.75em 1.25em 0.75em 1em;
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  box-shadow: var(--shadow-card);
+  color: var(--color-cream);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+}
+
+.margin-note__dot {
+  flex: none;
+  width: 0.625em;
+  height: 0.625em;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+@media (min-width: 760px) {
+  .stage__overlay {
+    position: absolute;
+    z-index: 1;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+  }
+
+  .stage__notes {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .margin-note {
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    font-size: clamp(13px, calc(16 * var(--u)), 16px);
+    white-space: nowrap;
+  }
+
+  .margin-note[data-anchor='right'] {
+    left: auto;
+    right: var(--right);
+  }
+}
+
+/* No mobile design yet: overlay and notes leave the canvas and stack around it in reading order. */
+@media (max-width: 759px) {
+  .stage__overlay {
+    margin-bottom: var(--m-gap-s);
+  }
+
+  .stage__notes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--m-gap-xs);
+    margin-top: var(--m-gap-s);
+  }
+}

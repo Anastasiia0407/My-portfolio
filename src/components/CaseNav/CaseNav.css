@@ -1,0 +1,26 @@
+/* 113:12823: "← Back" left, "Get in touch" right, Inter SemiBold 24/28 uppercase, ink. */
+.case-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-m);
+}
+
+.case-link {
+  color: var(--color-ink);
+  font-size: var(--fs-ui);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-ui);
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color var(--dur-color) var(--ease-out);
+}
+
+.case-link:focus-visible {
+  color: var(--color-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .case-link:hover {
+    color: var(--color-accent);
+  }
+}

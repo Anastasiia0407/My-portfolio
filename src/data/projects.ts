@@ -123,5 +123,6 @@ export const projects: Project[] = [
         frame: { kind: 'solid', desktop: { stroke: 19.2, radius: 36 }, mobile: { stroke: 9.6, radius: 18 } },
       },
     ],
+    caseStudyUrl: '/work/tms',
   },
 ]

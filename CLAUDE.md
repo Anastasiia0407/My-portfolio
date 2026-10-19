@@ -1,14 +1,14 @@
 # Anastasiia Cheban — portfolio
 
-Single-page portfolio. Vite + React + TypeScript, plain CSS with custom properties, prerendered to static HTML. Public repo (github.com/Anastasiia0407/My-portfolio); Vercel deploys `main`.
+Portfolio: home page plus static case-study pages. Vite + React + TypeScript (multi-page), plain CSS with custom properties, prerendered to static HTML. Public repo (github.com/Anastasiia0407/My-portfolio); Vercel deploys `main`.
 
 ## Commands
 
 - `npm run dev` — dev server (client-rendered)
-- `npm run build` — typecheck → client build → SSR build → `scripts/prerender.mjs` (injects HTML into `dist/index.html`) → `check:assets`
+- `npm run build` — typecheck → client build → SSR build → `scripts/prerender.mjs` (injects HTML into every page listed in `src/entry-server.tsx`) → `check:assets`
 - `npm run preview` — serve `dist/`
 - `npm run lint` — ESLint
-- `npm run images` — rebuild `src/assets/` + `src/data/figma-layout.generated.ts` from `design-src/figma/` (local originals)
+- `npm run images` — rebuild `src/assets/` + `src/data/figma-layout.generated.ts` from `design-src/figma/` (local originals); `scripts/build-case-images.mjs` does the case images (`design-src/figma/case-tms/` → `src/assets/cases/tms/`)
 - `npm run check:assets` — fails if any file in `src/assets/` or `public/` is over 500 KB
 
 ## Page
@@ -22,6 +22,14 @@ Two designs: desktop (Figma 37:2, 1512 wide) from 760px, mobile (66:263, 393 wid
 - **About** (`components/About`, 62:245 / 66:278): `h2` "Who I am" + paragraph with a scroll-linked per-character reveal. Pinned like Works: the section is a track `(1 + --about-pin-length) × 100svh` (1.5 desktop, 1.2 below 760, in `tokens.css`), `.about__pin` is sticky, one viewport tall, content at the bottom. `usePinProgress` maps the pinned range to the reveal: pin start = only "Hi, I’m Anastasiia Cheban," dark (Figma state), release = fully dark; reverses on the way up. `#about` lands at the pin start. Reduced motion: no track, no pin, text fully dark.
 - **Works** (`components/Works`, 37:18): rendered from `projects.ts`. Pinned only at `(min-width: 760px) and (prefers-reduced-motion: no-preference)`: the section is `(projects + 1) × 100svh`, `.works__pin` is sticky, `useActiveProject` maps scroll to the active project (title, panel). Each panel shows its own "(0X)" (top-right, or bottom-right when the project's `counter` is `bottom`). Hovering the panel colours the active visuals and `useCursorFollow` moves the CTA. ≥760px with reduced motion: projects stack in the panel. <760px: one card per project (visual, then dark title), always in colour, no CTA, no hover, no active state; with a case-study URL the whole card is a link. The layout switch is pure CSS.
 - **Contact** (`components/Contact`, 37:56 / 66:310): footer with the "GET IN TOUCH" vector (`h2`, text "Get in touch") and links from `site.ts`. One row from 1024px; 2 × 2 grid (© + email, Telegram + LinkedIn) at 760–1023; below 760, links stacked 16/24 and © last.
+
+## Case pages
+
+- One HTML entry per case: `work/<slug>.html` (in `vite.config.ts` inputs and `src/entry-server.tsx` pages), served at `/work/<slug>` (Vite tries `<path>.html`; `vercel.json` has `cleanUrls`). No router.
+- **TMS** (`/work/tms`, Figma 113:12821, desktop only so far; motion notes 124:2, not built yet): `src/cases/tms/` (`main.tsx`, `TmsCase.tsx`, `TmsCase.css`), content in `src/data/cases/tms.ts`. Hero (tagline, h1 lines, "(03)", meta `dl`, teal stage), The project, The problem (stage with real-HTML TMS window + five rotated tool cards over a blurred photo, stat cards), The research (insight rows), Stops 01–05, No dead ends, The result (`RevealText`, static/full ink), footer link. Below 760 everything stacks; no mobile design yet.
+- Shared primitives: `CaseNav` (+ `CaseLink`), `SectionHeader` (eyebrow / h2 lines / optional body, side by side from 760), `Stage` (fixed-ratio canvas; Figma px → % via `placeIn`; `--u` = one Figma px of the stage via `cqw`; `StageShot` framed screenshots with outside stroke; `MarginNote` anchored to the nearer edge, listed under the stage below 760; optional `overlay`), `StatCard` (`<data value>`), `InsightRow`, `HandoffFlow`, `RevealText` (also used by home About).
+- Links: "← Back" / "← Back to all work" → `/#works`, "Get in touch" → `/#contact`. Project 03's `caseStudyUrl` is `/work/tms`; a project with a case URL makes its Works list title a link to it too.
+- The hero / stop 03 dashboard reuses `work-03@1x/2x.webp` (same source). Stat sources link to the URLs given in Figma.
 
 ## Data
 

@@ -1,0 +1,46 @@
+/* 113:12887: columns 160 | 560 | arrow | 520, 40 apart, 42 spare at the end (of 1432); top rule, 32 padding. */
+.insight-row {
+  display: grid;
+  grid-template-columns: minmax(0, 160fr) minmax(0, 560fr) auto minmax(0, 520fr);
+  column-gap: var(--gap-case-col);
+  align-items: center;
+  padding-block: var(--space-case-card);
+  padding-inline-end: calc(42 / 1432 * 100%);
+  border-top: 1px solid var(--color-rule);
+}
+
+.insight-row__label {
+  color: var(--color-muted);
+  font-size: var(--fs-meta);
+  line-height: var(--lh-meta);
+}
+
+.insight-row__insight {
+  color: var(--color-ink-60);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+}
+
+.insight-row__arrow,
+.insight-row__principle {
+  font-family: var(--font-display);
+  font-size: var(--fs-display-m);
+  font-weight: var(--fw-semibold);
+}
+
+.insight-row__arrow {
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.insight-row__principle {
+  line-height: var(--lh-display-m);
+}
+
+@media (max-width: 759px) {
+  .insight-row {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--m-gap-xs);
+    padding-inline-end: 0;
+  }
+}
