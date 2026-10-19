@@ -132,7 +132,6 @@
   --space-case-hero: clamp(100px, 23.148vw, 350px); /* hero title block's top padding (113:13026), below the 80 gap */
   --space-case-card: clamp(20px, 2.116vw, 32px); /* stat card padding, insight row padding */
   --gap-case-header: clamp(48px, 5.291vw, 80px); /* section header → stage */
-  --gap-case-header-s: clamp(40px, 4.233vw, 64px); /* stop 02 */
   --gap-case-media: clamp(64px, 7.937vw, 120px); /* header → photo row, footer bottom */
   --gap-case-col: clamp(16px, 2.646vw, 40px); /* insight columns */
   --gap-case-card: clamp(16px, 1.587vw, 24px); /* meta columns, stat cards */

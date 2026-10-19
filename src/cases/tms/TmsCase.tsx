@@ -97,7 +97,6 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
                 key={tool.id}
                 className="tool-card"
                 data-card={tool.id}
-                data-tone={tool.tone}
                 data-rotation={tool.rotation}
                 style={
                   {

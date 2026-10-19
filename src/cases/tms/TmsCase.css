@@ -272,10 +272,6 @@
   white-space: nowrap;
 }
 
-.tool-card[data-tone='white'] {
-  background: var(--color-white);
-}
-
 .problem-stage .stage__canvas[data-scene] .tool-card {
   rotate: none;
 }

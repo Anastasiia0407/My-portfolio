@@ -183,12 +183,12 @@ export const tmsCase = {
        * centre in % of the temporary mobile stage; `row` is what the card adds to the window.
        */
       tools: [
-        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, tone: 'panel' as const, mobile: { cx: 27, cy: 7 }, row: { label: 'Shipments & status', value: 'Booking' } },
-        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, tone: 'panel' as const, mobile: { cx: 73, cy: 7 }, row: { label: 'Tasks & comments', value: '3 open' } },
-        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, tone: 'white' as const, mobile: { cx: 22, cy: 87 }, row: { label: 'ETA & tracking', value: '26.08' } },
-        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, tone: 'panel' as const, mobile: { cx: 82, cy: 87 }, row: { label: 'Client: AgroFood Export' } },
-        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, tone: 'panel' as const, mobile: { cx: 52, cy: 95 }, row: { label: 'Documents & invoices', value: '4 files' } },
-      ] as { id: string; label: string; cx: number; cy: number; rotation: number; tone: 'panel' | 'white'; mobile: { cx: number; cy: number }; row: { label: string; value?: string } }[],
+        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, mobile: { cx: 27, cy: 7 }, row: { label: 'Shipments & status', value: 'Booking' } },
+        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, mobile: { cx: 73, cy: 7 }, row: { label: 'Tasks & comments', value: '3 open' } },
+        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, mobile: { cx: 22, cy: 87 }, row: { label: 'ETA & tracking', value: '26.08' } },
+        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, mobile: { cx: 82, cy: 87 }, row: { label: 'Client: AgroFood Export' } },
+        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, mobile: { cx: 52, cy: 95 }, row: { label: 'Documents & invoices', value: '4 files' } },
+      ] as { id: string; label: string; cx: number; cy: number; rotation: number; mobile: { cx: number; cy: number }; row: { label: string; value?: string } }[],
     },
     /** 113:12867. Sources are linked in Figma. */
     stats: [
@@ -265,7 +265,7 @@ export const tmsCase = {
             src2x: stop01List2x,
             alt: 'Shipments list with a status for each shipment; the new shipment FIFO-010 is in Booking',
             box: { x: 760, y: 330, width: 600, height: 412.698 },
-            radius: 9.524,
+            radius: 24,
             stroke,
           },
         ],
@@ -352,13 +352,13 @@ export const tmsCase = {
       } satisfies SectionCopy,
       scene: { length: 1.6, label: 'The shipment page switches from General information to Financial terms, then an invoice built from the shipment opens over it.' } satisfies SceneData,
       stage: {
-        size: { width: 1432, height: 874 },
+        size: { width: 1432, height: 960 },
         shots: [
           {
             src1x: stop04Shipment1x,
             src2x: stop04Shipment2x,
             alt: 'Shipment page, Financial terms tab: customer, payer, payment status, rate and the expenses table',
-            box: { x: 80, y: 144, width: 760, height: 493.598 },
+            box: { x: 42.609, y: 201.169, width: 834.783, height: 542.167 },
             radius: 24,
             stroke,
           },
@@ -366,18 +366,18 @@ export const tmsCase = {
             src1x: stop04Invoice1x,
             src2x: stop04Invoice2x,
             alt: 'Invoice FIFO-002 generated from the shipment data, open over the shipment page with Save and export buttons',
-            box: { x: 736.004, y: 330, width: 615.886, height: 400 },
+            box: { x: 705.699, y: 405.471, width: 676.488, height: 439.359 },
             radius: 24,
             stroke,
           },
         ],
         notes: [
-          { text: 'Header stays put, tabs change below it', x: 80, y: 50, width: 355 },
-          { text: 'Invoice built from shipment data', x: 1050, y: 780, width: 302 },
+          { text: 'Header stays put, tabs change below it', x: 80, y: 93, width: 355 },
+          { text: 'Invoice built from shipment data', x: 1050, y: 823, width: 302 },
         ],
       } satisfies StageData,
     },
-    /** 120:13588. Figma's stage is 1416 wide; the image sits centred in the 1432 content width. */
+    /** 120:13588: the dashboard frame is centred in the stage; its right edge lines up with the note. */
     overview: {
       copy: {
         id: 'stop-05',
@@ -387,14 +387,14 @@ export const tmsCase = {
       } satisfies SectionCopy,
       scene: { length: 1.2, label: 'The dashboard charts draw in, the period menu switches from 3 months to 1 year, and the charts redraw.' } satisfies SceneData,
       stage: {
-        size: { width: 1432, height: 959 },
+        size: { width: 1432, height: 960 },
         shots: [
           {
             src1x: stop05Dashboard1x,
             src2x: stop05Dashboard2x,
             alt: 'Dashboard with the period menu open (1 month, 3 months, 9 months, 1 year) over the shipment status chart',
-            box: { x: 166, y: 100, width: 1100, height: 714.418 },
-            radius: 17.46,
+            box: { x: 165.426, y: 100.104, width: 1101.147, height: 715.163 },
+            radius: 24,
             stroke,
           },
         ],
@@ -420,7 +420,7 @@ export const tmsCase = {
           src2x: edgeEmpty2x,
           alt: 'Empty shipments list: “You don’t have any shipments yet” and when they will appear',
           box: { x: 80, y: 100, width: 560, height: 363.704 },
-          radius: 8.889,
+          radius: 24,
           stroke,
         },
         {
@@ -428,7 +428,7 @@ export const tmsCase = {
           src2x: edgeNoResults2x,
           alt: 'Search with no results: “Oops! We couldn’t find any results” and a Clear all filters button',
           box: { x: 320, y: 400, width: 560, height: 363.704 },
-          radius: 8.889,
+          radius: 24,
           stroke,
         },
         {

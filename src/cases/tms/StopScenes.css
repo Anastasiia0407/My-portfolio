@@ -13,10 +13,6 @@
   container-type: inline-size;
 }
 
-.case-section--scene.case-section--compact {
-  --pin-gap: var(--gap-case-header-s);
-}
-
 .scene-track {
   margin-top: var(--pin-gap);
 }

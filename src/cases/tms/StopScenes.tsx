@@ -46,7 +46,6 @@ function PinnedStop({
   size,
   notes,
   overlay,
-  compact,
   children,
 }: {
   copy: SectionCopy
@@ -55,7 +54,6 @@ function PinnedStop({
   size: Size
   notes?: MarginNoteData[]
   overlay?: ReactNode
-  compact?: boolean
   children: ReactNode
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -65,7 +63,7 @@ function PinnedStop({
   return (
     <section
       id={copy.id}
-      className={`case-section case-section--scene${compact ? ' case-section--compact' : ''}`}
+      className="case-section case-section--scene"
       aria-labelledby={titleId}
       style={{ '--pin-w': size.width, '--pin-h': size.height, '--pin-length': scene.length } as CSSProperties}
     >
@@ -193,7 +191,6 @@ export function Stop02Scene() {
       spec={stop02}
       size={stage.size}
       notes={stage.notes}
-      compact
       overlay={
         <div className="stage__overlay" style={placeIn(flow.box, stage.size)}>
           <HandoffFlow steps={flow.steps} />

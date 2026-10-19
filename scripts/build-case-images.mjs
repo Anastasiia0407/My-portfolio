@@ -24,9 +24,9 @@ const images = [
   { name: 'stop-01-list', file: 'image-32.png', width: 600, height: 412.698 }, // 120:13377
   { name: 'stop-02-notifications', file: 'image-31.png', width: 907, height: 589.019 }, // 120:13403
   { name: 'stop-03-mobile', file: 'image-33.png', width: 244.238, height: 650 }, // 120:13518
-  { name: 'stop-04-shipment', file: 'image-28.png', width: 760, height: 493.598 }, // 120:13532
-  { name: 'stop-04-invoice', file: 'image-34.png', width: 615.886, height: 400 }, // 120:13578
-  { name: 'stop-05-dashboard', file: 'image-35.png', width: 1100, height: 714.418 }, // 120:13639
+  { name: 'stop-04-shipment', file: 'image-28.png', width: 834.783, height: 542.167 }, // 120:13532
+  { name: 'stop-04-invoice', file: 'image-34.png', width: 676.488, height: 439.359 }, // 120:13578
+  { name: 'stop-05-dashboard', file: 'image-35.png', width: 1101.147, height: 715.163 }, // 120:13639
   { name: 'edge-empty', file: 'image-36.png', width: 560, height: 363.704 }, // 120:13680
   { name: 'edge-no-results', file: 'image-37.png', width: 560, height: 363.704 }, // 120:13685
   { name: 'edge-columns', file: 'image-30.png', width: 300, height: 649.6 }, // 120:13658
@@ -39,7 +39,7 @@ const images = [
 {
   const general = await sharp(src('image-27.png')).resize(3024).extract({ left: 0, top: 0, width: 3024, height: 1964 }).png().toBuffer()
   for (const scale of [1, 2]) {
-    const info = await sharp(general).flatten({ background: '#f6f4f2' }).resize(Math.round(760 * scale), Math.round(493.598 * scale), { fit: 'cover' }).webp({ quality: 82, effort: 6 }).toFile(join(outDir, `stop-04-general@${scale}x.webp`))
+    const info = await sharp(general).flatten({ background: '#f6f4f2' }).resize(Math.round(834.783 * scale), Math.round(542.167 * scale), { fit: 'cover' }).webp({ quality: 82, effort: 6 }).toFile(join(outDir, `stop-04-general@${scale}x.webp`))
     console.log(`${`stop-04-general@${scale}x.webp`.padEnd(32)} ${`${info.width}×${info.height}`.padEnd(10)} ${(info.size / 1024).toFixed(0)} KB`)
   }
 }
