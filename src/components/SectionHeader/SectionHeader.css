@@ -19,9 +19,15 @@
   text-transform: uppercase;
 }
 
-/* Lines Figma breaks by hand. */
-.section-header__line {
-  display: block;
+/* Lines Figma breaks by hand: kept from 1280px; below, the heading reflows, balanced so no line is a lone word. */
+.section-header__heading {
+  text-wrap: balance;
+}
+
+@media (min-width: 1280px) {
+  .section-header__line {
+    display: block;
+  }
 }
 
 .section-header__body {

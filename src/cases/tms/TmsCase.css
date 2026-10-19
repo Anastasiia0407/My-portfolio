@@ -37,9 +37,18 @@
   min-width: 0;
 }
 
-/* Lines Figma breaks by hand; the title lines are separate for the later masked rise. */
+/* Lines Figma breaks by hand. Title lines sit in overflow-hidden masks for the rise (motion.css);
+   the mask's padding keeps glyph overshoot unclipped without changing the layout. */
+.case-hero__tagline-line,
 .case-hero__line {
   display: block;
+}
+
+.case-hero__mask {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.08em;
+  margin-block: -0.08em;
 }
 
 .case-hero__tagline {
@@ -115,8 +124,12 @@
 }
 
 .case-photo {
+  overflow: hidden;
+}
+
+.case-photo__image {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: cover;
 }
 

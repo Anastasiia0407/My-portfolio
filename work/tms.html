@@ -21,6 +21,20 @@
       content="One workspace where a container’s whole journey lives on one screen, for the teams who chase it all day."
     />
     <meta name="twitter:card" content="summary" />
+
+    <!-- Motion start states (src/motion/motion.css) apply only under html.motion, set here before the
+         first paint. If the app doesn't confirm within 4 s (data-motion-ready), the class is dropped
+         so nothing stays hidden. -->
+    <script>
+      ;(function () {
+        var root = document.documentElement
+        if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return
+        root.classList.add('motion')
+        setTimeout(function () {
+          if (!root.hasAttribute('data-motion-ready')) root.classList.remove('motion')
+        }, 4000)
+      })()
+    </script>
   </head>
   <body class="page-case">
     <div id="root"><!--app-html--></div>

@@ -1,5 +1,7 @@
-/* 113:12887: columns 160 | 560 | arrow | 520, 40 apart, 42 spare at the end (of 1432); top rule, 32 padding. */
+/* 113:12887: columns 160 | 560 | arrow | 520, 40 apart, 42 spare at the end (of 1432); top rule, 32 padding.
+   --stagger: time between the reveal steps (text → arrow → principle). */
 .insight-row {
+  --stagger: var(--stagger-insight);
   display: grid;
   grid-template-columns: minmax(0, 160fr) minmax(0, 560fr) auto minmax(0, 520fr);
   column-gap: var(--gap-case-col);

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
@@ -11,25 +12,33 @@ import HandoffFlow from '../../components/HandoffFlow/HandoffFlow.tsx'
 import RevealText from '../../components/RevealText/RevealText.tsx'
 import { tmsCase } from '../../data/cases/tms.ts'
 import type { Photo, SectionCopy, StageData } from '../../data/cases/tms.ts'
+import { useCountUp, useHeroStage, useParallax, useReveal, useScrollReveal } from '../../motion/hooks.ts'
+import '../../motion/motion.css'
 import './TmsCase.css'
 
 const { hero, project, problem, research, stops, edgeCases, result, nav } = tmsCase
 
 const headingId = (copy: SectionCopy) => `${copy.id}-title`
 
-/** Photo in a fixed-ratio frame (117:13235, 117:13257). */
+/** Photo in a fixed-ratio frame that clips it (117:13235, 117:13257); slow parallax inside the frame. */
 function CasePhoto({ photo }: { photo: Photo }) {
+  const frameRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLImageElement>(null)
+  useParallax(frameRef, imageRef, 0.1)
   return (
-    <img
-      className="case-photo"
-      src={photo.src1x}
-      srcSet={`${photo.src1x} 1x, ${photo.src2x} 2x`}
-      width={photo.width}
-      height={photo.height}
-      alt={photo.alt}
-      loading="lazy"
-      decoding="async"
-    />
+    <div ref={frameRef} className="case-photo" style={{ aspectRatio: `${photo.width} / ${photo.height}` }}>
+      <img
+        ref={imageRef}
+        className="case-photo__image"
+        src={photo.src1x}
+        srcSet={`${photo.src1x} 1x, ${photo.src2x} 2x`}
+        width={photo.width}
+        height={photo.height}
+        alt={photo.alt}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
   )
 }
 
@@ -90,6 +99,22 @@ function ProblemStage() {
 /** TMS case study (Figma 113:12821). Static: no motion in this stage. */
 export default function TmsCase() {
   const { handoff } = stops
+  const heroCanvasRef = useRef<HTMLDivElement>(null)
+  const dashboardRef = useRef<HTMLImageElement>(null)
+  const statsRef = useRef<HTMLUListElement>(null)
+  const insightsRef = useRef<HTMLOListElement>(null)
+  const resultRef = useRef<HTMLParagraphElement>(null)
+
+  useHeroStage(heroCanvasRef, dashboardRef, 0.85)
+  useCountUp(statsRef)
+  useReveal(insightsRef, { selector: '.insight-row', batchStagger: 200 })
+  useScrollReveal(resultRef)
+
+  // Tells the inline script in work/tms.html that motion is wired up (otherwise it drops .motion).
+  useEffect(() => {
+    document.documentElement.setAttribute('data-motion-ready', '')
+  }, [])
+
   return (
     <div className="case on-light">
       <a className="skip-link" href="#main">
@@ -107,15 +132,18 @@ export default function TmsCase() {
             <div className="case-hero__titles">
               <p className="case-hero__tagline">
                 {hero.tagline.map((line) => (
-                  <span key={line} className="case-hero__line">
+                  <span key={line} className="case-hero__tagline-line">
                     {line}{' '}
                   </span>
                 ))}
               </p>
+              {/* Each line rises inside its own mask (motion.css); below 760px all at once. */}
               <h1 id="case-title" className="case-hero__title">
-                {hero.title.map((line) => (
-                  <span key={line} className="case-hero__line">
-                    {line}{' '}
+                {hero.title.map((line, index) => (
+                  <span key={line} className="case-hero__mask">
+                    <span className="case-hero__line" style={{ '--line': index } as CSSProperties}>
+                      {line}{' '}
+                    </span>
                   </span>
                 ))}
               </h1>
@@ -132,9 +160,9 @@ export default function TmsCase() {
               </div>
             ))}
           </dl>
-          <Stage size={hero.stage.size} className="stage--teal case-hero__stage">
+          <Stage size={hero.stage.size} className="stage--teal case-hero__stage" canvasRef={heroCanvasRef}>
             {hero.stage.shots.map((shot) => (
-              <StageShot key={shot.src1x} shot={shot} size={hero.stage.size} eager />
+              <StageShot key={shot.src1x} ref={dashboardRef} shot={shot} size={hero.stage.size} eager />
             ))}
           </Stage>
         </section>
@@ -157,7 +185,7 @@ export default function TmsCase() {
             body={problem.copy.body}
           />
           <ProblemStage />
-          <ul className="case-stats">
+          <ul ref={statsRef} className="case-stats">
             {problem.stats.map((stat) => (
               <StatCard key={stat.source} stat={stat} />
             ))}
@@ -171,7 +199,7 @@ export default function TmsCase() {
             <CasePhoto photo={research.photo} />
             <p className="case-media__text">{research.copy.body}</p>
           </div>
-          <ol className="case-insights">
+          <ol ref={insightsRef} className="case-insights">
             {research.insights.map((item) => (
               <InsightRow key={item.label} item={item} />
             ))}
@@ -209,12 +237,12 @@ export default function TmsCase() {
         <StopSection copy={stops.overview.copy} stage={stops.overview.stage} />
         <StopSection copy={edgeCases.copy} stage={edgeCases.stage} />
 
-        {/* The result 120:13690: the home About component, static (full ink) for now. */}
+        {/* The result 120:13690: the home About reveal, scroll-linked, no pin. */}
         <section id="result" className="case-result" aria-labelledby="result-title">
           <h2 id="result-title" className="case-result__label">
             {result.eyebrow}
           </h2>
-          <RevealText className="case-result__text" text={result.text} />
+          <RevealText ref={resultRef} className="case-result__text" text={result.text} />
         </section>
       </main>
 

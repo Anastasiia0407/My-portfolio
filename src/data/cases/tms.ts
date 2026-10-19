@@ -128,7 +128,7 @@ export const tmsCase = {
     copy: {
       id: 'project',
       eyebrow: 'The project',
-      heading: ['A shared workspace for', 'a container’s whole journey'],
+      heading: ['A single platform for', 'a container’s whole journey'],
       body: 'An internal transport management system for a freight forwarding team that moves containers by sea. Four roles touch every shipment (sales, operations, and the head of the company) and each keeps their part in a different tool. The goal: one platform where every role sees the same shipment, but starts from its own day.',
     } satisfies SectionCopy,
     photo: {

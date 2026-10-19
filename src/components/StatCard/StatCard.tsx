@@ -8,13 +8,22 @@ export interface Stat {
   href?: string
 }
 
-/** 113:12868: number (a <data> value, so a later stage can count up to it), text, source link. */
+/**
+ * 113:12868: number, text, source link. The number is a <data> value: screen readers get the final
+ * text; the visible copy is aria-hidden so useCountUp can animate it.
+ */
 export default function StatCard({ stat }: { stat: Stat }) {
   return (
     <li className="stat-card">
       <data className="stat-card__value" value={stat.value}>
-        {stat.value}
-        {stat.suffix}
+        <span className="sr-only">
+          {stat.value}
+          {stat.suffix}
+        </span>
+        <span aria-hidden="true" data-count={stat.value} data-suffix={stat.suffix}>
+          {stat.value}
+          {stat.suffix}
+        </span>
       </data>
       <p className="stat-card__text">{stat.text}</p>
       {stat.href ? (

@@ -1,0 +1,100 @@
+/*
+ * Enter motion (case pages; Figma 124:2 "Motion notes"). Start states exist only under html.motion,
+ * which work/*.html sets before the first paint when the user allows motion: nothing hides without
+ * it (no JS, reduced motion), and content in view on load animates instead of flashing.
+ * JS (src/motion/hooks.ts) only sets data-entered on [data-enter] triggers; these rules animate.
+ * Only opacity, transform and clip-path change.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  /* Reveal: fade up 24px, children in --i order, --stagger apart, after the trigger's --enter-delay. */
+  .motion [data-enter] [data-reveal] {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance));
+  }
+
+  .motion [data-enter] [data-reveal='fade'] {
+    transform: none;
+  }
+
+  /* Draw: a left → right wipe (insight arrows). */
+  .motion [data-enter] [data-reveal='draw'] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .motion [data-enter][data-entered] [data-reveal] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0);
+    transition:
+      opacity var(--dur-reveal) var(--ease-out),
+      transform var(--dur-reveal) var(--ease-out),
+      clip-path var(--dur-draw) var(--ease-out);
+    transition-delay: calc(var(--enter-delay, 0ms) + var(--i, 0) * var(--stagger, var(--stagger-reveal)));
+  }
+
+  /* Pop-in (margin notes): scale 0.9 → 1 + fade, one by one. */
+  .motion [data-enter] [data-pop] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .motion [data-enter][data-entered] [data-pop] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--dur-pop) var(--ease-out),
+      transform var(--dur-pop) var(--ease-out);
+    transition-delay: calc(var(--i, 0) * var(--stagger-pop));
+  }
+
+  /* --- Hero 113:12822, on load (pure CSS, so it runs from the first paint) --- */
+  .motion .case-hero__line {
+    animation: case-rise var(--dur-rise) var(--ease-out) both;
+    animation-delay: calc(var(--line, 0) * var(--stagger-line));
+  }
+
+  .motion .case-hero__tagline,
+  .motion .case-hero__number {
+    animation: case-fade var(--dur-reveal) var(--ease-out) both;
+  }
+
+  .motion .case-meta {
+    animation: case-fade var(--dur-reveal) var(--ease-out) var(--delay-meta) both;
+  }
+
+  /* Dashboard stage: useHeroStage drives scale (0.96 → 1) and the 0.85× drift; this is its start state. */
+  .motion .case-hero__stage .stage__canvas {
+    transform: scale(0.96);
+  }
+
+  /* Photos: scaled to cover the parallax travel (useParallax replaces this with translate + scale). */
+  .motion .case-photo__image {
+    transform: scale(1.11);
+  }
+
+  /* The result: muted until useScrollReveal takes over (it then sets data-progress-active). */
+  .motion .case-result__text:not([data-progress-active]) .reveal-text__char {
+    opacity: var(--opacity-muted);
+  }
+}
+
+/* Below 760 the title may wrap inside a line: the heading rises as one block (no line stagger). */
+@media (prefers-reduced-motion: no-preference) and (max-width: 759px) {
+  .motion .case-hero__line {
+    animation-delay: 0ms;
+  }
+}
+
+@keyframes case-rise {
+  from {
+    transform: translateY(110%);
+  }
+}
+
+@keyframes case-fade {
+  from {
+    opacity: 0;
+  }
+}

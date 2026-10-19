@@ -36,6 +36,16 @@
   box-shadow: 0 0 0 calc(var(--s) * var(--u)) var(--color-band-border);
 }
 
+/* 1px marker at the stage's vertical centre: the margin-note pop-in trigger. */
+.stage__centre {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
 .margin-note {
   display: flex;
   align-items: center;

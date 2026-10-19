@@ -76,6 +76,18 @@
   --dur-panel: 600ms;
   --dur-menu: 300ms;
 
+  /* Case page motion (Figma 124:2) */
+  --dur-reveal: 600ms; /* fade up, fades */
+  --reveal-distance: 24px;
+  --stagger-reveal: 120ms; /* eyebrow → heading → body */
+  --dur-draw: 400ms; /* insight arrow wipe */
+  --stagger-insight: 300ms; /* insight → arrow → principle */
+  --dur-pop: 400ms;
+  --stagger-pop: 300ms; /* margin notes */
+  --dur-rise: 900ms; /* hero title lines */
+  --stagger-line: 100ms;
+  --delay-meta: 800ms; /* meta row after the title */
+
   /*
    * Case studies (TMS, Figma 113:12821, 1512 wide). Same fluid rule: max = Figma value at 1512.
    * Stage contents (screenshots, cards, notes) scale with their stage instead: see Stage.css.
