@@ -33,8 +33,14 @@
   font-weight: var(--fw-semibold);
 }
 
-/* One project's stage. Placements are % of the stage; the stage clips what extends past it.
-   --su is one Figma px of the stage, for borders and shadows that scale with it. */
+/* One project's stage: the Figma panel (756 × 982) at the panel's width. Placements are % of it;
+   --su is one Figma px of it, for borders and shadows that scale with it (Figma "Scale").
+   Cards and stacked mode: the stage clips what extends past it. Pinned mode: the stage starts at
+   the panel's top-left and only .works__clip (the panel) clips. */
+.works__clip {
+  position: relative;
+}
+
 .works__stage {
   position: relative;
   overflow: clip;
@@ -303,7 +309,8 @@
     --glass-tint: var(--color-glass-tint);
   }
 
-  /* 40:119 / 73:890 — "(0X)" top-right, or bottom-right per project (projects.ts `counter`). */
+  /* 40:119 / 73:890 — "(0X)" top-right, or bottom-right per project (projects.ts `counter`).
+     Outside the image clip, positioned in the figure (= the stage box here, the panel when pinned). */
   .works__number {
     position: absolute;
     top: calc(64 / 982 * 100%);
@@ -320,11 +327,11 @@
     bottom: calc(64 / 982 * 100%);
   }
 
-  /* 40:125 — hidden at rest. */
+  /* 40:125 — hidden at rest. Outside the image clip, so it is never cut by the visuals. */
   .works__cta {
     position: absolute;
-    left: var(--x);
-    top: var(--y);
+    left: calc(var(--cta-x) / 756 * 100%);
+    top: calc(var(--cta-y) / 982 * 100%);
     z-index: 2;
     display: grid;
     place-items: center;
@@ -419,8 +426,10 @@
     container-type: size;
   }
 
-  /* All projects share one stage that fits the panel; the active one is shown. */
+  /* Every project fills the panel; the active one is shown. --s = one Figma px of the panel
+     (panel width / 756): the composition scales from the panel's top-left, never by height. */
   .works__visual {
+    --s: calc(100cqw / 756);
     position: absolute;
     inset: 0;
     transition:
@@ -429,11 +438,33 @@
       visibility 0s linear;
   }
 
-  .works__stage {
+  /* The images' clipping layer is the panel itself; the stage inside it does not clip. */
+  .works__clip {
     position: absolute;
     inset: 0;
-    width: min(100cqw, 100cqh * 756 / 982);
-    margin: auto;
+    overflow: hidden;
+  }
+
+  .works__stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+  }
+
+  .works__number {
+    top: calc(64 * var(--s));
+    right: calc(64 * var(--s));
+  }
+
+  .works__visual[data-counter='bottom'] .works__number {
+    top: auto;
+    bottom: calc(64 * var(--s));
+  }
+
+  .works__cta {
+    left: calc(var(--cta-x) * var(--s));
+    top: calc(var(--cta-y) * var(--s));
   }
 
   .works__visual[data-state='before'],

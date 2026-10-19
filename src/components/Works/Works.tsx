@@ -47,11 +47,9 @@ function imageStyle({ placement, rotation, frame, src1x }: ProjectImage) {
   } as CSSProperties
 }
 
-// Static CTA position from Figma (40:125); the cursor-follow translates it from here.
-const ctaStyle = {
-  '--x': pct(224, worksStages.desktop.width),
-  '--y': pct(642, worksStages.desktop.height),
-} as CSSProperties
+// Static CTA position from Figma (40:125), in panel px (Works.css scales it); the cursor-follow
+// translates it from here.
+const ctaStyle = { '--cta-x': 224, '--cta-y': 642 } as CSSProperties
 
 const stageStyle = {
   '--stage-w': worksStages.desktop.width,
@@ -113,43 +111,46 @@ function ProjectVisual({
       data-counter={project.counter ?? 'top'}
       aria-hidden={hidden || undefined}
     >
-      <div className="works__stage" style={stageStyle}>
-        {project.band && <div className="works__band works__image" style={place(project.band)} />}
-        {project.images.map((image) =>
-          image.frame ? (
-            <div
-              key={image.src1x}
-              className="works__frame works__image"
-              data-frame={image.frame.kind}
-              style={imageStyle(image)}
-            >
+      {/* The images' own clipping layer: the panel in pinned mode. The counter and CTA sit above it, unclipped. */}
+      <div className="works__clip">
+        <div className="works__stage" style={stageStyle}>
+          {project.band && <div className="works__band works__image" style={place(project.band)} />}
+          {project.images.map((image) =>
+            image.frame ? (
+              <div
+                key={image.src1x}
+                className="works__frame works__image"
+                data-frame={image.frame.kind}
+                style={imageStyle(image)}
+              >
+                <img
+                  className="works__frame-image"
+                  src={image.src1x}
+                  srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+                  alt={image.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            ) : (
               <img
-                className="works__frame-image"
+                key={image.src1x}
+                className="works__image"
+                style={imageStyle(image)}
                 src={image.src1x}
                 srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
                 alt={image.alt}
                 loading="lazy"
                 decoding="async"
               />
-            </div>
-          ) : (
-            <img
-              key={image.src1x}
-              className="works__image"
-              style={imageStyle(image)}
-              src={image.src1x}
-              srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
-              alt={image.alt}
-              loading="lazy"
-              decoding="async"
-            />
-          ),
-        )}
-        <span className="works__number" aria-hidden="true">
-          ({project.number})
-        </span>
-        <ProjectCta project={project} />
+            ),
+          )}
+        </div>
       </div>
+      <span className="works__number" aria-hidden="true">
+        ({project.number})
+      </span>
+      <ProjectCta project={project} />
       {/* Visible card title below 760px; visually hidden on desktop, where the list names the project. */}
       <figcaption className={`works__caption works__label${state === 'active' ? ' is-active' : ''}`}>
         <ProjectLabel project={project} />
