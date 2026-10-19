@@ -64,8 +64,14 @@ export function useToolsScene({
         length = trackEl.offsetHeight - pinEl.offsetHeight
         const wx = win.offsetLeft + win.offsetWidth / 2
         const wy = win.offsetTop + win.offsetHeight / 2
-        // A card's layout box starts at its centre (left/top = centre, then translate −50%).
-        deltas = cards.map((card) => ({ x: wx - card.offsetLeft, y: wy - card.offsetTop }))
+        // Card centre in layout: desktop places left/top at the centre and translates −50%; the
+        // mobile layout places the top-left (no translate).
+        deltas = cards.map((card) => {
+          const centred = getComputedStyle(card).translate !== 'none'
+          const cx = card.offsetLeft + (centred ? 0 : card.offsetWidth / 2)
+          const cy = card.offsetTop + (centred ? 0 : card.offsetHeight / 2)
+          return { x: wx - cx, y: wy - cy }
+        })
       },
       update(y) {
         const p = length > 0 ? clamp01((y - top) / length) : 1

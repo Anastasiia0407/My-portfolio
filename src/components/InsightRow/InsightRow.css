@@ -43,6 +43,29 @@
   .insight-row {
     grid-template-columns: minmax(0, 1fr);
     row-gap: var(--m-gap-xs);
+    padding-block: var(--m-gap-m);
     padding-inline-end: 0;
+  }
+
+  .insight-row__label {
+    font-size: var(--m-fs-small);
+    line-height: var(--m-lh-label);
+  }
+
+  .insight-row__insight {
+    font-size: var(--m-fs-body);
+    line-height: var(--m-lh-body);
+  }
+
+  /* The arrow points down; its left → right wipe (motion.css) then draws top → bottom. */
+  .insight-row__arrow {
+    justify-self: start;
+    rotate: 90deg;
+    font-size: var(--m-fs-principle);
+  }
+
+  .insight-row__principle {
+    font-size: var(--m-fs-principle);
+    line-height: var(--m-lh-principle);
   }
 }

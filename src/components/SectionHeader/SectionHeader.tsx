@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { Fragment, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import { useReveal } from '../../motion/hooks.ts'
 import './SectionHeader.css'
@@ -31,10 +31,13 @@ export default function SectionHeader({
           {eyebrow}
         </p>
         <h2 id={id} className="section-header__heading" data-reveal style={step(1)}>
+          {/* The space sits between the lines, not inside one: a trailing space inside an inline
+              span that ends a wrapped line is dropped from the accessible name ("FORA"). */}
           {lines.map((line, index) => (
-            <span key={index} className="section-header__line">
-              {line}{' '}
-            </span>
+            <Fragment key={index}>
+              {index > 0 && ' '}
+              <span className="section-header__line">{line}</span>
+            </Fragment>
           ))}
         </h2>
       </div>

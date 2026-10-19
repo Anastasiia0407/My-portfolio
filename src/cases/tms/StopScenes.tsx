@@ -1,9 +1,14 @@
 /**
- * Stops 01–05 and No dead ends (stage 3b): each stage pins in a scroll track and progress p = 0 → 1
- * drives its scene, margin notes last (useStageScene). Layer geometry below is measured from the
- * screenshots (fractions of the image, or Figma stage px) — see the comments per scene.
- * The markup's own state is the final one (reduced motion, no JS); `scene-only` layers exist only
- * while a scene runs.
+ * Stops 01–05 and No dead ends.
+ * - 760px and up (stage 3b): each stage pins in a scroll track and progress p = 0 → 1 drives its
+ *   scene, margin notes last (useStageScene).
+ * - Below 760 (stage 4): the stage is restacked, one full-width screenshot after another with its
+ *   note under it (`.scene-mobile`, no pin); each screenshot's steps play once on a timeline when it
+ *   enters, then its note pops in (useTimedScene).
+ * Each screenshot and its overlays are built once (`pieces`) and placed either on the desktop stage
+ * or in their own full-width mini stage, so overlay geometry (fractions of the screenshot) holds in
+ * both. The markup's own state is the final one (reduced motion, no JS); `scene-only` layers exist
+ * only while a scene runs.
  */
 import { useRef } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
@@ -11,7 +16,8 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader.tsx'
 import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
 import { placeIn } from '../../components/Stage/placeIn.ts'
 import HandoffFlow from '../../components/HandoffFlow/HandoffFlow.tsx'
-import { eased, ramp, sweep, useStageScene } from '../../motion/stageScene.ts'
+import { eased, ramp, span, sweep, useStageScene, useTimedScene } from '../../motion/stageScene.ts'
+import { DESKTOP_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
 import type { SceneSpec } from '../../motion/stageScene.ts'
 import { tmsCase } from '../../data/cases/tms.ts'
 import type { Box, MarginNoteData, SceneData, SectionCopy, Size, StageShot as Shot } from '../../data/cases/tms.ts'
@@ -46,6 +52,7 @@ function PinnedStop({
   size,
   notes,
   overlay,
+  mobile,
   children,
 }: {
   copy: SectionCopy
@@ -54,11 +61,14 @@ function PinnedStop({
   size: Size
   notes?: MarginNoteData[]
   overlay?: ReactNode
+  /** The restacked version below 760 (MobileGroup / MobileShot). */
+  mobile: ReactNode
   children: ReactNode
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const pinRef = useRef<HTMLDivElement>(null)
-  useStageScene(trackRef, pinRef, spec)
+  const desktop = useMediaQuery(DESKTOP_QUERY)
+  useStageScene(trackRef, pinRef, spec, desktop)
   const titleId = `${copy.id}-title`
   return (
     <section
@@ -75,9 +85,65 @@ function PinnedStop({
           </Stage>
         </div>
       </div>
+      {/* Below 760: a figure (not role="img") so its screenshots' alts and its notes are read, once. */}
+      <figure className="scene-mobile" aria-label={scene.label}>
+        {mobile}
+      </figure>
     </section>
   )
 }
+
+/** A screenshot as its own stage at full width (or half, `narrow`), for the restacked mobile stops. */
+function MobileShot({
+  shot,
+  narrow,
+  children,
+}: {
+  shot: Shot
+  narrow?: boolean
+  children: (local: Shot, size: Size) => ReactNode
+}) {
+  const size = { width: shot.box.width, height: shot.box.height }
+  const local = { ...shot, box: { x: 0, y: 0, ...size } }
+  return (
+    <div className={`mshot${narrow ? ' mshot--narrow' : ''}`} style={{ '--stage-w': size.width, '--stage-h': size.height } as CSSProperties}>
+      {children(local, size)}
+    </div>
+  )
+}
+
+/** One step of a restacked stop: its screenshot(s), its timeline (played once on enter), its note. */
+function MobileGroup({
+  spec,
+  duration,
+  notes = [],
+  pair,
+  children,
+}: {
+  spec: SceneSpec
+  duration: number
+  notes?: MarginNoteData[]
+  pair?: boolean
+  children: ReactNode
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const desktop = useMediaQuery(DESKTOP_QUERY)
+  useTimedScene(ref, spec, duration, !desktop)
+  return (
+    <div ref={ref} className={`mgroup${pair ? ' mgroup--pair' : ''}`}>
+      {children}
+      {notes.map((note) => (
+        <p key={note.text} className="margin-note" data-pop>
+          <span className="margin-note__dot" aria-hidden="true" />
+          {note.text}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+/** A timeline with nothing to animate: the note pops in once the screenshot is in view. */
+const noteOnly: SceneSpec = { layers: {}, notesAt: [1] }
 
 /** A framed screenshot whose image is built from layers (the first child is the static screenshot). */
 function SceneFrame({ shot, size, layer, children }: { shot: Shot; size: Size; layer?: string; children: ReactNode }) {
@@ -133,16 +199,48 @@ const stop01: SceneSpec = {
   notesAt: [0.74, 0.88],
 }
 
+const m01List: SceneSpec = {
+  layers: {
+    list: (p) => {
+      const k = eased(p, 0, 0.45)
+      return { transform: `translate3d(${px(80 * (1 - k))}px, 0, 0)`, opacity: k }
+    },
+    booking: (p) => ({ opacity: ramp(p, 0.5, 0.6) - ramp(p, 0.82, 0.92) }),
+  },
+  notesAt: [1],
+}
+
 export function Stop01Scene() {
   const { copy, stage, scene } = stops.sales
   const [form, list] = stage.shots
-  // FIFO-010 row (the one Booking row) in image 32.
-  const booking = onShot(list, 0.069, 0.218, 0.903, 0.052)
+  const formPiece = (shot: Shot, size: Size) => <StageShot shot={shot} size={size} />
+  const listPiece = (shot: Shot, size: Size) => (
+    <>
+      <StageShot shot={shot} size={size} layer="list" />
+      {/* FIFO-010 row (the one Booking row) in image 32. */}
+      <div className="stage__item scene-only scene-highlight" data-layer="booking" style={placeIn(onShot(shot, 0.069, 0.218, 0.903, 0.052), size)} />
+    </>
+  )
   return (
-    <PinnedStop copy={copy} scene={scene} spec={stop01} size={stage.size} notes={stage.notes}>
-      <StageShot shot={form} size={stage.size} />
-      <StageShot shot={list} size={stage.size} layer="list" />
-      <div className="stage__item scene-only scene-highlight" data-layer="booking" style={placeIn(booking, stage.size)} />
+    <PinnedStop
+      copy={copy}
+      scene={scene}
+      spec={stop01}
+      size={stage.size}
+      notes={stage.notes}
+      mobile={
+        <>
+          <MobileGroup spec={noteOnly} duration={500} notes={[stage.notes[0]]}>
+            <MobileShot shot={form}>{formPiece}</MobileShot>
+          </MobileGroup>
+          <MobileGroup spec={m01List} duration={2000} notes={[stage.notes[1]]}>
+            <MobileShot shot={list}>{listPiece}</MobileShot>
+          </MobileGroup>
+        </>
+      }
+    >
+      {formPiece(form, stage.size)}
+      {listPiece(list, stage.size)}
     </PinnedStop>
   )
 }
@@ -181,9 +279,32 @@ const rectPoints = ([x, y, w, h]: readonly number[]) =>
 /** The shadow area minus the panel (even-odd hole). */
 const shadeOnly = `polygon(evenodd, ${rectPoints(shade)}, ${rectPoints(panel)})`
 
+const m02Flow: SceneSpec = {
+  layers: { 'flow-dark': span(stop02.layers['flow-dark'], 0, 0.6), 'flow-arrow': span(stop02.layers['flow-arrow'], 0, 0.6) },
+  notesAt: [],
+}
+const m02Panel: SceneSpec = {
+  layers: {
+    panel: span(stop02.layers.panel, 0.56, 0.78),
+    'panel-shadow': span(stop02.layers['panel-shadow'], 0.56, 0.78),
+    bell: span(stop02.layers.bell, 0.56, 0.78),
+  },
+  notesAt: [1],
+}
+
 export function Stop02Scene() {
   const { copy, stage, scene, flow } = stops.handoff
   const [shot] = stage.shots
+  const notificationsPiece = (shot: Shot, size: Size) => (
+    <SceneFrame shot={shot} size={size}>
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} alt={shot.alt} />
+      <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" style={{ clipPath: insetOf(...shade) }} />
+      <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" style={{ clipPath: insetOf(...bell) }} />
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="panel-shadow" style={{ clipPath: shadeOnly }} />
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="panel" style={{ clipPath: insetOf(...panel) }} />
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="bell" style={{ clipPath: insetOf(...bell) }} />
+    </SceneFrame>
+  )
   return (
     <PinnedStop
       copy={copy}
@@ -196,15 +317,18 @@ export function Stop02Scene() {
           <HandoffFlow steps={flow.steps} />
         </div>
       }
+      mobile={
+        <>
+          <MobileGroup spec={m02Flow} duration={2400}>
+            <HandoffFlow steps={flow.steps} />
+          </MobileGroup>
+          <MobileGroup spec={m02Panel} duration={1400} notes={stage.notes}>
+            <MobileShot shot={shot}>{notificationsPiece}</MobileShot>
+          </MobileGroup>
+        </>
+      }
     >
-      <SceneFrame shot={shot} size={stage.size}>
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} alt={shot.alt} />
-        <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" style={{ clipPath: insetOf(...shade) }} />
-        <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" style={{ clipPath: insetOf(...bell) }} />
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="panel-shadow" style={{ clipPath: shadeOnly }} />
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="panel" style={{ clipPath: insetOf(...panel) }} />
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="bell" style={{ clipPath: insetOf(...bell) }} />
-      </SceneFrame>
+      {notificationsPiece(shot, stage.size)}
     </PinnedStop>
   )
 }
@@ -232,27 +356,52 @@ const stop03: SceneSpec = {
   notesAt: [0.88],
 }
 
+const m03Desk: SceneSpec = { layers: { hl: span(stop03.layers.hl, 0.18, 1) }, notesAt: [1] }
+
 export function Stop03Scene() {
   const { copy, stage, scene } = stops.tasks
   const [desk, phone] = stage.shots
-  // In the dashboard: "Tasks at work" counter, the first task row, its "⋯" button.
-  const highlights: [Box, number][] = [
-    [onShot(desk, 0.532, 0.094, 0.212, 0.141), 10],
-    [onShot(desk, 0.083, 0.907, 0.885, 0.074), 6],
-    [onShot(desk, 0.929, 0.922, 0.028, 0.043), 6],
-  ]
-  return (
-    <PinnedStop copy={copy} scene={scene} spec={stop03} size={stage.size} notes={stage.notes}>
-      <StageShot shot={desk} size={stage.size} layer="desk" />
-      <StageShot shot={phone} size={stage.size} layer="phone" />
-      {highlights.map(([box, radius], i) => (
+  const deskPiece = (shot: Shot, size: Size) => (
+    <>
+      <StageShot shot={shot} size={size} layer="desk" />
+      {/* In the dashboard: "Tasks at work" counter, the first task row, its "⋯" button. */}
+      {(
+        [
+          [onShot(shot, 0.532, 0.094, 0.212, 0.141), 10],
+          [onShot(shot, 0.083, 0.907, 0.885, 0.074), 6],
+          [onShot(shot, 0.929, 0.922, 0.028, 0.043), 6],
+        ] as [Box, number][]
+      ).map(([box, radius], i) => (
         <div
           key={i}
           className="stage__item scene-only scene-highlight"
           data-layer="hl"
-          style={{ ...placeIn(box, stage.size), '--hl-r': radius } as CSSProperties}
+          style={{ ...placeIn(box, size), '--hl-r': radius } as CSSProperties}
         />
       ))}
+    </>
+  )
+  const phonePiece = (shot: Shot, size: Size) => <StageShot shot={shot} size={size} layer="phone" />
+  return (
+    <PinnedStop
+      copy={copy}
+      scene={scene}
+      spec={stop03}
+      size={stage.size}
+      notes={stage.notes}
+      mobile={
+        <>
+          <MobileGroup spec={m03Desk} duration={2600} notes={stage.notes}>
+            <MobileShot shot={desk}>{deskPiece}</MobileShot>
+          </MobileGroup>
+          <MobileShot shot={phone} narrow>
+            {phonePiece}
+          </MobileShot>
+        </>
+      }
+    >
+      {deskPiece(desk, stage.size)}
+      {phonePiece(phone, stage.size)}
     </PinnedStop>
   )
 }
@@ -281,30 +430,67 @@ const stop04: SceneSpec = {
 // Image 34 = image 28 under a 21% black scrim + this modal.
 const modal = [0.2188, 0.1263, 0.5527, 0.7398] as const
 
+const m04Page: SceneSpec = {
+  layers: { general: span(stop04.layers.general, 0.08, 0.34), underline: span(stop04.layers.underline, 0.08, 0.34) },
+  notesAt: [1],
+}
+const m04Invoice: SceneSpec = {
+  layers: {
+    invoice: (p) => {
+      const k = eased(p, 0, 0.5)
+      return { transform: `translate3d(0, ${u(60 * (1 - k))}, 0)`, opacity: k }
+    },
+    modal: span(stop04.layers.modal, 0.4, 0.76),
+  },
+  notesAt: [1],
+}
+
 export function Stop04Scene() {
   const { copy, stage, scene, general } = stops.shipment
   const [page, invoice] = stage.shots
+  const pagePiece = (shot: Shot, size: Size) => (
+    <SceneFrame shot={shot} size={size}>
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} alt={shot.alt} />
+      {/* General information tab and content below the fixed header (header ends at 8.5%, sidebar at 6.4%). */}
+      <FrameImage src1x={general.src1x} src2x={general.src2x} className="scene-only" layer="general" style={{ clipPath: 'inset(8.5% 0 0 6.4%)' }} />
+      <span className="scene-only scene-box scene-underline" data-layer="underline" style={inFrame(0.2027, 0.1238, 0.0751, 0.0025)} />
+    </SceneFrame>
+  )
+  const invoicePiece = (shot: Shot, size: Size) => (
+    <SceneFrame shot={shot} size={size} layer="invoice">
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} alt={shot.alt} />
+      <span className="scene-only scene-backdrop" style={{ clipPath: insetOf(...modal) }}>
+        <FrameImage src1x={page.src1x} src2x={page.src2x} />
+      </span>
+      <FrameImage
+        src1x={shot.src1x}
+        src2x={shot.src2x}
+        className="scene-only"
+        layer="modal"
+        style={{ clipPath: insetOf(...modal), transformOrigin: `${(modal[0] + modal[2] / 2) * 100}% ${(modal[1] + modal[3] / 2) * 100}%` }}
+      />
+    </SceneFrame>
+  )
   return (
-    <PinnedStop copy={copy} scene={scene} spec={stop04} size={stage.size} notes={stage.notes}>
-      <SceneFrame shot={page} size={stage.size}>
-        <FrameImage src1x={page.src1x} src2x={page.src2x} alt={page.alt} />
-        {/* General information tab and content below the fixed header (header ends at 8.5%, sidebar at 6.4%). */}
-        <FrameImage src1x={general.src1x} src2x={general.src2x} className="scene-only" layer="general" style={{ clipPath: 'inset(8.5% 0 0 6.4%)' }} />
-        <span className="scene-only scene-box scene-underline" data-layer="underline" style={inFrame(0.2027, 0.1238, 0.0751, 0.0025)} />
-      </SceneFrame>
-      <SceneFrame shot={invoice} size={stage.size} layer="invoice">
-        <FrameImage src1x={invoice.src1x} src2x={invoice.src2x} alt={invoice.alt} />
-        <span className="scene-only scene-backdrop" style={{ clipPath: insetOf(...modal) }}>
-          <FrameImage src1x={page.src1x} src2x={page.src2x} />
-        </span>
-        <FrameImage
-          src1x={invoice.src1x}
-          src2x={invoice.src2x}
-          className="scene-only"
-          layer="modal"
-          style={{ clipPath: insetOf(...modal), transformOrigin: `${(modal[0] + modal[2] / 2) * 100}% ${(modal[1] + modal[3] / 2) * 100}%` }}
-        />
-      </SceneFrame>
+    <PinnedStop
+      copy={copy}
+      scene={scene}
+      spec={stop04}
+      size={stage.size}
+      notes={stage.notes}
+      mobile={
+        <>
+          <MobileGroup spec={m04Page} duration={1600} notes={[stage.notes[0]]}>
+            <MobileShot shot={page}>{pagePiece}</MobileShot>
+          </MobileGroup>
+          <MobileGroup spec={m04Invoice} duration={1800} notes={[stage.notes[1]]}>
+            <MobileShot shot={invoice}>{invoicePiece}</MobileShot>
+          </MobileGroup>
+        </>
+      }
+    >
+      {pagePiece(page, stage.size)}
+      {invoicePiece(invoice, stage.size)}
     </PinnedStop>
   )
 }
@@ -336,32 +522,51 @@ const stop05: SceneSpec = {
   notesAt: [0.88],
 }
 
+const m05: SceneSpec = {
+  layers: Object.fromEntries(Object.entries(stop05.layers).map(([name, fn]) => [name, span(fn, 0, 0.86)])),
+  notesAt: [1],
+}
+
 export function Stop05Scene() {
   const { copy, stage, scene } = stops.overview
   const [shot] = stage.shots
+  const dashboardPiece = (shot: Shot, size: Size) => (
+    <SceneFrame shot={shot} size={size}>
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} alt={shot.alt} />
+      {/* Image 35 is this dashboard with the menus open: the scene starts from the closed one. */}
+      <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" />
+      <span className="scene-only scene-box scene-donut-cover" style={inFrame(0.1177, 0.3285, 0.2427, 0)} />
+      <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" layer="donut" />
+      {bars.fills.map((fill, i) => (
+        <span key={i} className="scene-only scene-box scene-bar" style={inFrame(bars.x, bars.y + i * bars.pitch, bars.w, bars.h)}>
+          <span className="scene-bar__fill" data-layer="bar" style={{ width: `${fill}%` }} />
+        </span>
+      ))}
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="button-open" style={{ clipPath: insetOf(0.418, 0.283, 0.086, 0.032) }} />
+      <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="menu" style={{ clipPath: insetOf(menu[0], menu[1], menu[2], 0) }} />
+      <span className="scene-only scene-box scene-menu-row" data-layer="menu-cover" style={inFrame(0.417, 0.374, 0.082, 0.043)} aria-hidden="true">
+        3 months
+      </span>
+      <span className="scene-only scene-box scene-menu-pick" data-layer="menu-pick" style={inFrame(0.4182, 0.4542, 0.0794, 0.0412)} />
+      <span className="scene-only scene-box scene-period" data-layer="period" style={inFrame(0.421, 0.287, 0.062, 0.024)} aria-hidden="true">
+        1 year
+      </span>
+    </SceneFrame>
+  )
   return (
-    <PinnedStop copy={copy} scene={scene} spec={stop05} size={stage.size} notes={stage.notes}>
-      <SceneFrame shot={shot} size={stage.size}>
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} alt={shot.alt} />
-        {/* Image 35 is this dashboard with the menus open: the scene starts from the closed one. */}
-        <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" />
-        <span className="scene-only scene-box scene-donut-cover" style={inFrame(0.1177, 0.3285, 0.2427, 0)} />
-        <FrameImage src1x={dashboard.src1x} src2x={dashboard.src2x} className="scene-only" layer="donut" />
-        {bars.fills.map((fill, i) => (
-          <span key={i} className="scene-only scene-box scene-bar" style={inFrame(bars.x, bars.y + i * bars.pitch, bars.w, bars.h)}>
-            <span className="scene-bar__fill" data-layer="bar" style={{ width: `${fill}%` }} />
-          </span>
-        ))}
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="button-open" style={{ clipPath: insetOf(0.418, 0.283, 0.086, 0.032) }} />
-        <FrameImage src1x={shot.src1x} src2x={shot.src2x} className="scene-only" layer="menu" style={{ clipPath: insetOf(menu[0], menu[1], menu[2], 0) }} />
-        <span className="scene-only scene-box scene-menu-row" data-layer="menu-cover" style={inFrame(0.417, 0.374, 0.082, 0.043)} aria-hidden="true">
-          3 months
-        </span>
-        <span className="scene-only scene-box scene-menu-pick" data-layer="menu-pick" style={inFrame(0.4182, 0.4542, 0.0794, 0.0412)} />
-        <span className="scene-only scene-box scene-period" data-layer="period" style={inFrame(0.421, 0.287, 0.062, 0.024)} aria-hidden="true">
-          1 year
-        </span>
-      </SceneFrame>
+    <PinnedStop
+      copy={copy}
+      scene={scene}
+      spec={stop05}
+      size={stage.size}
+      notes={stage.notes}
+      mobile={
+        <MobileGroup spec={m05} duration={3600} notes={stage.notes}>
+          <MobileShot shot={shot}>{dashboardPiece}</MobileShot>
+        </MobileGroup>
+      }
+    >
+      {dashboardPiece(shot, stage.size)}
     </PinnedStop>
   )
 }
@@ -381,20 +586,60 @@ const edge: SceneSpec = {
   notesAt: [0.88],
 }
 
+// Below 760 the empty states stack: the second starts over the first and slides down into place.
+const mEdgeEmpty: SceneSpec = {
+  layers: {
+    fan: (p, i) => {
+      const k = eased(p, 0, 0.7)
+      return { transform: i === 0 ? 'none' : `translate3d(0, calc((-100% - var(--m-gap-s)) * ${(1 - k).toFixed(4)}), 0)` }
+    },
+  },
+  notesAt: [1],
+}
+const mEdgePhone: SceneSpec = {
+  layers: { 'toggle-on': span(edge.layers['toggle-on'], 0.38, 0.82), 'toggle-knob': span(edge.layers['toggle-knob'], 0.38, 0.82) },
+  notesAt: [],
+}
+
 export function EdgeCasesScene() {
   const { copy, stage, scene } = edgeCases
   const [empty, noResults, phone] = stage.shots
-  return (
-    <PinnedStop copy={copy} scene={scene} spec={edge} size={stage.size} notes={stage.notes}>
-      <StageShot shot={empty} size={stage.size} layer="fan" />
-      <StageShot shot={noResults} size={stage.size} layer="fan" />
-      <StageShot shot={phone} size={stage.size} />
+  const emptyPiece = (shot: Shot, size: Size) => <StageShot shot={shot} size={size} layer="fan" />
+  const phonePiece = (shot: Shot, size: Size) => (
+    <>
+      <StageShot shot={shot} size={size} />
       {toggleRows.map((y) => (
-        <span key={y} className="stage__item scene-only scene-toggle" style={placeIn(onShot(phone, 0.8187, y, 0.096, 0.0246), stage.size)}>
+        <span key={y} className="stage__item scene-only scene-toggle" style={placeIn(onShot(shot, 0.8187, y, 0.096, 0.0246), size)}>
           <span className="scene-toggle__on" data-layer="toggle-on" />
           <span className="scene-toggle__knob" data-layer="toggle-knob" />
         </span>
       ))}
+    </>
+  )
+  return (
+    <PinnedStop
+      copy={copy}
+      scene={scene}
+      spec={edge}
+      size={stage.size}
+      notes={stage.notes}
+      mobile={
+        <>
+          <MobileGroup spec={mEdgeEmpty} duration={1400} notes={stage.notes} pair>
+            <MobileShot shot={empty}>{emptyPiece}</MobileShot>
+            <MobileShot shot={noResults}>{emptyPiece}</MobileShot>
+          </MobileGroup>
+          <MobileGroup spec={mEdgePhone} duration={2000}>
+            <MobileShot shot={phone} narrow>
+              {phonePiece}
+            </MobileShot>
+          </MobileGroup>
+        </>
+      }
+    >
+      {emptyPiece(empty, stage.size)}
+      {emptyPiece(noResults, stage.size)}
+      {phonePiece(phone, stage.size)}
     </PinnedStop>
   )
 }

@@ -112,6 +112,8 @@ export const tmsCase = {
   hero: {
     tagline: ['One workspace where a container’s whole journey lives on one screen,', 'for the teams who chase it all day.'],
     title: ['TMS platform for', 'a logistics company'],
+    /** Below 760 (no Figma mobile design): three lines that fit 40 × --m at 320–759. */
+    titleMobile: ['TMS platform', 'for a logistics', 'company'],
     meta: [
       { label: 'Role', value: 'UX/UI & Product designer' },
       { label: 'Industry', value: 'B2B SaaS · Logistics' },
@@ -162,33 +164,33 @@ export const tmsCase = {
     /**
      * 113:12853: blurred photo (117:13298, 6px blur, stretched to fill), one window, five tilted tool
      * cards. Scroll scene (motion note 124:15): in this order each card flies into the window and adds
-     * its row; then the window settles and the label shows. Below 760px a temporary 361×480 layout
-     * (`mobile`, % of the stage) until the mobile design exists.
+     * its row; then the window settles and the label shows. Below 760 the approved prototype: a 4:5
+     * stage, window and card start positions (`mobile`, top-left) in % of the stage.
      */
     stage: {
       size: { width: 1432, height: 720 },
-      mobileSize: { width: 361, height: 480 },
       ariaLabel:
         'Five tool cards — Excel tracker, email threads, carrier portal, CRM and PDF documents — fly into one TMS window as you scroll.',
       background: { src: problemBg, blur: 6 },
       window: {
         box: { x: 436, y: 180, width: 560, height: 360 },
-        mobile: { x: 6, y: 15, width: 88, height: 65 },
+        /** Below 760: the approved prototype's 4:5 stage, in %. */
+        mobile: { x: 10, y: 28, width: 80, height: 44 },
         title: 'TMS',
         caption: 'status · documents · invoices · tasks',
       },
       endLabel: 'One shipment, one place',
       /**
        * Centre of each card's rotated bounding box (Figma), rotation in degrees (clockwise); `mobile`
-       * centre in % of the temporary mobile stage; `row` is what the card adds to the window.
+       * top-left in % of the 4:5 mobile stage; `row` is what the card adds to the window.
        */
       tools: [
-        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, mobile: { cx: 27, cy: 7 }, row: { label: 'Shipments & status', value: 'Booking' } },
-        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, mobile: { cx: 73, cy: 7 }, row: { label: 'Tasks & comments', value: '3 open' } },
-        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, mobile: { cx: 22, cy: 87 }, row: { label: 'ETA & tracking', value: '26.08' } },
-        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, mobile: { cx: 82, cy: 87 }, row: { label: 'Client: AgroFood Export' } },
-        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, mobile: { cx: 52, cy: 95 }, row: { label: 'Documents & invoices', value: '4 files' } },
-      ] as { id: string; label: string; cx: number; cy: number; rotation: number; mobile: { cx: number; cy: number }; row: { label: string; value?: string } }[],
+        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, mobile: { x: 6, y: 7 }, row: { label: 'Shipments & status', value: 'Booking' } },
+        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, mobile: { x: 50, y: 12 }, row: { label: 'Tasks & comments', value: '3 open' } },
+        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, mobile: { x: 4, y: 80 }, row: { label: 'ETA & tracking', value: '26.08' } },
+        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, mobile: { x: 62, y: 84 }, row: { label: 'Client: AgroFood Export' } },
+        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, mobile: { x: 30, y: 90 }, row: { label: 'Documents & invoices', value: '4 files' } },
+      ] as { id: string; label: string; cx: number; cy: number; rotation: number; mobile: { x: number; y: number }; row: { label: string; value?: string } }[],
     },
     /** 113:12867. Sources are linked in Figma. */
     stats: [

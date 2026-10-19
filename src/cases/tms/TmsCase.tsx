@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import type { CSSProperties, RefObject } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
@@ -102,8 +102,8 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
                   {
                     '--cx': percent(tool.cx, stage.size.width),
                     '--cy': percent(tool.cy, stage.size.height),
-                    '--mcx': `${tool.mobile.cx}%`,
-                    '--mcy': `${tool.mobile.cy}%`,
+                    '--mx': `${tool.mobile.x}%`,
+                    '--my': `${tool.mobile.y}%`,
                     '--rot': `${tool.rotation}deg`,
                   } as CSSProperties
                 }
@@ -156,19 +156,31 @@ export default function TmsCase() {
           <div className="case-hero__intro">
             <div className="case-hero__titles">
               <p className="case-hero__tagline">
-                {hero.tagline.map((line) => (
-                  <span key={line} className="case-hero__tagline-line">
-                    {line}{' '}
-                  </span>
+                {hero.tagline.map((line, index) => (
+                  <Fragment key={line}>
+                    {index > 0 && ' '}
+                    <span className="case-hero__tagline-line">{line}</span>
+                  </Fragment>
                 ))}
               </p>
-              {/* Each line rises inside its own mask (motion.css); below 760px all at once. */}
+              {/* Each line rises inside its own mask (motion.css). Figma's lines from 760px, three
+                  fitted lines below; screen readers get the title once. */}
               <h1 id="case-title" className="case-hero__title">
-                {hero.title.map((line, index) => (
-                  <span key={line} className="case-hero__mask">
-                    <span className="case-hero__line" style={{ '--line': index } as CSSProperties}>
-                      {line}{' '}
-                    </span>
+                <span className="sr-only">{hero.title.join(' ')}</span>
+                {(
+                  [
+                    ['desktop', hero.title],
+                    ['mobile', hero.titleMobile],
+                  ] as const
+                ).map(([variant, lines]) => (
+                  <span key={variant} className={`case-hero__lines case-hero__lines--${variant}`} aria-hidden="true">
+                    {lines.map((line, index) => (
+                      <span key={line} className="case-hero__mask">
+                        <span className="case-hero__line" style={{ '--line': index } as CSSProperties}>
+                          {line}{' '}
+                        </span>
+                      </span>
+                    ))}
                   </span>
                 ))}
               </h1>

@@ -24,3 +24,10 @@
     color: var(--color-accent);
   }
 }
+
+@media (max-width: 759px) {
+  .case-link {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-link);
+  }
+}

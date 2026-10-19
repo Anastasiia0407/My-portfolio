@@ -127,13 +127,6 @@
   }
 }
 
-/* Below 760 the title may wrap inside a line: the heading rises as one block (no line stagger). */
-@media (prefers-reduced-motion: no-preference) and (max-width: 759px) {
-  .motion .case-hero__line {
-    animation-delay: 0ms;
-  }
-}
-
 @keyframes case-rise {
   from {
     transform: translateY(110%);

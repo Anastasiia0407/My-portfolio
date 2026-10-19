@@ -43,3 +43,23 @@ a.stat-card__source:focus-visible {
     color: var(--color-accent);
   }
 }
+
+@media (max-width: 759px) {
+  .stat-card {
+    padding: var(--m-gap-m) var(--m-gap-s);
+  }
+
+  .stat-card__value {
+    font-size: var(--m-fs-stat);
+  }
+
+  .stat-card__text {
+    font-size: var(--m-fs-body);
+    line-height: var(--m-lh-body);
+  }
+
+  .stat-card__source {
+    font-size: var(--m-fs-small);
+    line-height: var(--m-lh-label);
+  }
+}

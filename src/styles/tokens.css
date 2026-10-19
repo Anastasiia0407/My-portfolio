@@ -172,6 +172,16 @@
   --m-fs-tagline: calc(32 * var(--m)); /* UX/UI·PRODUCT: 32/40, tracking 7.68 */
   --m-lh-tagline: calc(40 * var(--m));
   --m-track-tagline: calc(7.68 * var(--m));
+
+  /* Case pages below 760 (no Figma mobile design; home mobile rules). Scaled: */
+  --m-fs-hero: calc(40 * var(--m)); /* case Hero title 40/40 */
+  --m-fs-stat: calc(56 * var(--m)); /* stat numbers 56/56 */
+  /* Fixed: */
+  --m-fs-body: 16px; /* body text, subtitle, insight, stat text 16/24 */
+  --m-lh-body: 24px;
+  --m-fs-principle: 20px; /* insight principle, Onest 20/24 */
+  --m-lh-principle: 24px;
+  --m-radius-min: 8px; /* scaled screenshot radii never go below this */
 }
 
 @media (max-width: 759px) {

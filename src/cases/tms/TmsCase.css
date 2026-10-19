@@ -50,6 +50,17 @@
   display: block;
 }
 
+/* Title line sets: Figma's lines from 760px, the fitted mobile lines below. Flex columns, so the
+   masks' negative margins add up instead of collapsing. */
+.case-hero__lines {
+  display: flex;
+  flex-direction: column;
+}
+
+.case-hero__lines--mobile {
+  display: none;
+}
+
 @media (min-width: 1280px) {
   .case-hero__tagline-line {
     display: block;
@@ -297,15 +308,20 @@
   visibility: hidden;
 }
 
-/* Temporary layout below 760 (no mobile design yet): a taller 361×480 stage so the rows stay
-   readable; window and cards placed in % (tms.ts `mobile`), fixed type. */
+/* Below 760: the approved prototype — a 4:5 stage, window at 10 / 28 / 80 / 44 %, cards by their
+   top-left (tms.ts `mobile`); fixed type sized to fit the window's five rows. */
 @media (max-width: 759px) {
   .case-section--problem {
-    --pin-ratio: calc(361 / 480);
+    --pin-ratio: calc(4 / 5);
   }
 
   .problem-stage .stage__canvas {
-    aspect-ratio: 361 / 480;
+    aspect-ratio: 4 / 5;
+  }
+
+  /* The blurred photo is exported at Figma's stretched 1432 × 720; crop it, don't distort it. */
+  .problem-stage__bg {
+    object-fit: cover;
   }
 
   .problem-stage .tms-window {
@@ -313,27 +329,28 @@
     top: var(--my);
     width: var(--mw);
     height: var(--mh);
-    padding: var(--m-gap-s);
+    padding: var(--m-gap-xs);
   }
 
   .problem-stage .tms-window__title {
-    font-size: var(--m-fs-about);
+    font-size: 24px;
   }
 
   .problem-stage .tms-window__caption {
     margin-top: var(--m-gap-xxs);
     font-size: 12px;
+    line-height: 16px;
   }
 
   .problem-stage .tms-window__rows {
-    gap: var(--m-gap-xxs);
-    margin-top: var(--m-gap-xs);
+    gap: 2px;
+    margin-top: 8px;
   }
 
   .problem-stage .tms-row {
     gap: 8px;
-    font-size: 13px;
-    line-height: 18px;
+    font-size: 12px;
+    line-height: 16px;
   }
 
   .problem-stage .tms-row__dot {
@@ -342,8 +359,9 @@
   }
 
   .problem-stage .tool-card {
-    left: var(--mcx);
-    top: var(--mcy);
+    left: var(--mx);
+    top: var(--my);
+    translate: none;
     padding: 6px 10px;
     font-size: 13px;
     line-height: 18px;
@@ -385,7 +403,8 @@
   padding-bottom: var(--gap-case-media);
 }
 
-/* No mobile design yet: everything stacks in reading order. */
+/* Below 760 (stage 4, no Figma mobile design): the home page's mobile rules — 16 gutters, 32
+   section padding, gaps 12 / 16 / 24 / 32; display headings scale with --m, the rest is fixed. */
 @media (max-width: 759px) {
   .case-header,
   .case-hero,
@@ -399,21 +418,109 @@
     padding-top: var(--m-gutter);
   }
 
+  .case-section {
+    padding-block: var(--m-section);
+  }
+
+  /* Section 02's pin keeps the mobile header → stage gap at its start and release. */
+  .case-section--problem {
+    --gap-case-header: var(--m-gap-m);
+  }
+
+  /* Hero: "(03)" on its own line above the title, right-aligned; three fitted title lines. */
+  .case-hero__intro {
+    flex-direction: column-reverse;
+    gap: var(--m-gap-xs);
+    padding-top: calc(var(--m-section) * 2);
+  }
+
+  .case-hero__titles {
+    width: 100%;
+    gap: var(--m-gap-s);
+  }
+
+  .case-hero__number {
+    align-self: flex-end;
+    font-size: var(--m-fs-tagline);
+  }
+
+  .case-hero__tagline {
+    font-size: var(--m-fs-body);
+    line-height: var(--m-lh-body);
+  }
+
+  .case-hero__title {
+    font-size: var(--m-fs-hero);
+  }
+
+  .case-hero__lines--desktop {
+    display: none;
+  }
+
+  .case-hero__lines--mobile {
+    display: flex;
+  }
+
+  .case-hero__line {
+    white-space: nowrap;
+  }
+
   .case-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: var(--m-gap-m);
+    gap: var(--m-gap-m) var(--m-gap-s);
+    margin-top: var(--m-gap-l);
+  }
+
+  .case-meta__label {
+    font-size: var(--m-fs-small);
+    line-height: var(--m-lh-label);
+  }
+
+  .case-meta__value {
+    margin-top: var(--m-gap-xxs);
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
   }
 
   .case-hero__stage {
     margin-top: var(--m-gap-l);
   }
 
+  /* 01 and 03: photo first, then text. */
   .case-media {
-    gap: var(--m-gap-m);
+    gap: var(--m-gap-s);
+    margin-top: var(--m-gap-m);
+  }
+
+  .case-media__text {
+    order: 1;
+    font-size: var(--m-fs-body);
+    line-height: var(--m-lh-body);
   }
 
   .case-stats {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--m-gap-xs);
+    margin-top: var(--m-gap-m);
+  }
+
+  .case-insights {
+    margin-top: var(--m-gap-l);
+  }
+
+  .case-result {
+    gap: var(--m-gap-xs);
+    padding-block: var(--m-section);
+  }
+
+  .case-result__label {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
+  }
+
+  .case-footer {
+    padding-top: var(--m-gutter);
+    padding-bottom: calc(var(--m-section) * 2);
   }
 
   .case-result__text {

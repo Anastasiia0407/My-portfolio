@@ -22,8 +22,13 @@
   display: none;
 }
 
-.scene-pin[data-scene] .scene-only {
+[data-scene] .scene-only {
   display: block;
+}
+
+/* The restacked version is for below 760 only. */
+.scene-mobile {
+  display: none;
 }
 
 /* A screenshot assembled from layers: the frame clips them; outside stroke like StageShot. */
@@ -183,8 +188,72 @@
       transform var(--dur-pop) var(--ease-out);
   }
 
-  .motion .scene-pin[data-scene] [data-pop]:not([data-shown]) {
+  .motion [data-scene] [data-pop]:not([data-shown]) {
     opacity: 0;
     transform: scale(0.9);
+  }
+
+  .motion .mgroup [data-pop] {
+    transition:
+      opacity var(--dur-pop) var(--ease-out),
+      transform var(--dur-pop) var(--ease-out);
+  }
+}
+
+/* Below 760: no pin; screenshots stack at full width (phones at half), each note under its
+   screenshot. Each screenshot is its own stage: --u = one Figma px of it, so radii, strokes and
+   overlays scale with it (radii never below --m-radius-min). */
+@media (max-width: 759px) {
+  .case-section--scene {
+    overflow-x: clip;
+  }
+
+  .case-section--scene .scene-track {
+    display: none;
+  }
+
+  .scene-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--m-gap-m);
+    margin-top: var(--m-gap-m);
+  }
+
+  .mgroup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--m-gap-xs);
+  }
+
+  .mgroup > .mshot,
+  .mgroup > .handoff {
+    align-self: stretch;
+  }
+
+  .mgroup--pair {
+    gap: var(--m-gap-s);
+  }
+
+  .mshot {
+    --u: calc(100cqw / var(--stage-w));
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--stage-w) / var(--stage-h);
+    container-type: inline-size;
+  }
+
+  .mshot--narrow {
+    width: 50%;
+    align-self: center;
+    margin-inline: auto;
+  }
+
+  .mgroup > .mshot--narrow {
+    align-self: center;
+  }
+
+  .mshot .stage-frame {
+    border-radius: max(var(--m-radius-min), calc(var(--r) * var(--u)));
   }
 }

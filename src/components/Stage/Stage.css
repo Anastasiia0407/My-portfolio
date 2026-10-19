@@ -100,6 +100,16 @@
 
 /* No mobile design yet: overlay and notes leave the canvas and stack around it in reading order. */
 @media (max-width: 759px) {
+  /* Screenshot radii keep scaling with their frame, but never below --m-radius-min. */
+  .stage-shot {
+    border-radius: max(var(--m-radius-min), calc(var(--r) * var(--u)));
+  }
+
+  .margin-note {
+    font-size: var(--m-fs-small);
+    line-height: var(--m-lh-label);
+  }
+
   .stage__overlay {
     margin-bottom: var(--m-gap-s);
   }
