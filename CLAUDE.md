@@ -45,7 +45,7 @@ Home page plus static case-study pages. Vite + React + TypeScript (multi-page), 
 
 ## Scale rule
 
-Every mockup on both pages follows Figma's "Scale" constraint: position and size in % of its stage or frame, Figma's aspect ratio (never stretched or cropped differently), and borders, radii and text inside mockups scale with the stage (`--u`, no px minimums from 760 up). Figma draws frames as OUTSIDE strokes (box-shadow spread here). Below 760 screenshot radii scale too, with an 8px floor (`--m-radius-min`). Margin notes are not mockups: fixed text (16/20 desktop, 14/20 mobile), only their position follows the stage. Pinned stages are fitted whole to the viewport (`100svh − 48px`, section 02: `100svh − 2 × gutter`).
+Every mockup on both pages follows Figma's "Scale" constraint: position and size in % of its stage or frame, Figma's aspect ratio (never stretched or cropped differently), and borders, radii and text inside mockups scale with the stage (`--u`, no px minimums from 760 up). Figma draws frames as OUTSIDE strokes (box-shadow spread here). Below 760 screenshot radii scale too, with an 8px floor (`--m-radius-min`). Margin notes are not mockups: fixed text (16/20 desktop, 14/20 mobile), only their position follows the stage. Pinned stages are fitted whole to the viewport (`100svh − 48px`, section 02: `100svh − 2 × gutter`). Stops 01–05 and No dead ends: the #fafafa panel (`.scene-panel`) is always the full content width, height = min(Figma height × width / 1432, `100svh − 48px`); the composition inside scales by min(width fit, height fit), centred horizontally and anchored to the top; only the panel clips.
 
 ## Pin rule
 

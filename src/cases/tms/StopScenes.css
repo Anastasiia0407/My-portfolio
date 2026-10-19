@@ -1,13 +1,16 @@
 /*
  * Pinned stop scenes (stage 3b). Static (reduced motion, no JS): the stage sits a header gap below
- * the header, final state, all notes shown. With motion (motion.css gate): the stage pins in a
- * track of 100svh + --pin-length viewports, fitted to 100svh − 48px and centred; the track's
- * margins keep Figma's header → stage gap at the pin start and the stage → next section distance
- * at the release.
+ * the header, final state, all notes shown. With motion (motion.css gate): the panel pins in a
+ * track of 100svh + --pin-length viewports. It is always the full content width; its height is
+ * Figma's × (width / Figma width), capped at 100svh − 48px. The composition inside scales by
+ * min(width fit, height fit), centred horizontally and anchored to the panel's top; only the panel
+ * clips. The track's margins keep Figma's header → stage gap at the pin start and the stage → next
+ * section distance at the release.
  */
 .case-section--scene {
+  /* Composition width (s × Figma width) and panel height. */
   --pin-stage-w: min(100cqw, calc((100svh - 48px) * var(--pin-w) / var(--pin-h)));
-  --pin-stage-h: calc(var(--pin-stage-w) * var(--pin-h) / var(--pin-w));
+  --pin-stage-h: min(calc(100cqw * var(--pin-h) / var(--pin-w)), calc(100svh - 48px));
   --pin-gap: var(--gap-case-header);
   --pin-offset: calc(var(--pin-gap) - (100svh - var(--pin-stage-h)) / 2);
   container-type: inline-size;
@@ -171,14 +174,32 @@
     height: 100svh;
   }
 
-  .motion .scene-pin .stage {
-    width: var(--pin-stage-w);
+  /* The #fafafa panel: full content width, clips at its own edges. */
+  .motion .scene-panel {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    height: var(--pin-stage-h);
+    overflow: hidden;
+    background: var(--color-panel);
     pointer-events: auto;
     transition: opacity var(--dur-reveal) var(--ease-out);
   }
 
+  .motion .scene-pin .stage {
+    flex: none;
+    width: var(--pin-stage-w);
+  }
+
+  /* The composition box does not clip or paint; the panel does. */
+  .motion .scene-pin .stage__canvas {
+    overflow: visible;
+    background: none;
+  }
+
   /* Until the app has set every scene to its scroll position, a scene shows nothing (reload mid-scene). */
-  .motion:not([data-motion-ready]) .scene-pin .stage {
+  .motion:not([data-motion-ready]) .scene-panel {
     opacity: 0;
   }
 

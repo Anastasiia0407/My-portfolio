@@ -80,9 +80,11 @@ function PinnedStop({
       <SectionHeader id={titleId} eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />
       <div ref={trackRef} className="scene-track">
         <div ref={pinRef} className="scene-pin">
-          <Stage size={size} className="stage--panel" notes={notes} overlay={overlay} label={scene.label}>
-            {children}
-          </Stage>
+          <div className="scene-panel">
+            <Stage size={size} className="stage--panel" notes={notes} overlay={overlay} label={scene.label}>
+              {children}
+            </Stage>
+          </div>
         </div>
       </div>
       {/* Below 760: a figure (not role="img") so its screenshots' alts and its notes are read, once. */}
