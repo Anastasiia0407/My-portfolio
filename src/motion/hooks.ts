@@ -50,14 +50,16 @@ const easeOut = (t: number) => 1 - (1 - t) ** 3
 
 /**
  * Count-up for `[data-count]` elements (aria-hidden visual copies; the real value is in the HTML):
- * 0 → value once, 900 ms ease-out, when `root` is half visible. Already visible on load: left final.
+ * 0 → value once, 900 ms ease-out, when `root` is half visible — and, with `after`, only once that
+ * element's bottom has reached the viewport bottom (e.g. a pin track has released). A row that is
+ * already on screen (or past) on load keeps its final values.
  */
-export function useCountUp(root: RefObject<Element | null>, duration = 900) {
+export function useCountUp(root: RefObject<Element | null>, { after, duration = 900 }: { after?: RefObject<Element | null>; duration?: number } = {}) {
   useEffect(() => {
     const el = root.current
+    const afterEl = after?.current ?? null
     if (!el || !motionEnabled()) return
     // Only a row that starts fully below the viewport counts up: setting it to 0 is then off screen.
-    // Partly or fully visible on load (or scrolled past): the final values stay.
     if (el.getBoundingClientRect().top < window.innerHeight) return
     const counters = [...el.querySelectorAll<HTMLElement>('[data-count]')]
     const show = (value: number) =>
@@ -65,10 +67,19 @@ export function useCountUp(root: RefObject<Element | null>, duration = 900) {
         counter.textContent = `${Math.round(Number(counter.dataset.count) * value)}${counter.dataset.suffix ?? ''}`
       })
     let frame = 0
+    let started = false
+    let halfLine = 0 // scroll position at which the row is half visible (viewport bottom at its middle)
+    let releaseLine = 0
     show(0)
-    const stop = observeEnter(
-      [el],
-      () => {
+    const stopScroll = addScrollJob({
+      measure(vh) {
+        const rect = el.getBoundingClientRect()
+        halfLine = rect.top + window.scrollY + rect.height / 2 - vh
+        releaseLine = afterEl ? afterEl.getBoundingClientRect().bottom + window.scrollY - vh : -Infinity
+      },
+      update(y) {
+        if (started || y < halfLine || y < releaseLine) return
+        started = true
         const start = performance.now()
         const step = (now: number) => {
           const t = Math.min(1, (now - start) / duration)
@@ -77,14 +88,13 @@ export function useCountUp(root: RefObject<Element | null>, duration = 900) {
         }
         frame = requestAnimationFrame(step)
       },
-      { threshold: 0.5 },
-    )
+    })
     return () => {
-      stop()
+      stopScroll()
       cancelAnimationFrame(frame)
       show(1)
     }
-  }, [root, duration])
+  }, [root, after, duration])
 }
 
 /**
@@ -121,16 +131,22 @@ export function useParallax(frame: RefObject<Element | null>, image: RefObject<H
 
 /**
  * Hero stage (113:12841): the stage scales 0.96 → 1 over the first half viewport of scroll after it
- * starts entering, and the dashboard drifts at `speed` × page speed (moves down inside the stage, so
- * its clipped bottom edge never lifts into view).
+ * starts entering, and the dashboard drifts at `speed` × page speed (it moves down inside the stage,
+ * so its clipped bottom edge never lifts into view).
+ * Only a fresh load at the top plays the scale: there the pre-paint CSS start state (0.96) is what
+ * the scroll position asks for. A restored load (reload, back/forward, #hash — html.motion-restored,
+ * set before first paint) or a stage already scrolled into on load starts final: scale 1, and the
+ * drift is anchored at the load position, so nothing moves when the app starts.
  */
 export function useHeroStage(stage: RefObject<HTMLElement | null>, image: RefObject<HTMLElement | null>, speed = 0.85) {
   useEffect(() => {
     const stageEl = stage.current
     const imageEl = image.current
     if (!stageEl || !imageEl || !motionEnabled()) return
+    const restored = document.documentElement.classList.contains('motion-restored')
     let top = 0
     let height = 0
+    let anchor: number | null = null // travelled distance at load, when the stage starts final
     let lastScale = ''
     let lastShift = ''
     const stop = addScrollJob({
@@ -141,8 +157,10 @@ export function useHeroStage(stage: RefObject<HTMLElement | null>, image: RefObj
       update(y, vh) {
         const start = Math.max(0, top - vh)
         const travelled = Math.min(Math.max(0, y - start), top + height - start)
-        const scale = `scale(${(0.96 + 0.04 * clamp01(travelled / (vh * 0.5))).toFixed(4)})`
-        const shift = `translate3d(0, ${((1 - speed) * travelled).toFixed(2)}px, 0)`
+        if (anchor === null) anchor = restored || travelled > 0 ? travelled : 0
+        const final = restored || anchor > 0
+        const scale = final ? 'none' : `scale(${(0.96 + 0.04 * clamp01(travelled / (vh * 0.5))).toFixed(4)})`
+        const shift = `translate3d(0, ${((1 - speed) * Math.max(0, travelled - anchor)).toFixed(2)}px, 0)`
         if (scale !== lastScale) stageEl.style.transform = lastScale = scale
         if (shift !== lastShift) imageEl.style.transform = lastShift = shift
       },

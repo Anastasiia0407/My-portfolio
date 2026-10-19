@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, RefObject } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
 import CaseNav, { CaseLink } from '../../components/CaseNav/CaseNav.tsx'
@@ -13,6 +13,7 @@ import RevealText from '../../components/RevealText/RevealText.tsx'
 import { tmsCase } from '../../data/cases/tms.ts'
 import type { Photo, SectionCopy, StageData } from '../../data/cases/tms.ts'
 import { useCountUp, useHeroStage, useParallax, useReveal, useScrollReveal } from '../../motion/hooks.ts'
+import { useToolsScene } from '../../motion/toolsScene.ts'
 import '../../motion/motion.css'
 import './TmsCase.css'
 
@@ -56,43 +57,82 @@ function StopSection({ copy, stage, compact }: { copy: SectionCopy; stage: Stage
   )
 }
 
-/** 02's stage (113:12853): blurred photo, the TMS window and five tool cards, all real HTML. */
-function ProblemStage() {
+/**
+ * 02's scene (113:12853, motion note 124:15): blurred photo, the TMS window and five tool cards, all
+ * real HTML, in a pinned scroll track. useToolsScene flies the cards into the window and fills its
+ * rows. Without motion (reduced, no JS) the track collapses and the final state shows (motion.css).
+ */
+function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null> }) {
   const { stage } = problem
+  const pinRef = useRef<HTMLDivElement>(null)
+  const canvasRef = useRef<HTMLDivElement>(null)
+  useToolsScene({ track: trackRef, pin: pinRef, canvas: canvasRef })
+  const percent = (value: number, of: number) => `${(value / of) * 100}%`
   return (
-    <Stage size={stage.size} className="case-section__stage problem-stage">
-      <img
-        className="problem-stage__bg"
-        style={{ '--blur': stage.background.blur } as CSSProperties}
-        src={stage.background.src}
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
-      <div className="stage__item tms-window" style={placeIn(stage.window.box, stage.size)}>
-        <p className="tms-window__title">{stage.window.title}</p>
-        <p className="tms-window__caption">{stage.window.caption}</p>
-      </div>
-      <ul className="problem-stage__tools" aria-label="Tools a shipment passes through today">
-        {stage.tools.map((tool) => (
-          <li
-            key={tool.id}
-            className="tool-card"
-            data-tool={tool.id}
-            data-tone={tool.tone}
+    <div ref={trackRef} className="problem-track">
+      <div ref={pinRef} className="problem-pin">
+        <Stage size={stage.size} className="problem-stage" canvasRef={canvasRef} label={stage.ariaLabel}>
+          <img
+            className="problem-stage__bg"
+            style={{ '--blur': stage.background.blur } as CSSProperties}
+            src={stage.background.src}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+          <div
+            className="stage__item tms-window"
+            data-window
             style={
               {
-                '--cx': `${(tool.cx / stage.size.width) * 100}%`,
-                '--cy': `${(tool.cy / stage.size.height) * 100}%`,
-                '--rot': `${tool.rotation}deg`,
+                ...placeIn(stage.window.box, stage.size),
+                '--mx': `${stage.window.mobile.x}%`,
+                '--my': `${stage.window.mobile.y}%`,
+                '--mw': `${stage.window.mobile.width}%`,
+                '--mh': `${stage.window.mobile.height}%`,
               } as CSSProperties
             }
           >
-            {tool.label}
-          </li>
-        ))}
-      </ul>
-    </Stage>
+            <p className="tms-window__title">{stage.window.title}</p>
+            <p className="tms-window__caption">{stage.window.caption}</p>
+            <ul className="tms-window__rows" aria-hidden="true">
+              {stage.tools.map((tool, index) => (
+                <li key={tool.id} className="tms-row" data-row={index}>
+                  <span className="tms-row__dot" />
+                  <span className="tms-row__label">{tool.row.label}</span>
+                  {tool.row.value && <span className="tms-row__value">{tool.row.value}</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <ul className="problem-stage__tools" aria-hidden="true">
+            {stage.tools.map((tool) => (
+              <li
+                key={tool.id}
+                className="tool-card"
+                data-card={tool.id}
+                data-tone={tool.tone}
+                data-rotation={tool.rotation}
+                style={
+                  {
+                    '--cx': percent(tool.cx, stage.size.width),
+                    '--cy': percent(tool.cy, stage.size.height),
+                    '--mcx': `${tool.mobile.cx}%`,
+                    '--mcy': `${tool.mobile.cy}%`,
+                    '--rot': `${tool.rotation}deg`,
+                  } as CSSProperties
+                }
+              >
+                {tool.label}
+              </li>
+            ))}
+          </ul>
+          <p className="problem-stage__label" data-scene-label aria-hidden="true">
+            {stage.endLabel}
+          </p>
+        </Stage>
+      </div>
+    </div>
   )
 }
 
@@ -102,11 +142,12 @@ export default function TmsCase() {
   const heroCanvasRef = useRef<HTMLDivElement>(null)
   const dashboardRef = useRef<HTMLImageElement>(null)
   const statsRef = useRef<HTMLUListElement>(null)
+  const problemTrackRef = useRef<HTMLDivElement>(null)
   const insightsRef = useRef<HTMLOListElement>(null)
   const resultRef = useRef<HTMLParagraphElement>(null)
 
   useHeroStage(heroCanvasRef, dashboardRef, 0.85)
-  useCountUp(statsRef)
+  useCountUp(statsRef, { after: problemTrackRef }) // only after the section 02 pin has released
   useReveal(insightsRef, { selector: '.insight-row', batchStagger: 200 })
   useScrollReveal(resultRef)
 
@@ -177,14 +218,14 @@ export default function TmsCase() {
         </section>
 
         {/* 02 The problem 113:12848 */}
-        <section id={problem.copy.id} className="case-section" aria-labelledby={headingId(problem.copy)}>
+        <section id={problem.copy.id} className="case-section case-section--problem" aria-labelledby={headingId(problem.copy)}>
           <SectionHeader
             id={headingId(problem.copy)}
             eyebrow={problem.copy.eyebrow}
             heading={problem.copy.heading}
             body={problem.copy.body}
           />
-          <ProblemStage />
+          <ProblemScene trackRef={problemTrackRef} />
           <ul ref={statsRef} className="case-stats">
             {problem.stats.map((stat) => (
               <StatCard key={stat.source} stat={stat} />

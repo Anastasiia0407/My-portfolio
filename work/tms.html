@@ -23,13 +23,16 @@
     <meta name="twitter:card" content="summary" />
 
     <!-- Motion start states (src/motion/motion.css) apply only under html.motion, set here before the
-         first paint. If the app doesn't confirm within 4 s (data-motion-ready), the class is dropped
-         so nothing stays hidden. -->
+         first paint. html.motion-restored marks loads that may not start at the top (reload,
+         back/forward, #hash): scroll-position-dependent start states are skipped there. If the app
+         doesn't confirm within 4 s (data-motion-ready), the class is dropped so nothing stays hidden. -->
     <script>
       ;(function () {
         var root = document.documentElement
         if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return
         root.classList.add('motion')
+        var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0]
+        if (location.hash || (nav && nav.type !== 'navigate')) root.classList.add('motion-restored')
         setTimeout(function () {
           if (!root.hasAttribute('data-motion-ready')) root.classList.remove('motion')
         }, 4000)

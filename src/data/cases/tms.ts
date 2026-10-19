@@ -148,23 +148,36 @@ export const tmsCase = {
       heading: 'Five tools, one shipment',
       body: 'A single container passes through spreadsheets, email threads, carrier portals, a CRM and a folder of PDFs. The same client and booking get typed in again at every step, ETAs go stale between updates, and nobody sees at a glance which deal is stuck. When I worked in logistics, there was no one place to see my tasks and how each deal was moving.',
     } satisfies SectionCopy,
-    /** 113:12853: blurred photo (117:13298, 6px blur, stretched to fill), one window, five tilted tool cards. */
+    /**
+     * 113:12853: blurred photo (117:13298, 6px blur, stretched to fill), one window, five tilted tool
+     * cards. Scroll scene (motion note 124:15): in this order each card flies into the window and adds
+     * its row; then the window settles and the label shows. Below 760px a temporary 361×480 layout
+     * (`mobile`, % of the stage) until the mobile design exists.
+     */
     stage: {
       size: { width: 1432, height: 720 },
+      mobileSize: { width: 361, height: 480 },
+      ariaLabel:
+        'Five tool cards — Excel tracker, email threads, carrier portal, CRM and PDF documents — fly into one TMS window as you scroll.',
       background: { src: problemBg, blur: 6 },
       window: {
         box: { x: 436, y: 180, width: 560, height: 360 },
+        mobile: { x: 6, y: 15, width: 88, height: 65 },
         title: 'TMS',
         caption: 'status · documents · invoices · tasks',
       },
-      /** Centre of each card's rotated bounding box (Figma), rotation in degrees (clockwise). */
+      endLabel: 'One shipment, one place',
+      /**
+       * Centre of each card's rotated bounding box (Figma), rotation in degrees (clockwise); `mobile`
+       * centre in % of the temporary mobile stage; `row` is what the card adds to the window.
+       */
       tools: [
-        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, tone: 'panel' as const },
-        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, tone: 'panel' as const },
-        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, tone: 'white' as const },
-        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, tone: 'panel' as const },
-        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, tone: 'panel' as const },
-      ],
+        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, tone: 'panel' as const, mobile: { cx: 27, cy: 7 }, row: { label: 'Shipments & status', value: 'Booking' } },
+        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, tone: 'panel' as const, mobile: { cx: 73, cy: 7 }, row: { label: 'Tasks & comments', value: '3 open' } },
+        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, tone: 'white' as const, mobile: { cx: 22, cy: 87 }, row: { label: 'ETA & tracking', value: '26.08' } },
+        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, tone: 'panel' as const, mobile: { cx: 82, cy: 87 }, row: { label: 'Client: AgroFood Export' } },
+        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, tone: 'panel' as const, mobile: { cx: 52, cy: 95 }, row: { label: 'Documents & invoices', value: '4 files' } },
+      ] as { id: string; label: string; cx: number; cy: number; rotation: number; tone: 'panel' | 'white'; mobile: { cx: number; cy: number }; row: { label: string; value?: string } }[],
     },
     /** 113:12867. Sources are linked in Figma. */
     stats: [

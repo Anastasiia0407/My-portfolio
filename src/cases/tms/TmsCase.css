@@ -151,7 +151,27 @@
   margin-top: var(--gap-case-media);
 }
 
-/* --- 02 stage 113:12853 --- */
+/* --- 02 scene 113:12853 (motion note 124:15) ---
+   Static (reduced motion, no JS): the stage sits 80 below the header and shows the END state — rows
+   and label shown, cards hidden. With motion (motion.css) it pins in a scroll track and starts from
+   the Figma composition. The pinned stage is fitted to the viewport height and centred in it. */
+.case-section--problem {
+  --pin-ratio: calc(1432 / 720);
+  --pin-stage-w: min(100cqw, calc((100svh - 2 * var(--space-gutter)) * var(--pin-ratio)));
+  --pin-stage-h: calc(var(--pin-stage-w) / var(--pin-ratio));
+  /* At the pin start and release the stage keeps Figma's 80 to the header and the stats. */
+  --pin-offset: calc(var(--gap-case-header) - (100svh - var(--pin-stage-h)) / 2);
+  container-type: inline-size;
+}
+
+.problem-track {
+  margin-top: var(--gap-case-header);
+}
+
+.problem-track + .case-stats {
+  margin-top: var(--gap-case-header);
+}
+
 .problem-stage__bg {
   position: absolute;
   inset: 0;
@@ -162,11 +182,21 @@
   filter: blur(calc(var(--blur) * var(--u)));
 }
 
-/* 113:12854: white window, 40 padding, "TMS" Onest 56/56, caption 20/24 at 50% ink, 14 below */
+/* 113:12854: white window, 40 padding, "TMS" Onest 56/56, caption 20/24 at 50% ink, 14 below.
+   ::after is the deeper shadow the settle fades in (opacity only). */
 .tms-window {
   padding: calc(40 * var(--u));
   background: var(--color-white);
   box-shadow: var(--shadow-card);
+}
+
+.tms-window::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 calc(24 * var(--u)) calc(64 * var(--u)) var(--color-window-shadow);
+  opacity: var(--settle, 0);
+  pointer-events: none;
 }
 
 .tms-window__title {
@@ -183,8 +213,41 @@
   line-height: calc(24 / 20);
 }
 
-/* 113:12857…: cards centred on their Figma position and rotated. `translate` and `rotate` (not
-   `transform`) so the later motion stage can animate transform on top. */
+/* Rows a landing card adds: pink dot, bold label, grey value on the right. */
+.tms-window__rows {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+  margin-top: calc(20 * var(--u));
+}
+
+.tms-row {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  font-size: max(10px, calc(18 * var(--u)));
+  line-height: calc(22 / 18);
+}
+
+.tms-row__dot {
+  flex: none;
+  width: calc(8 * var(--u));
+  height: calc(8 * var(--u));
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.tms-row__label {
+  font-weight: var(--fw-semibold);
+}
+
+.tms-row__value {
+  margin-left: auto;
+  color: var(--color-muted);
+}
+
+/* 113:12857…: cards centred on their Figma position and rotated with `translate` / `rotate`, so the
+   scene can own `transform` (it then sets data-scene and carries the rotation itself). */
 .tool-card {
   position: absolute;
   left: var(--cx);
@@ -202,6 +265,91 @@
 
 .tool-card[data-tone='white'] {
   background: var(--color-white);
+}
+
+.problem-stage .stage__canvas[data-scene] .tool-card {
+  rotate: none;
+}
+
+/* End label: ink pill, bottom centre of the stage. */
+.problem-stage__label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(32 * var(--u));
+  translate: -50% 0;
+  padding: calc(12 * var(--u)) calc(24 * var(--u));
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-size: max(12px, calc(20 * var(--u)));
+  font-weight: var(--fw-semibold);
+  line-height: calc(24 / 20);
+  white-space: nowrap;
+}
+
+/* Static end state: no cards. */
+:root:not(.motion) .tool-card {
+  visibility: hidden;
+}
+
+/* Temporary layout below 760 (no mobile design yet): a taller 361×480 stage so the rows stay
+   readable; window and cards placed in % (tms.ts `mobile`), fixed type. */
+@media (max-width: 759px) {
+  .case-section--problem {
+    --pin-ratio: calc(361 / 480);
+  }
+
+  .problem-stage .stage__canvas {
+    aspect-ratio: 361 / 480;
+  }
+
+  .problem-stage .tms-window {
+    left: var(--mx);
+    top: var(--my);
+    width: var(--mw);
+    height: var(--mh);
+    padding: var(--m-gap-s);
+  }
+
+  .problem-stage .tms-window__title {
+    font-size: var(--m-fs-about);
+  }
+
+  .problem-stage .tms-window__caption {
+    margin-top: var(--m-gap-xxs);
+    font-size: 12px;
+  }
+
+  .problem-stage .tms-window__rows {
+    gap: var(--m-gap-xxs);
+    margin-top: var(--m-gap-xs);
+  }
+
+  .problem-stage .tms-row {
+    gap: 8px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .problem-stage .tms-row__dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .problem-stage .tool-card {
+    left: var(--mcx);
+    top: var(--mcy);
+    padding: 6px 10px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .problem-stage__label {
+    bottom: var(--m-gap-xs);
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 18px;
+  }
 }
 
 /* --- The result 120:13690: home About layout, full viewport, content at the bottom --- */

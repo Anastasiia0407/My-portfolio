@@ -64,14 +64,61 @@
     animation: case-fade var(--dur-reveal) var(--ease-out) var(--delay-meta) both;
   }
 
-  /* Dashboard stage: useHeroStage drives scale (0.96 → 1) and the 0.85× drift; this is its start state. */
-  .motion .case-hero__stage .stage__canvas {
+  /* Dashboard stage: useHeroStage drives scale (0.96 → 1) and the 0.85× drift; this is its start state
+     on a fresh load. Restored loads (reload, back/forward, #hash) start final. */
+  .motion:not(.motion-restored) .case-hero__stage .stage__canvas {
     transform: scale(0.96);
   }
 
   /* Photos: scaled to cover the parallax travel (useParallax replaces this with translate + scale). */
   .motion .case-photo__image {
     transform: scale(1.11);
+  }
+
+  /* --- Section 02 scene (useToolsScene) --- */
+  .motion .problem-track {
+    height: calc((1 + var(--problem-pin-length)) * 100svh);
+    margin-top: var(--pin-offset);
+    pointer-events: none;
+  }
+
+  .motion .problem-track + .case-stats {
+    margin-top: var(--pin-offset);
+  }
+
+  .motion .problem-pin {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100svh;
+  }
+
+  .motion .problem-pin .stage {
+    width: var(--pin-stage-w);
+    pointer-events: auto;
+  }
+
+  .motion .tms-row,
+  .motion .problem-stage__label {
+    transition:
+      opacity var(--dur-row) ease,
+      transform var(--dur-row) ease;
+  }
+
+  .motion .problem-stage__label {
+    transition-duration: var(--dur-label);
+  }
+
+  .motion .tms-row:not([data-shown]) {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  .motion .problem-stage__label:not([data-shown]) {
+    opacity: 0;
+    transform: translateY(10px);
   }
 
   /* The result: muted until useScrollReveal takes over (it then sets data-progress-active). */

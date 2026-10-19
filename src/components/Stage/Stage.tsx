@@ -19,6 +19,7 @@ export default function Stage({
   overlay,
   notes,
   canvasRef,
+  label,
   children,
 }: {
   size: Size
@@ -26,6 +27,8 @@ export default function Stage({
   overlay?: ReactNode
   notes?: MarginNoteData[]
   canvasRef?: Ref<HTMLDivElement>
+  /** Makes the canvas one image for assistive tech (role="img") with this description. */
+  label?: string
   children: ReactNode
 }) {
   const sentinelRef = useRef<HTMLSpanElement>(null)
@@ -39,7 +42,7 @@ export default function Stage({
       style={{ '--stage-w': size.width, '--stage-h': size.height } as CSSProperties}
     >
       {overlay}
-      <div ref={canvasRef} className="stage__canvas">
+      <div ref={canvasRef} className="stage__canvas" role={label ? 'img' : undefined} aria-label={label}>
         {children}
       </div>
       {hasNotes && (

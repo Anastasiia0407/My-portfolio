@@ -87,6 +87,9 @@
   --dur-rise: 900ms; /* hero title lines */
   --stagger-line: 100ms;
   --delay-meta: 800ms; /* meta row after the title */
+  --problem-pin-length: 1.6; /* section 02: viewports of scroll the tools scene takes */
+  --dur-row: 350ms; /* a row appearing in the TMS window */
+  --dur-label: 400ms; /* "One shipment, one place" */
 
   /*
    * Case studies (TMS, Figma 113:12821, 1512 wide). Same fluid rule: max = Figma value at 1512.
@@ -108,6 +111,7 @@
   --color-ink-50: rgb(30 31 45 / 0.5);
   --color-cream-60: rgb(246 244 242 / 0.6);
   --color-rule: rgb(30 31 45 / 0.12);
+  --color-window-shadow: rgb(30 31 45 / 0.18); /* section 02 window, deepened by the settle */
   /* Figma's card shadow: cream-tinted layers, only visible over the photo stage. Figma px. */
   --shadow-card:
     0 15px 34px rgb(246 244 242 / 0.1), 0 62px 62px rgb(246 244 242 / 0.09), 0 139px 83px rgb(246 244 242 / 0.05),
