@@ -29,3 +29,6 @@ Desktop.ini
 .vscode/*
 !.vscode/extensions.json
 *.swp
+
+# Source video for the Stop 05 scene (large original; only encoded outputs are committed)
+video-src/

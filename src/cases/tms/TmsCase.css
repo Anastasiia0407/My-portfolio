@@ -26,7 +26,8 @@
   display: flex;
   align-items: flex-start;
   gap: var(--gap-xs);
-  padding-top: var(--space-case-hero);
+  /* Figma: nav → 80 gap → title block with 350 top padding. */
+  padding-top: calc(var(--gap-case-header) + var(--space-case-hero));
 }
 
 .case-hero__titles {
@@ -37,11 +38,22 @@
   min-width: 0;
 }
 
-/* Lines Figma breaks by hand. Title lines sit in overflow-hidden masks for the rise (motion.css);
-   the mask's padding keeps glyph overshoot unclipped without changing the layout. */
-.case-hero__tagline-line,
+/* Lines Figma breaks by hand (113:13026). The subtitle keeps its break from 1280px and reflows
+   (balanced, no lone word) below. The title keeps its break from 760px: its lines fit there, and
+   each sits in an overflow-hidden mask for the rise (motion.css); the mask's padding keeps glyph
+   overshoot unclipped without changing the layout. */
+.case-hero__tagline {
+  text-wrap: balance;
+}
+
 .case-hero__line {
   display: block;
+}
+
+@media (min-width: 1280px) {
+  .case-hero__tagline-line {
+    display: block;
+  }
 }
 
 .case-hero__mask {
@@ -55,8 +67,11 @@
   color: var(--color-muted);
 }
 
-/* 113:12998: Onest SemiBold 96/96 uppercase */
+/* 113:12998: Onest SemiBold 96/96 uppercase. A flex column, so the masks' negative margins add up
+   instead of collapsing (which would add 0.08em of height). */
 .case-hero__title {
+  display: flex;
+  flex-direction: column;
   font-family: var(--font-display);
   font-size: var(--fs-display-xl);
   font-weight: var(--fw-semibold);
