@@ -57,8 +57,9 @@
   background: var(--color-ink);
   box-shadow: var(--shadow-card);
   color: var(--color-cream);
-  font-size: var(--fs-caption);
-  line-height: var(--lh-caption);
+  /* Not a mockup: fixed text size at every width; only its position follows the stage. */
+  font-size: var(--fs-note);
+  line-height: var(--lh-note);
 }
 
 .margin-note__dot {
@@ -88,7 +89,6 @@
     position: absolute;
     top: var(--y);
     left: var(--x);
-    font-size: clamp(13px, calc(16 * var(--u)), 16px);
     white-space: nowrap;
   }
 

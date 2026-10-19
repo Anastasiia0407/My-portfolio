@@ -106,6 +106,8 @@
   --lh-meta: calc(24 / 20);
   --fs-caption: clamp(14px, 1.058vw, 16px); /* stat source 16/20 */
   --lh-caption: calc(20 / 16);
+  --fs-note: 16px; /* margin notes 16/20, fixed (not scaled with the stage) */
+  --lh-note: 20px;
 
   --color-ink-60: rgb(30 31 45 / 0.6);
   --color-ink-50: rgb(30 31 45 / 0.5);

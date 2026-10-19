@@ -1,4 +1,5 @@
-/* Inside a Stage: sizes in --u (Figma px of the stage). Steps 364 wide, arrows 48px, 24 apart. */
+/* Inside a Stage: sizes in --u (Figma px of the stage), so the flow scales with it (Figma "Scale").
+   Steps 364 wide, arrows 48px, 24 apart. */
 .handoff {
   display: flex;
   align-items: center;
@@ -34,14 +35,14 @@
 }
 
 .handoff__title {
-  font-size: max(12px, calc(24 * var(--u)));
+  font-size: calc(24 * var(--u));
   font-weight: var(--fw-semibold);
   line-height: calc(28 / 24);
 }
 
 .handoff__text {
   color: var(--color-ink-60);
-  font-size: max(11px, calc(20 * var(--u)));
+  font-size: calc(20 * var(--u));
   line-height: calc(26 / 20);
 }
 
