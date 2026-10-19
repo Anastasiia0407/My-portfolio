@@ -4,4 +4,4 @@
  * social previews require. public/robots.txt and public/sitemap.xml are static: update them too
  * when this changes (e.g. to an own domain).
  */
-export const SITE_URL = 'https://my-portfolio-two-tawny-2uvzh79ird.vercel.app'
+export const SITE_URL = 'https://anastasiia-cheban.vercel.app'

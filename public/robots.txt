@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://my-portfolio-two-tawny-2uvzh79ird.vercel.app/sitemap.xml
+Sitemap: https://anastasiia-cheban.vercel.app/sitemap.xml
