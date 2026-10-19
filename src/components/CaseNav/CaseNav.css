@@ -25,9 +25,22 @@
   }
 }
 
+/* The case number replaces Get in touch below 760. */
+.case-nav__number {
+  display: none;
+}
+
 @media (max-width: 759px) {
   .case-link {
     font-size: var(--m-fs-label);
     line-height: var(--m-lh-link);
+  }
+
+  .case-nav__contact {
+    display: none;
+  }
+
+  .case-nav__number {
+    display: inline;
   }
 }

@@ -174,7 +174,10 @@
   --m-track-tagline: calc(7.68 * var(--m));
 
   /* Case pages below 760 (no Figma mobile design; home mobile rules). Scaled: */
-  --m-fs-hero: calc(40 * var(--m)); /* case Hero title 40/40 */
+  --m-fs-hero: calc(36 * var(--m)); /* case Hero title 36/40 */
+  --m-lh-hero: calc(40 * var(--m));
+  --m-fs-case-heading: calc(32 * var(--m)); /* case section headings 32/36 (home stays 40/48) */
+  --m-lh-case-heading: calc(36 * var(--m));
   --m-fs-stat: calc(56 * var(--m)); /* stat numbers 56/56 */
   /* Fixed: */
   --m-fs-body: 16px; /* body text, subtitle, insight, stat text 16/24 */
@@ -182,6 +185,8 @@
   --m-fs-principle: 20px; /* insight principle, Onest 20/24 */
   --m-lh-principle: 24px;
   --m-radius-min: 8px; /* scaled screenshot radii never go below this */
+  --m-tools-stage-h: 460px; /* section 02 drop-in stage: pill stack + window + end label */
+  --m-tools-window-top: 160px;
 }
 
 @media (max-width: 759px) {

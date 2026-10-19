@@ -308,15 +308,19 @@
   visibility: hidden;
 }
 
-/* Below 760: the approved prototype — a 4:5 stage, window at 10 / 28 / 80 / 44 %, cards by their
-   top-left (tms.ts `mobile`); fixed type sized to fit the window's five rows. */
+/* Below 760: the "drop-in" scene. A fixed-height stage (the pill stack above, the window, the end
+   label below; the photo covers it). The window spans the stage minus 16 each side and grows to fit
+   "TMS", the subtitle and five rows; the pills start in a loose tilted stack above it (tms.ts
+   `drop`, centre x in %, y in px) and fall straight down into their rows (toolsScene.ts). */
 @media (max-width: 759px) {
   .case-section--problem {
-    --pin-ratio: calc(4 / 5);
+    --pin-stage-w: 100cqw;
+    --pin-stage-h: var(--m-tools-stage-h);
   }
 
   .problem-stage .stage__canvas {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: auto;
+    height: var(--m-tools-stage-h);
   }
 
   /* The blurred photo is exported at Figma's stretched 1432 × 720; crop it, don't distort it. */
@@ -325,32 +329,48 @@
   }
 
   .problem-stage .tms-window {
-    left: var(--mx);
-    top: var(--my);
-    width: var(--mw);
-    height: var(--mh);
-    padding: var(--m-gap-xs);
+    top: var(--m-tools-window-top);
+    right: var(--m-gutter);
+    left: var(--m-gutter);
+    width: auto;
+    height: auto;
+    padding: var(--m-gap-s);
   }
 
   .problem-stage .tms-window__title {
-    font-size: 24px;
+    font-size: 28px;
+    line-height: 32px;
   }
 
   .problem-stage .tms-window__caption {
     margin-top: var(--m-gap-xxs);
-    font-size: 12px;
-    line-height: 16px;
+    overflow: hidden;
+    font-size: clamp(12px, 3.75vw, 14px);
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .problem-stage .tms-window__rows {
-    gap: 2px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: var(--m-gap-xs);
   }
 
   .problem-stage .tms-row {
     gap: 8px;
-    font-size: 12px;
-    line-height: 16px;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+
+  .problem-stage .tms-row__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .problem-stage .tms-row__value {
+    flex: none;
   }
 
   .problem-stage .tms-row__dot {
@@ -359,16 +379,15 @@
   }
 
   .problem-stage .tool-card {
-    left: var(--mx);
-    top: var(--my);
-    translate: none;
+    left: var(--dx);
+    top: var(--dy);
     padding: 6px 10px;
     font-size: 13px;
     line-height: 18px;
   }
 
   .problem-stage__label {
-    bottom: var(--m-gap-xs);
+    bottom: var(--m-gutter);
     padding: 6px 14px;
     font-size: 13px;
     line-height: 18px;
@@ -427,10 +446,8 @@
     --gap-case-header: var(--m-gap-m);
   }
 
-  /* Hero: "(03)" on its own line above the title, right-aligned; three fitted title lines. */
+  /* Hero: the case number is in the nav on mobile; three fitted title lines. */
   .case-hero__intro {
-    flex-direction: column-reverse;
-    gap: var(--m-gap-xs);
     padding-top: calc(var(--m-section) * 2);
   }
 
@@ -440,8 +457,7 @@
   }
 
   .case-hero__number {
-    align-self: flex-end;
-    font-size: var(--m-fs-tagline);
+    display: none;
   }
 
   .case-hero__tagline {
@@ -451,6 +467,7 @@
 
   .case-hero__title {
     font-size: var(--m-fs-hero);
+    line-height: var(--m-lh-hero);
   }
 
   .case-hero__lines--desktop {
@@ -465,21 +482,22 @@
     white-space: nowrap;
   }
 
+  /* One column: label 16/20 grey, value 16/24 SemiBold ink, 16 between items. */
   .case-meta {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--m-gap-m) var(--m-gap-s);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--m-gap-s);
     margin-top: var(--m-gap-l);
   }
 
   .case-meta__label {
-    font-size: var(--m-fs-small);
+    font-size: var(--m-fs-label);
     line-height: var(--m-lh-label);
   }
 
   .case-meta__value {
     margin-top: var(--m-gap-xxs);
-    font-size: var(--m-fs-label);
-    line-height: var(--m-lh-label);
+    font-size: var(--m-fs-body);
+    line-height: var(--m-lh-body);
   }
 
   .case-hero__stage {
@@ -520,7 +538,7 @@
 
   .case-footer {
     padding-top: var(--m-gutter);
-    padding-bottom: calc(var(--m-section) * 2);
+    padding-bottom: var(--m-gutter);
   }
 
   .case-result__text {

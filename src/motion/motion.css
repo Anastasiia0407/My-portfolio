@@ -116,6 +116,12 @@
     transform: translateX(-8px);
   }
 
+  @media (max-width: 759px) {
+    .motion .tms-row:not([data-shown]) {
+      transform: translateY(-8px);
+    }
+  }
+
   .motion .problem-stage__label:not([data-shown]) {
     opacity: 0;
     transform: translateY(10px);

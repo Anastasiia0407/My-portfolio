@@ -69,15 +69,7 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
           <div
             className="stage__item tms-window"
             data-window
-            style={
-              {
-                ...placeIn(stage.window.box, stage.size),
-                '--mx': `${stage.window.mobile.x}%`,
-                '--my': `${stage.window.mobile.y}%`,
-                '--mw': `${stage.window.mobile.width}%`,
-                '--mh': `${stage.window.mobile.height}%`,
-              } as CSSProperties
-            }
+            style={placeIn(stage.window.box, stage.size)}
           >
             <p className="tms-window__title">{stage.window.title}</p>
             <p className="tms-window__caption">{stage.window.caption}</p>
@@ -102,8 +94,8 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
                   {
                     '--cx': percent(tool.cx, stage.size.width),
                     '--cy': percent(tool.cy, stage.size.height),
-                    '--mx': `${tool.mobile.x}%`,
-                    '--my': `${tool.mobile.y}%`,
+                    '--dx': `${tool.drop.x}%`,
+                    '--dy': `${tool.drop.y}px`,
                     '--rot': `${tool.rotation}deg`,
                   } as CSSProperties
                 }
@@ -147,7 +139,7 @@ export default function TmsCase() {
       </a>
 
       <header className="case-header">
-        <CaseNav back={nav.back} contact={nav.contact} />
+        <CaseNav back={nav.back} contact={nav.contact} number={`(${tmsCase.number})`} />
       </header>
 
       <main id="main">

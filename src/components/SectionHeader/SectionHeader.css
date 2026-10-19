@@ -60,10 +60,10 @@
     line-height: var(--m-lh-label);
   }
 
-  /* 40/48 × --m, as "SELECTED WORKS" on the home page. */
+  /* 32/36 × --m. */
   .section-header__heading {
-    font-size: var(--m-fs-display);
-    line-height: var(--m-lh-display);
+    font-size: var(--m-fs-case-heading);
+    line-height: var(--m-lh-case-heading);
   }
 
   .section-header__body {

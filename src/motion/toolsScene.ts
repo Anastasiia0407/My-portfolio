@@ -24,6 +24,8 @@ const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) *
  * "Tools → one window" (113:12853): scroll through the pinned track drives each tool card into the
  * TMS window (translate to the window centre, straighten, scale to 40%, fade), shows its row in the
  * window, then settles the window and shows the end label. Reverses on the way up.
+ * Below 760 ("drop-in"): the same timing, but each card falls straight down onto its own row
+ * (no horizontal move, no shrink), straightens, and is gone once its row shows.
  * Card and window centres are layout offsets (no transforms), measured on resize only; each frame
  * writes transforms, opacity and data-shown attributes.
  */
@@ -51,6 +53,8 @@ export function useToolsScene({
     let top = 0
     let length = 1
     let deltas = cards.map(() => ({ x: 0, y: 0 }))
+    let drop = false
+    const rowEls = rows
     const last = { cards: cards.map(() => ''), rows: rows.map(() => false), win: '', label: false }
 
     // Cards drop their static CSS rotate; their transform (written below in the same task) carries it.
@@ -62,15 +66,15 @@ export function useToolsScene({
       measure() {
         top = pageTop(trackEl)
         length = trackEl.offsetHeight - pinEl.offsetHeight
+        drop = window.matchMedia('(max-width: 759px)').matches
         const wx = win.offsetLeft + win.offsetWidth / 2
         const wy = win.offsetTop + win.offsetHeight / 2
-        // Card centre in layout: desktop places left/top at the centre and translates −50%; the
-        // mobile layout places the top-left (no translate).
-        deltas = cards.map((card) => {
-          const centred = getComputedStyle(card).translate !== 'none'
-          const cx = card.offsetLeft + (centred ? 0 : card.offsetWidth / 2)
-          const cy = card.offsetTop + (centred ? 0 : card.offsetHeight / 2)
-          return { x: wx - cx, y: wy - cy }
+        // Card centre in layout: left/top sit at the centre and the card is translated −50%.
+        deltas = cards.map((card, i) => {
+          if (!drop) return { x: wx - card.offsetLeft, y: wy - card.offsetTop }
+          const row = rowEls[i]
+          const rowY = win.offsetTop + (row ? row.offsetTop + row.offsetHeight / 2 : win.offsetHeight / 2)
+          return { x: 0, y: rowY - card.offsetTop }
         })
       },
       update(y) {
@@ -78,7 +82,7 @@ export function useToolsScene({
         cards.forEach((card, i) => {
           const k = easeInOutCubic(clamp01((p - (t.firstStart + i * t.startStep)) / t.flight))
           const rotate = rotations[i] * (1 - Math.min(1, k * t.straightenBy))
-          const scale = 1 - (1 - t.endScale) * k
+          const scale = drop ? 1 : 1 - (1 - t.endScale) * k
           const opacity = k <= t.fadeFrom ? 1 : 1 - (k - t.fadeFrom) / (1 - t.fadeFrom)
           const key = `translate(${(deltas[i].x * k).toFixed(2)}px, ${(deltas[i].y * k).toFixed(2)}px) rotate(${rotate.toFixed(3)}deg) scale(${scale.toFixed(4)})|${opacity.toFixed(3)}`
           if (key !== last.cards[i]) {
