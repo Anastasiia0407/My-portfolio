@@ -33,19 +33,6 @@ export function useReveal(
   }, [root, selector, batchStagger, rootMargin, threshold])
 }
 
-/**
- * Pop-in for margin notes: `data-entered` on `target` when `sentinel` (a 1px marker at the stage's
- * centre) reaches the viewport centre. CSS pops the notes in one by one.
- */
-export function usePopIn(sentinel: RefObject<Element | null>, target: RefObject<Element | null>) {
-  useEffect(() => {
-    const marker = sentinel.current
-    const el = target.current
-    if (!marker || !el || !motionEnabled()) return
-    return observeEnter([marker], () => el.setAttribute('data-entered', ''), { rootMargin: '0px 0px -50% 0px' })
-  }, [sentinel, target])
-}
-
 const easeOut = (t: number) => 1 - (1 - t) ** 3
 
 /**

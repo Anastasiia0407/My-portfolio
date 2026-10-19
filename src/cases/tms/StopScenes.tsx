@@ -80,7 +80,7 @@ function PinnedStop({
       <SectionHeader id={titleId} eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />
       <div ref={trackRef} className="scene-track">
         <div ref={pinRef} className="scene-pin">
-          <Stage size={size} className="stage--panel" notes={notes} notesMode="scene" overlay={overlay} label={scene.label}>
+          <Stage size={size} className="stage--panel" notes={notes} overlay={overlay} label={scene.label}>
             {children}
           </Stage>
         </div>

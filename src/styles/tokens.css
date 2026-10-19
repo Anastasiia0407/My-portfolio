@@ -83,7 +83,6 @@
   --dur-draw: 400ms; /* insight arrow wipe */
   --stagger-insight: 300ms; /* insight → arrow → principle */
   --dur-pop: 400ms;
-  --stagger-pop: 300ms; /* margin notes */
   --dur-rise: 900ms; /* hero title lines */
   --stagger-line: 100ms;
   --delay-meta: 800ms; /* meta row after the title */

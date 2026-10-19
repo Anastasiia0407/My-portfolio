@@ -30,5 +30,5 @@ Desktop.ini
 !.vscode/extensions.json
 *.swp
 
-# Source video for the Stop 05 scene (large original; only encoded outputs are committed)
+# Local source video (the Stop 05 video was cancelled; never commit it)
 video-src/

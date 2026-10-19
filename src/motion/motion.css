@@ -34,21 +34,6 @@
     transition-delay: calc(var(--enter-delay, 0ms) + var(--i, 0) * var(--stagger, var(--stagger-reveal)));
   }
 
-  /* Pop-in (margin notes): scale 0.9 → 1 + fade, one by one. */
-  .motion [data-enter] [data-pop] {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  .motion [data-enter][data-entered] [data-pop] {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity var(--dur-pop) var(--ease-out),
-      transform var(--dur-pop) var(--ease-out);
-    transition-delay: calc(var(--i, 0) * var(--stagger-pop));
-  }
-
   /* --- Hero 113:12822, on load (pure CSS, so it runs from the first paint) --- */
   .motion .case-hero__line {
     animation: case-rise var(--dur-rise) var(--ease-out) both;
