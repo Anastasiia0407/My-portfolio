@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# TODO(domain): add once the final domain is known
-# Sitemap: https://YOUR-DOMAIN/sitemap.xml
+Sitemap: https://my-portfolio-two-tawny-2uvzh79ird.vercel.app/sitemap.xml
