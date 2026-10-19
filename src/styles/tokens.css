@@ -112,6 +112,15 @@
   --color-cream-60: rgb(246 244 242 / 0.6);
   --color-rule: rgb(30 31 45 / 0.12);
   --color-window-shadow: rgb(30 31 45 / 0.18); /* section 02 window, deepened by the settle */
+  --color-highlight-tint: rgb(255 92 185 / 0.12); /* scene highlights over screenshots */
+  /* Colours sampled from the TMS screenshots, for layers rebuilt over them (stage 3b scenes). */
+  --color-ui-surface: #fdfdfd; /* cards, menus */
+  --color-ui-select: #daf0ed; /* selected menu row */
+  --color-ui-accent: #006d75; /* active tab underline */
+  --color-ui-bar: #08979c; /* chart bars */
+  --color-ui-track: #dfdfdf; /* chart bar tracks */
+  --color-ui-switch-on: #027a48;
+  --color-ui-scrim: rgb(0 0 0 / 0.213); /* modal backdrop (image 34 = image 28 at 78.7%) */
   /* Figma's card shadow: cream-tinted layers, only visible over the photo stage. Figma px. */
   --shadow-card:
     0 15px 34px rgb(246 244 242 / 0.1), 0 62px 62px rgb(246 244 242 / 0.09), 0 139px 83px rgb(246 244 242 / 0.05),

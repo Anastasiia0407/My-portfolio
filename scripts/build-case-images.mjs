@@ -32,6 +32,18 @@ const images = [
   { name: 'edge-columns', file: 'image-30.png', width: 300, height: 649.6 }, // 120:13658
 ]
 
+/**
+ * Stop 04 tab switch: image 27 (General information, 4096 wide) has image 28's layout at 4096/3024 the
+ * resolution, so scaled to 3024 wide and cut to 28's 3024×1964 it lines up with image 28 exactly.
+ */
+{
+  const general = await sharp(src('image-27.png')).resize(3024).extract({ left: 0, top: 0, width: 3024, height: 1964 }).png().toBuffer()
+  for (const scale of [1, 2]) {
+    const info = await sharp(general).flatten({ background: '#f6f4f2' }).resize(Math.round(760 * scale), Math.round(493.598 * scale), { fit: 'cover' }).webp({ quality: 82, effort: 6 }).toFile(join(outDir, `stop-04-general@${scale}x.webp`))
+    console.log(`${`stop-04-general@${scale}x.webp`.padEnd(32)} ${`${info.width}×${info.height}`.padEnd(10)} ${(info.size / 1024).toFixed(0)} KB`)
+  }
+}
+
 for (const { name, file, width, height, fit = 'cover', quality = 82, scales = [1, 2] } of images) {
   const input = sharp(src(file))
   const meta = await input.metadata()

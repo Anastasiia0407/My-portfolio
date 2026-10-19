@@ -6,6 +6,7 @@
 }
 
 .handoff__step {
+  position: relative;
   display: flex;
   flex: 1 1 0;
   flex-direction: column;
@@ -16,8 +17,20 @@
   box-shadow: var(--shadow-card);
 }
 
-.handoff__step[data-tone='dark'] {
+/* Dark copy of the step on top: shown on the dark (TMS) step; a scene fades it from card to card. */
+.handoff__dark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  padding: inherit;
   background: var(--color-ink);
+  opacity: 0;
+}
+
+.handoff__step[data-tone='dark'] .handoff__dark {
+  opacity: 1;
 }
 
 .handoff__title {
@@ -32,11 +45,11 @@
   line-height: calc(26 / 20);
 }
 
-.handoff__step[data-tone='dark'] .handoff__title {
+.handoff__dark .handoff__title {
   color: var(--color-cream);
 }
 
-.handoff__step[data-tone='dark'] .handoff__text {
+.handoff__dark .handoff__text {
   color: var(--color-cream-60);
 }
 

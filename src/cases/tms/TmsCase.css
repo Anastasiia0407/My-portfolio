@@ -100,14 +100,8 @@
   padding-top: var(--space-case-section);
 }
 
-.case-section__stage,
 .case-stats {
   margin-top: var(--gap-case-header);
-}
-
-/* Stop 02 (120:13379): 64 between header and stage instead of 80. */
-.case-section--compact .case-section__stage {
-  margin-top: var(--gap-case-header-s);
 }
 
 /* 117:13233 / 117:13255: body text and photo side by side, bottom-aligned, 612 | 756 columns

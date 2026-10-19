@@ -1,0 +1,194 @@
+/*
+ * Pinned stop scenes (stage 3b). Static (reduced motion, no JS): the stage sits a header gap below
+ * the header, final state, all notes shown. With motion (motion.css gate): the stage pins in a
+ * track of 100svh + --pin-length viewports, fitted to 100svh − 48px and centred; the track's
+ * margins keep Figma's header → stage gap at the pin start and the stage → next section distance
+ * at the release.
+ */
+.case-section--scene {
+  --pin-stage-w: min(100cqw, calc((100svh - 48px) * var(--pin-w) / var(--pin-h)));
+  --pin-stage-h: calc(var(--pin-stage-w) * var(--pin-h) / var(--pin-w));
+  --pin-gap: var(--gap-case-header);
+  --pin-offset: calc(var(--pin-gap) - (100svh - var(--pin-stage-h)) / 2);
+  container-type: inline-size;
+}
+
+.case-section--scene.case-section--compact {
+  --pin-gap: var(--gap-case-header-s);
+}
+
+.scene-track {
+  margin-top: var(--pin-gap);
+}
+
+/* Layers that only exist while a scene runs. */
+.scene-only {
+  display: none;
+}
+
+.scene-pin[data-scene] .scene-only {
+  display: block;
+}
+
+/* A screenshot assembled from layers: the frame clips them; outside stroke like StageShot. */
+.stage-frame {
+  overflow: hidden;
+  border-radius: calc(var(--r) * var(--u));
+  box-shadow: 0 0 0 calc(var(--s) * var(--u)) var(--color-band-border);
+}
+
+.stage-frame__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* A box in % of its frame (inFrame() in StopScenes.tsx). */
+.scene-box {
+  position: absolute;
+  left: var(--bx);
+  top: var(--by);
+  width: var(--bw);
+  height: var(--bh);
+}
+
+.scene-highlight {
+  border: calc(2 * var(--u)) solid var(--color-accent);
+  border-radius: calc(var(--hl-r, 6) * var(--u));
+  background: var(--color-highlight-tint);
+  opacity: 0;
+}
+
+/* Stop 04: the rebuilt tab underline (screenshot #006d75). */
+.scene-underline {
+  background: var(--color-ui-accent);
+  transform-origin: left;
+}
+
+/* Stop 04: what image 34 has under its modal = image 28 under a 21% black scrim. */
+.scene-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.scene-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-ui-scrim);
+}
+
+/* Stop 05: card-coloured ring over the screenshot's donut (the centre text stays), then the sweep. */
+.scene-donut-cover {
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side, transparent 58%, var(--color-ui-surface) 59%);
+}
+
+.scene-bar {
+  overflow: hidden;
+  border-radius: calc(2 * var(--u));
+  background: var(--color-ui-track);
+  /* A card-coloured ring hides the screenshot bar's anti-aliased edges and rounded ends. */
+  box-shadow: 0 0 0 calc(2 * var(--u)) var(--color-ui-surface);
+}
+
+.scene-bar__fill {
+  display: block;
+  height: 100%;
+  background: var(--color-ui-bar);
+  transform-origin: left;
+}
+
+.scene-menu-row,
+.scene-period {
+  align-content: center;
+  font-size: calc(11 * var(--u));
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.scene-menu-row {
+  padding-left: calc(10 * var(--u));
+  background: var(--color-ui-surface);
+}
+
+.scene-period {
+  padding-left: calc(3 * var(--u));
+  background: var(--color-ui-surface);
+}
+
+.scene-menu-pick {
+  border-radius: calc(3 * var(--u));
+  background: var(--color-ui-select);
+  mix-blend-mode: multiply;
+}
+
+/* No dead ends: rebuilt switches over image 30's six ON switches (start OFF in the scene). */
+.scene-toggle {
+  border-radius: var(--radius-pill);
+  background: var(--color-band-border);
+}
+
+.scene-toggle__on {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-ui-switch-on);
+}
+
+.scene-toggle__knob {
+  position: absolute;
+  top: 8%;
+  right: 4.5%;
+  height: 84%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-ui-surface);
+  box-shadow: 0 calc(0.5 * var(--u)) calc(1.5 * var(--u)) rgb(0 0 0 / 0.15);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .motion .scene-track {
+    height: calc((1 + var(--pin-length)) * 100svh);
+    margin-top: var(--pin-offset);
+    margin-bottom: calc((var(--pin-stage-h) - 100svh) / 2);
+    pointer-events: none;
+  }
+
+  .motion .scene-pin {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100svh;
+  }
+
+  .motion .scene-pin .stage {
+    width: var(--pin-stage-w);
+    pointer-events: auto;
+    transition: opacity var(--dur-reveal) var(--ease-out);
+  }
+
+  /* Until the app has set every scene to its scroll position, a scene shows nothing (reload mid-scene). */
+  .motion:not([data-motion-ready]) .scene-pin .stage {
+    opacity: 0;
+  }
+
+  .motion .scene-pin [data-pop] {
+    transition:
+      opacity var(--dur-pop) var(--ease-out),
+      transform var(--dur-pop) var(--ease-out);
+  }
+
+  .motion .scene-pin[data-scene] [data-pop]:not([data-shown]) {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}

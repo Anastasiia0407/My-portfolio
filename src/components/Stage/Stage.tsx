@@ -20,6 +20,7 @@ export default function Stage({
   notes,
   canvasRef,
   label,
+  notesMode = 'pop',
   children,
 }: {
   size: Size
@@ -29,12 +30,15 @@ export default function Stage({
   canvasRef?: Ref<HTMLDivElement>
   /** Makes the canvas one image for assistive tech (role="img") with this description. */
   label?: string
+  /** 'pop': notes pop in when the stage centre passes the viewport centre; 'scene': a pinned scene shows them by progress. */
+  notesMode?: 'pop' | 'scene'
   children: ReactNode
 }) {
   const sentinelRef = useRef<HTMLSpanElement>(null)
   const notesRef = useRef<HTMLDivElement>(null)
   usePopIn(sentinelRef, notesRef)
   const hasNotes = notes && notes.length > 0
+  const pop = notesMode === 'pop'
 
   return (
     <div
@@ -47,8 +51,8 @@ export default function Stage({
       </div>
       {hasNotes && (
         <>
-          <span ref={sentinelRef} className="stage__centre" aria-hidden="true" />
-          <div ref={notesRef} className="stage__notes" data-enter>
+          {pop && <span ref={sentinelRef} className="stage__centre" aria-hidden="true" />}
+          <div ref={notesRef} className="stage__notes" data-enter={pop || undefined} data-scene-notes={pop ? undefined : ''}>
             {notes.map((note, index) => (
               <MarginNote key={note.text} note={note} size={size} index={index} />
             ))}
@@ -64,16 +68,20 @@ export function StageShot({
   shot,
   size,
   eager,
+  layer,
   ref,
 }: {
   shot: StageShotData
   size: Size
   eager?: boolean
+  /** Scene layer name (useStageScene). */
+  layer?: string
   ref?: Ref<HTMLImageElement>
 }) {
   return (
     <img
       ref={ref}
+      data-layer={layer}
       className="stage__item stage-shot"
       style={{ ...placeIn(shot.box, size), '--r': shot.radius, '--s': shot.stroke } as CSSProperties}
       src={shot.src1x}

@@ -20,6 +20,8 @@ import stop03Mobile1x from '../../assets/cases/tms/stop-03-mobile@1x.webp'
 import stop03Mobile2x from '../../assets/cases/tms/stop-03-mobile@2x.webp'
 import stop04Shipment1x from '../../assets/cases/tms/stop-04-shipment@1x.webp'
 import stop04Shipment2x from '../../assets/cases/tms/stop-04-shipment@2x.webp'
+import stop04General1x from '../../assets/cases/tms/stop-04-general@1x.webp'
+import stop04General2x from '../../assets/cases/tms/stop-04-general@2x.webp'
 import stop04Invoice1x from '../../assets/cases/tms/stop-04-invoice@1x.webp'
 import stop04Invoice2x from '../../assets/cases/tms/stop-04-invoice@2x.webp'
 import stop05Dashboard1x from '../../assets/cases/tms/stop-05-dashboard@1x.webp'
@@ -66,6 +68,15 @@ export interface StageData {
   size: Size
   shots: StageShot[]
   notes?: MarginNoteData[]
+}
+
+/**
+ * Pinned scroll scene of a stop (stage 3b): `length` = viewports of scroll the pin lasts (track =
+ * 100svh + length × 100svh); `label` = what the scene shows, for assistive tech (role="img").
+ */
+export interface SceneData {
+  length: number
+  label: string
 }
 
 export interface SectionCopy {
@@ -237,6 +248,7 @@ export const tmsCase = {
         heading: 'Type once, use everywhere',
         body: 'The sales manager creates the shipment: client, route, ports, line, vessel and containers. Clients are picked from the existing list instead of being typed again, and every field entered here flows into documents and invoices later. New shipments land in the list with a Booking status, so operations can filter for what is new today.',
       } satisfies SectionCopy,
+      scene: { length: 1.6, label: 'The new shipment form, then the Shipments list slides in over it and the new shipment’s Booking row is highlighted.' } satisfies SceneData,
       stage: {
         size: { width: 1432, height: 960 },
         shots: [
@@ -271,6 +283,7 @@ export const tmsCase = {
         heading: 'A notification, not a chat',
         body: 'The riskiest moment in a shipment is when sales passes it to operations. In most teams it happens in a message that gets buried. Here, creating the shipment notifies operations, and the notification opens it directly, with client, route and documents already filled in.',
       } satisfies SectionCopy,
+      scene: { length: 1.2, label: 'The hand-off lights up from the sales manager to the TMS to the operations manager, then the notifications panel opens on the dashboard with the new shipment.' } satisfies SceneData,
       /** 120:13391, at (86, 100) in the stage, 1260 wide. */
       flow: {
         box: { x: 86, y: 100, width: 1260, height: 118 },
@@ -303,6 +316,7 @@ export const tmsCase = {
         heading: 'Tasks first, charts later',
         body: 'Once the container is on its way, the operations manager’s job is to keep it moving. The dashboard leads with four counters and a task list sorted by priority (Book and fill in the shipment, Update ETA, Check BL) each linked to its shipment. On the phone, the same tasks and statuses fit into one scroll.',
       } satisfies SectionCopy,
+      scene: { length: 1.2, label: 'The operations dashboard next to the same dashboard on a phone; the Tasks at work counter, the first task and its menu are highlighted in turn.' } satisfies SceneData,
       stage: {
         size: { width: 1432, height: 960 },
         shots: [
@@ -328,12 +342,15 @@ export const tmsCase = {
     },
     /** 120:13520 */
     shipment: {
+      /** Image 27's General information tab, scaled to image 28's frame (they line up exactly). */
+      general: { src1x: stop04General1x, src2x: stop04General2x },
       copy: {
         id: 'stop-04',
         eyebrow: 'Who’s here: Operations manager',
         heading: 'One shipment, one page',
         body: 'Documents, expenses and invoices used to live in separate files. Here they are tabs on the shipment’s own page: the header stays fixed while the content changes underneath. An invoice for the client is built from the shipment data in a couple of clicks, then saved or exported - nothing is typed twice.',
       } satisfies SectionCopy,
+      scene: { length: 1.6, label: 'The shipment page switches from General information to Financial terms, then an invoice built from the shipment opens over it.' } satisfies SceneData,
       stage: {
         size: { width: 1432, height: 874 },
         shots: [
@@ -368,6 +385,7 @@ export const tmsCase = {
         heading: 'Same data, read differently',
         body: 'The head of the company doesn’t wait for a report from the team. The shipments operations work with every day feed the dashboard charts (status split and container types) with a period switch from one month to a year. Nobody compiles anything by hand.',
       } satisfies SectionCopy,
+      scene: { length: 1.2, label: 'The dashboard charts draw in, the period menu switches from 3 months to 1 year, and the charts redraw.' } satisfies SceneData,
       stage: {
         size: { width: 1432, height: 959 },
         shots: [
@@ -393,6 +411,7 @@ export const tmsCase = {
       heading: 'No dead ends',
       body: 'A tool people use all day is judged by its edge cases. An empty list explains what will appear there and who creates it. A search with no results offers to clear the filters in one click instead of a dead end. On the phone, managers choose which columns they need, so a wide table still fits a narrow screen.',
     } satisfies SectionCopy,
+    scene: { length: 1.2, label: 'Two empty states fan out — an empty shipments list and a search with no results — and on the phone the table columns are switched on one by one.' } satisfies SceneData,
     stage: {
       size: { width: 1432, height: 840 },
       shots: [

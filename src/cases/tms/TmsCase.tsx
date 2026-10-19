@@ -8,16 +8,16 @@ import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
 import { placeIn } from '../../components/Stage/placeIn.ts'
 import StatCard from '../../components/StatCard/StatCard.tsx'
 import InsightRow from '../../components/InsightRow/InsightRow.tsx'
-import HandoffFlow from '../../components/HandoffFlow/HandoffFlow.tsx'
 import RevealText from '../../components/RevealText/RevealText.tsx'
 import { tmsCase } from '../../data/cases/tms.ts'
-import type { Photo, SectionCopy, StageData } from '../../data/cases/tms.ts'
+import type { Photo, SectionCopy } from '../../data/cases/tms.ts'
 import { useCountUp, useHeroStage, useParallax, useReveal, useScrollReveal } from '../../motion/hooks.ts'
 import { useToolsScene } from '../../motion/toolsScene.ts'
 import '../../motion/motion.css'
+import { EdgeCasesScene, Stop01Scene, Stop02Scene, Stop03Scene, Stop04Scene, Stop05Scene } from './StopScenes.tsx'
 import './TmsCase.css'
 
-const { hero, project, problem, research, stops, edgeCases, result, nav } = tmsCase
+const { hero, project, problem, research, result, nav } = tmsCase
 
 const headingId = (copy: SectionCopy) => `${copy.id}-title`
 
@@ -40,20 +40,6 @@ function CasePhoto({ photo }: { photo: Photo }) {
         decoding="async"
       />
     </div>
-  )
-}
-
-/** Header row + stage: the five "stops" and "No dead ends" share this layout. */
-function StopSection({ copy, stage, compact }: { copy: SectionCopy; stage: StageData; compact?: boolean }) {
-  return (
-    <section id={copy.id} className={`case-section${compact ? ' case-section--compact' : ''}`} aria-labelledby={headingId(copy)}>
-      <SectionHeader id={headingId(copy)} eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />
-      <Stage size={stage.size} className="stage--panel case-section__stage" notes={stage.notes}>
-        {stage.shots.map((shot) => (
-          <StageShot key={shot.src1x + shot.box.x} shot={shot} size={stage.size} />
-        ))}
-      </Stage>
-    </section>
   )
 }
 
@@ -138,7 +124,6 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
 
 /** TMS case study (Figma 113:12821). Static: no motion in this stage. */
 export default function TmsCase() {
-  const { handoff } = stops
   const heroCanvasRef = useRef<HTMLDivElement>(null)
   const dashboardRef = useRef<HTMLImageElement>(null)
   const statsRef = useRef<HTMLUListElement>(null)
@@ -247,36 +232,12 @@ export default function TmsCase() {
           </ol>
         </section>
 
-        <StopSection copy={stops.sales.copy} stage={stops.sales.stage} />
-
-        {/* Stop 02 120:13379: the hand-off flow sits on the stage, above the screenshot. */}
-        <section id={handoff.copy.id} className="case-section case-section--compact" aria-labelledby={headingId(handoff.copy)}>
-          <SectionHeader
-            id={headingId(handoff.copy)}
-            eyebrow={handoff.copy.eyebrow}
-            heading={handoff.copy.heading}
-            body={handoff.copy.body}
-          />
-          <Stage
-            size={handoff.stage.size}
-            className="stage--panel case-section__stage"
-            notes={handoff.stage.notes}
-            overlay={
-              <div className="stage__overlay" style={placeIn(handoff.flow.box, handoff.stage.size)}>
-                <HandoffFlow steps={handoff.flow.steps} />
-              </div>
-            }
-          >
-            {handoff.stage.shots.map((shot) => (
-              <StageShot key={shot.src1x} shot={shot} size={handoff.stage.size} />
-            ))}
-          </Stage>
-        </section>
-
-        <StopSection copy={stops.tasks.copy} stage={stops.tasks.stage} />
-        <StopSection copy={stops.shipment.copy} stage={stops.shipment.stage} />
-        <StopSection copy={stops.overview.copy} stage={stops.overview.stage} />
-        <StopSection copy={edgeCases.copy} stage={edgeCases.stage} />
+        <Stop01Scene />
+        <Stop02Scene />
+        <Stop03Scene />
+        <Stop04Scene />
+        <Stop05Scene />
+        <EdgeCasesScene />
 
         {/* The result 120:13690: the home About reveal, scroll-linked, no pin. */}
         <section id="result" className="case-result" aria-labelledby="result-title">
