@@ -37,7 +37,7 @@
 /* A screenshot assembled from layers: the frame clips them; outside stroke like StageShot. */
 .stage-frame {
   overflow: hidden;
-  border-radius: calc(var(--r) * var(--u));
+  border-radius: var(--radius-shot);
   box-shadow: 0 0 0 calc(var(--s) * var(--u)) var(--color-band-border);
 }
 
@@ -222,8 +222,8 @@
 }
 
 /* Below 760: no pin; on a #fafafa panel the screenshots stack at full width (phones 240 tall), each
-   note under its screenshot. Each screenshot is its own stage: --u = one Figma px of it, so radii, strokes and
-   overlays scale with it (radii never below --m-radius-min). */
+   note under its screenshot. Each screenshot is its own stage: --u = one Figma px of it, so strokes
+   and overlays scale with it; radii are fixed (--m-radius-shot). */
 @media (max-width: 759px) {
   .case-section--scene {
     overflow-x: clip;
@@ -289,6 +289,6 @@
   }
 
   .mshot .stage-frame {
-    border-radius: max(var(--m-radius-min), calc(var(--r) * var(--u)));
+    border-radius: var(--m-radius-shot);
   }
 }

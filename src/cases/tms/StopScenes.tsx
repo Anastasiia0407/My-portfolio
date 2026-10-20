@@ -159,7 +159,7 @@ function SceneFrame({ shot, size, layer, children }: { shot: Shot; size: Size; l
     <div
       className="stage__item stage-frame"
       data-layer={layer}
-      style={{ ...placeIn(shot.box, size), '--r': shot.radius, '--s': shot.stroke } as CSSProperties}
+      style={{ ...placeIn(shot.box, size), '--s': shot.stroke } as CSSProperties}
     >
       {children}
     </div>

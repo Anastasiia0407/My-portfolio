@@ -28,11 +28,12 @@
   height: var(--h);
 }
 
-/* Figma draws these frames as OUTSIDE strokes: the image fills its box, the ring sits around it. */
+/* Figma draws these frames as OUTSIDE strokes: the image fills its box, the ring sits around it (a
+   box-shadow spread, so its outer corners stay concentric with the fixed radius). */
 .stage-shot {
   max-width: none;
   object-fit: cover;
-  border-radius: calc(var(--r) * var(--u));
+  border-radius: var(--radius-shot);
   box-shadow: 0 0 0 calc(var(--s) * var(--u)) var(--color-band-border);
 }
 
@@ -90,9 +91,8 @@
 
 /* No mobile design yet: overlay and notes leave the canvas and stack around it in reading order. */
 @media (max-width: 759px) {
-  /* Screenshot radii keep scaling with their frame, but never below --m-radius-min. */
   .stage-shot {
-    border-radius: max(var(--m-radius-min), calc(var(--r) * var(--u)));
+    border-radius: var(--m-radius-shot);
   }
 
   /* 160:30: 12/16, padding 8/12, 8px dot 8 from the text; may wrap, balanced so no lone last word. */

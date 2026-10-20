@@ -46,13 +46,12 @@ export interface Size {
   height: number
 }
 
-/** Framed screenshot on a stage: rounded image with Figma's OUTSIDE stroke (radius and stroke in stage px). */
+/** Framed screenshot on a stage: rounded image (fixed radius, --radius-shot) with Figma's OUTSIDE stroke (in stage px). */
 export interface StageShot {
   src1x: string
   src2x: string
   alt: string
   box: Box
-  radius: number
   stroke: number
 }
 
@@ -136,7 +135,6 @@ export const tmsCase = {
           src2x: dashboard2x,
           alt: 'TMS dashboard: shipment counters, a shipment status chart, containers by type and the task list',
           box: { x: 116, y: 120, width: 1200, height: 780 },
-          radius: 24,
           stroke: 16,
         },
       ],
@@ -265,7 +263,6 @@ export const tmsCase = {
             src2x: stop01Form2x,
             alt: 'New shipment form: customer, ports, line, vessel and dates, the container list and attached documents',
             box: { x: 80, y: 90, width: 760, height: 735.879 },
-            radius: 24,
             stroke,
           },
           {
@@ -273,7 +270,6 @@ export const tmsCase = {
             src2x: stop01List2x,
             alt: 'Shipments list with a status for each shipment; the new shipment FIFO-010 is in Booking',
             box: { x: 760, y: 330, width: 600, height: 412.698 },
-            radius: 24,
             stroke,
           },
         ],
@@ -309,7 +305,6 @@ export const tmsCase = {
             src2x: stop02Notifications2x,
             alt: 'Dashboard with the notifications panel open: Andrii Tkachov has created a new shipment FIFO-010',
             box: { x: 262, y: 300, width: 907, height: 589.019 },
-            radius: 24,
             stroke,
           },
         ],
@@ -333,7 +328,6 @@ export const tmsCase = {
             src2x: dashboard2x,
             alt: 'Operations dashboard: four counters, shipment status and container charts, and the task list sorted by priority',
             box: { x: 80, y: 150, width: 1000, height: 650 },
-            radius: 24,
             stroke,
           },
           {
@@ -341,7 +335,6 @@ export const tmsCase = {
             src2x: stop03Mobile2x,
             alt: 'The same dashboard on a phone: counters and the shipment status chart in one scroll',
             box: { x: 1122.881, y: 150, width: 244.238, height: 650 },
-            radius: 24,
             stroke,
           },
         ],
@@ -369,7 +362,6 @@ export const tmsCase = {
             src2x: stop04Shipment2x,
             alt: 'Shipment page, Financial terms tab: customer, payer, payment status, rate and the expenses table',
             box: { x: 80, y: 177.169, width: 834.783, height: 542.167 },
-            radius: 24,
             stroke,
           },
           {
@@ -377,7 +369,6 @@ export const tmsCase = {
             src2x: stop04Invoice2x,
             alt: 'Invoice FIFO-002 generated from the shipment data, open over the shipment page with Save and export buttons',
             box: { x: 706, y: 405.471, width: 676.488, height: 439.359 },
-            radius: 24,
             stroke,
           },
         ],
@@ -404,7 +395,6 @@ export const tmsCase = {
             src2x: stop05Dashboard2x,
             alt: 'Dashboard with the period menu open (1 month, 3 months, 9 months, 1 year) over the shipment status chart',
             box: { x: 165.426, y: 100.104, width: 1101.147, height: 715.163 },
-            radius: 24,
             stroke,
           },
         ],
@@ -430,7 +420,6 @@ export const tmsCase = {
           src2x: edgeEmpty2x,
           alt: 'Empty shipments list: “You don’t have any shipments yet” and when they will appear',
           box: { x: 80, y: 100, width: 560, height: 363.704 },
-          radius: 24,
           stroke,
         },
         {
@@ -438,7 +427,6 @@ export const tmsCase = {
           src2x: edgeNoResults2x,
           alt: 'Search with no results: “Oops! We couldn’t find any results” and a Clear all filters button',
           box: { x: 320, y: 400, width: 560, height: 363.704 },
-          radius: 24,
           stroke,
         },
         {
@@ -446,7 +434,6 @@ export const tmsCase = {
           src2x: edgeColumns2x,
           alt: 'Phone screen Customize table view: a switch for each column, ID to Assigned manager',
           box: { x: 1020, y: 80, width: 300, height: 649.6 },
-          radius: 24,
           stroke,
         },
       ],

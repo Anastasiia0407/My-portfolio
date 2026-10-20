@@ -71,7 +71,7 @@ export function StageShot({
       ref={ref}
       data-layer={layer}
       className="stage__item stage-shot"
-      style={{ ...placeIn(shot.box, size), '--r': shot.radius, '--s': shot.stroke } as CSSProperties}
+      style={{ ...placeIn(shot.box, size), '--s': shot.stroke } as CSSProperties}
       src={shot.src1x}
       srcSet={`${shot.src1x} 1x, ${shot.src2x} 2x`}
       width={Math.round(shot.box.width)}

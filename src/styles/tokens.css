@@ -66,6 +66,7 @@
 
   /* Shape & size */
   --radius-pill: 999px;
+  --radius-shot: 24px; /* framed screenshots on the case page, fixed at every width from 760 */
   --size-cta: clamp(72px, 7.94vw, 120px);
   --size-touch: 44px; /* minimum tap target for text links */
 
@@ -188,7 +189,7 @@
   --m-lh-note: 16px;
   --m-case-section: 64px; /* case sections: top and bottom padding (161:2; the home page keeps --m-section) */
   --m-phone-h: 240px; /* phone screenshots in the mobile stops */
-  --m-radius-min: 8px; /* scaled screenshot radii never go below this */
+  --m-radius-shot: 12px; /* framed screenshots on the case page below 760 */
   --m-tools-stage-h: 408px; /* section 02 stage (162:25): window, then the note */
   --m-tools-window-top: 56px;
   --m-tools-note-bottom: 56px;
