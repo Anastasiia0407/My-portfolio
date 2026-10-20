@@ -87,13 +87,14 @@ export function useCountUp(root: RefObject<Element | null>, { after, duration = 
 /**
  * Parallax of `image` inside its clipping `frame`: the image is scaled up just enough to cover
  * ±travel/2 of the frame height and moves from −travel/2 to +travel/2 while the frame crosses the viewport.
+ * `zoom` > 1 adds a scale from `zoom` to 1 over the same crossing (03 photo tile, 1.08 → 1).
  */
-export function useParallax(frame: RefObject<Element | null>, image: RefObject<HTMLElement | null>, travel = 0.1) {
+export function useParallax(frame: RefObject<Element | null>, image: RefObject<HTMLElement | null>, travel = 0.1, zoom = 1) {
   useEffect(() => {
     const frameEl = frame.current
     const imageEl = image.current
     if (!frameEl || !imageEl || !motionEnabled()) return
-    const scale = 1 + travel + 0.01 // 1% slack so no edge shows at either end
+    const cover = 1 + travel + 0.01 // 1% slack so no edge shows at either end
     let top = 0
     let height = 0
     let last = ''
@@ -105,7 +106,8 @@ export function useParallax(frame: RefObject<Element | null>, image: RefObject<H
       update(y, vh) {
         const progress = clamp01((y + vh - top) / (vh + height))
         const shift = (progress - 0.5) * travel * height
-        const transform = `translate3d(0, ${shift.toFixed(2)}px, 0) scale(${scale})`
+        const scale = cover * (zoom + (1 - zoom) * progress)
+        const transform = `translate3d(0, ${shift.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`
         if (transform !== last) imageEl.style.transform = last = transform
       },
     })
@@ -113,7 +115,7 @@ export function useParallax(frame: RefObject<Element | null>, image: RefObject<H
       stop()
       imageEl.style.transform = ''
     }
-  }, [frame, image, travel])
+  }, [frame, image, travel, zoom])
 }
 
 /**
@@ -190,4 +192,35 @@ export function useScrollReveal(target: RefObject<HTMLElement | null>) {
       el.style.removeProperty('--progress')
     }
   }, [target])
+}
+
+/**
+ * Calls `onReach(index)` once per element when its vertical centre reaches the viewport centre (or
+ * straight away if it is already past on load). Elements: `root`, or its `selector` matches. A plain
+ * scroll job, so it also runs with reduced motion. Keep `onReach` stable (useCallback).
+ */
+export function useCentreReached(root: RefObject<Element | null>, selector: string | null, onReach: (index: number) => void) {
+  useEffect(() => {
+    const el = root.current
+    if (!el) return
+    const done = new Set<number>()
+    let centres: number[] = []
+    const stop = addScrollJob({
+      measure() {
+        const elements = selector ? [...el.querySelectorAll(selector)] : [el]
+        centres = elements.map((element) => {
+          const rect = element.getBoundingClientRect()
+          return rect.top + window.scrollY + rect.height / 2
+        })
+      },
+      update(y, vh) {
+        centres.forEach((centre, index) => {
+          if (done.has(index) || centre > y + vh / 2) return
+          done.add(index)
+          onReach(index)
+        })
+      },
+    })
+    return stop
+  }, [root, selector, onReach])
 }

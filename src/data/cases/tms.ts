@@ -87,11 +87,12 @@ export interface SectionCopy {
   body?: string
 }
 
-/** A research insight card (157:13744): label and statement; `dark` = ink card, `light` = #fafafa. */
+/** A research flip card (157:13744, back 184:86): the insight on the light front, the principle on the dark back. */
 export interface InsightCard {
   label: string
   text: string
-  tone: 'dark' | 'light'
+  principleLabel: string
+  principle: string
 }
 
 export interface Photo {
@@ -229,11 +230,14 @@ export const tmsCase = {
       heading: ['The work before', 'the screens'],
       body: 'Before drawing anything I mapped who touches a shipment and what each of them needs to get done in a day. I compared four tools teams already use (CargoWise, SAP TM, Magaya and Bitrix24) and read their user reviews on G2. The pattern: every feature exists, but the tools are slow to learn, overloaded, and the same for every role. That gave the design three rules.',
     } satisfies SectionCopy,
-    /** 157:13744 (dark), 157:13740, 157:13852. Figma's layer names say "Insignt"; the visible label is "Insight". */
+    /**
+     * Flip cards (157:13744, 157:13740, 157:13852; backs 184:86; motion note 184:81). Figma's layer
+     * names say "Insignt"; the visible label is "Insight".
+     */
     insights: [
-      { label: 'Insight 1', text: 'Reviewers value having every shipment detail in one place', tone: 'dark' },
-      { label: 'Insight 2', text: 'The top complaint: long onboarding and overloaded screens', tone: 'light' },
-      { label: 'Insight 3', text: 'Every role is forced into the same rigid views', tone: 'light' },
+      { label: 'Insight 1', text: 'Reviewers value having every shipment detail in one place', principleLabel: 'Principle 1', principle: 'One source of truth per shipment' },
+      { label: 'Insight 2', text: 'The top complaint: long onboarding and overloaded screens', principleLabel: 'Principle 2', principle: 'A calm UI with onboarding tips' },
+      { label: 'Insight 3', text: 'Every role is forced into the same rigid views', principleLabel: 'Principle 3', principle: 'A different starting point for each role' },
     ] satisfies InsightCard[],
     /** 157:13855: the grid's fourth cell, 704 × 320 at 1512. */
     photo: {

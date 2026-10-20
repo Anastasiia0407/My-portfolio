@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import type { CSSProperties, RefObject } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
@@ -9,8 +9,9 @@ import { placeIn } from '../../components/Stage/placeIn.ts'
 import StatCard from '../../components/StatCard/StatCard.tsx'
 import RevealText from '../../components/RevealText/RevealText.tsx'
 import { tmsCase } from '../../data/cases/tms.ts'
-import type { Photo, SectionCopy } from '../../data/cases/tms.ts'
-import { useCountUp, useHeroStage, useParallax, useReveal, useScrollReveal } from '../../motion/hooks.ts'
+import type { InsightCard, Photo, SectionCopy } from '../../data/cases/tms.ts'
+import { DESKTOP_QUERY, FINE_HOVER_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
+import { useCentreReached, useCountUp, useHeroStage, useParallax, useReveal, useScrollReveal } from '../../motion/hooks.ts'
 import { useToolsScene } from '../../motion/toolsScene.ts'
 import '../../motion/motion.css'
 import { EdgeCasesScene, Stop01Scene, Stop02Scene, Stop03Scene, Stop04Scene, Stop05Scene } from './StopScenes.tsx'
@@ -20,11 +21,14 @@ const { hero, project, problem, research, result, nav } = tmsCase
 
 const headingId = (copy: SectionCopy) => `${copy.id}-title`
 
-/** Photo in a fixed-ratio frame that clips it (117:13235, 117:13257); slow parallax inside the frame. */
-function CasePhoto({ photo }: { photo: Photo }) {
+/**
+ * Photo in a fixed-ratio frame that clips it (117:13235, 157:13855); slow parallax inside the frame,
+ * plus an optional scale from `zoom` to 1 (the 03 tile).
+ */
+function CasePhoto({ photo, zoom }: { photo: Photo; zoom?: number }) {
   const frameRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
-  useParallax(frameRef, imageRef, 0.1)
+  useParallax(frameRef, imageRef, 0.1, zoom)
   return (
     <div ref={frameRef} className="case-photo" style={{ aspectRatio: `${photo.width} / ${photo.height}` }}>
       <img
@@ -111,6 +115,96 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
   )
 }
 
+/** Delay between the cards' first flips on desktop (motion note 184:81). */
+const FLIP_STAGGER = 150
+
+/**
+ * 03 flip cards (motion note 184:81): the insight on a light front, the principle on a dark back.
+ * When the grid's centre (desktop) or each card's centre (mobile) reaches the viewport centre, the
+ * cards turn to their backs, 1 → 2 → 3, 150 ms apart on desktop. Then: hover or keyboard focus
+ * shows the front again (fine pointers), a tap or Enter / Space toggles. Each card is a toggle button
+ * (aria-pressed = the principle shows); both faces stay in the accessibility tree. CSS turns the
+ * card with rotateY, or cross-fades the faces with reduced motion.
+ */
+function InsightCards({
+  items,
+  listRef,
+  gridRef,
+}: {
+  items: InsightCard[]
+  listRef: RefObject<HTMLOListElement | null>
+  /** The 2 × 2 grid (the list itself is display: contents and has no box to measure). */
+  gridRef: RefObject<HTMLDivElement | null>
+}) {
+  const [back, setBack] = useState(() => items.map(() => false))
+  const [armed, setArmed] = useState(() => items.map(() => false))
+  const keyboardFocus = useRef(items.map(() => false))
+  const desktop = useMediaQuery(DESKTOP_QUERY)
+  const finePointer = useMediaQuery(FINE_HOVER_QUERY)
+  const timers = useRef<number[]>([])
+
+  const show = useCallback((index: number, showBack: boolean) => {
+    setBack((sides) => sides.map((side, i) => (i === index ? showBack : side)))
+    setArmed((flags) => (flags[index] ? flags : flags.map((flag, i) => flag || i === index)))
+  }, [])
+
+  const onReach = useCallback(
+    (index: number) => {
+      if (!desktop) return show(index, true)
+      items.forEach((_, i) => timers.current.push(window.setTimeout(() => show(i, true), i * FLIP_STAGGER)))
+    },
+    [desktop, items, show],
+  )
+  useCentreReached(gridRef, desktop ? null : '.insight-card', onReach)
+  useEffect(() => () => timers.current.forEach((timer) => window.clearTimeout(timer)), [])
+
+  return (
+    <ol ref={listRef} className="research-grid__insights">
+      {items.map((item, i) => (
+        <li key={item.label} className="insight-card" data-enter>
+          <button
+            type="button"
+            className="insight-card__flip"
+            aria-pressed={back[i]}
+            data-side={back[i] ? 'back' : 'front'}
+            onPointerEnter={(event) => {
+              if (finePointer && event.pointerType === 'mouse' && armed[i]) show(i, false)
+            }}
+            onPointerLeave={(event) => {
+              if (finePointer && event.pointerType === 'mouse' && armed[i]) show(i, true)
+            }}
+            onFocus={(event) => {
+              keyboardFocus.current[i] = event.currentTarget.matches(':focus-visible')
+              if (keyboardFocus.current[i] && armed[i]) show(i, false)
+            }}
+            onBlur={() => {
+              if (keyboardFocus.current[i] && armed[i]) show(i, true)
+              keyboardFocus.current[i] = false
+            }}
+            onClick={(event) => {
+              // Mouse users flip by hovering; a keyboard click (detail 0) or a tap toggles.
+              if (event.detail === 0 || !finePointer) show(i, !back[i])
+            }}
+          >
+            <span className="insight-card__face insight-card__face--front">
+              <span className="insight-card__label" data-reveal style={{ '--i': 0 } as CSSProperties}>
+                {item.label}
+              </span>
+              <span className="insight-card__text" data-reveal style={{ '--i': 1 } as CSSProperties}>
+                {item.text}
+              </span>
+            </span>
+            <span className="insight-card__face insight-card__face--back">
+              <span className="insight-card__label">{item.principleLabel}</span>
+              <span className="insight-card__text">{item.principle}</span>
+            </span>
+          </button>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
 /** TMS case study (Figma 113:12821). Static: no motion in this stage. */
 export default function TmsCase() {
   const heroCanvasRef = useRef<HTMLDivElement>(null)
@@ -118,6 +212,7 @@ export default function TmsCase() {
   const statsRef = useRef<HTMLUListElement>(null)
   const problemTrackRef = useRef<HTMLDivElement>(null)
   const insightsRef = useRef<HTMLOListElement>(null)
+  const researchGridRef = useRef<HTMLDivElement>(null)
   const resultRef = useRef<HTMLParagraphElement>(null)
 
   useHeroStage(heroCanvasRef, dashboardRef, 0.85)
@@ -227,20 +322,9 @@ export default function TmsCase() {
             heading={research.copy.heading}
             body={research.copy.body}
           />
-          <div className="research-grid">
-            <ol ref={insightsRef} className="research-grid__insights">
-              {research.insights.map((item) => (
-                <li key={item.label} className={`insight-card insight-card--${item.tone}`} data-enter>
-                  <p className="insight-card__label" data-reveal style={{ '--i': 0 } as CSSProperties}>
-                    {item.label}
-                  </p>
-                  <p className="insight-card__text" data-reveal style={{ '--i': 1 } as CSSProperties}>
-                    {item.text}
-                  </p>
-                </li>
-              ))}
-            </ol>
-            <CasePhoto photo={research.photo} />
+          <div ref={researchGridRef} className="research-grid">
+            <InsightCards items={research.insights} listRef={insightsRef} gridRef={researchGridRef} />
+            <CasePhoto photo={research.photo} zoom={1.08} />
           </div>
         </section>
 

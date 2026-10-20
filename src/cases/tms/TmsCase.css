@@ -185,32 +185,88 @@
   display: contents;
 }
 
-/* 157:13744 / 157:13740: padding 56 top, 28 bottom, 32 sides (scaled with the stat cards' 32); label
-   Inter Medium 20/26 grey, 32 above the statement, Inter SemiBold 40/48. */
+/* Flip cards (motion note 184:81). The card is a toggle button; both faces share one grid cell, so it
+   is as tall as its taller face. The button turns (rotateY 180°, 600 ms ease-out); each face hides
+   its back side. */
 .insight-card {
+  display: grid;
+  perspective: var(--perspective-card);
+}
+
+.insight-card__flip {
+  display: grid;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform var(--dur-flip) var(--ease-out);
+}
+
+.insight-card__flip[data-side='back'] {
+  transform: rotateY(180deg);
+}
+
+/* Front 157:13744 / back 184:87: padding 56 top, 28 bottom, 32 sides (scaled with the stat cards' 32);
+   label Inter Medium 20/26, 32 above the statement, Inter SemiBold 40/48. */
+.insight-card__face {
   display: flex;
+  grid-area: 1 / 1;
   flex-direction: column;
   gap: var(--gap-m);
   padding: calc(var(--space-case-card) * 56 / 32) var(--space-case-card) calc(var(--space-case-card) * 28 / 32);
+  backface-visibility: hidden;
+}
+
+.insight-card__face--front {
   background: var(--color-panel);
   color: var(--color-ink);
 }
 
-.insight-card--dark {
+.insight-card__face--back {
   background: var(--color-ink);
   color: var(--color-cream);
+  transform: rotateY(180deg);
 }
 
 .insight-card__label {
+  display: block;
   color: var(--color-muted);
   font-size: var(--fs-meta);
   line-height: calc(26 / 20);
 }
 
+.insight-card__face--back .insight-card__label {
+  color: var(--color-accent);
+}
+
 .insight-card__text {
+  display: block;
   font-size: var(--fs-display-m);
   font-weight: var(--fw-semibold);
   line-height: var(--lh-display-m);
+}
+
+/* Reduced motion: no turn; the back fades in over the front and out again. */
+@media (prefers-reduced-motion: reduce) {
+  .insight-card__flip,
+  .insight-card__flip[data-side='back'] {
+    transform: none;
+    transition: none;
+  }
+
+  .insight-card__face--back {
+    opacity: 0;
+    transform: none;
+    transition: opacity var(--dur-color) ease;
+  }
+
+  .insight-card__flip[data-side='back'] .insight-card__face--back {
+    opacity: 1;
+  }
 }
 
 /* Fills its cell (width and height both set, so the inline aspect ratio doesn't widen it). */
@@ -590,7 +646,7 @@
     margin-top: var(--m-gap-l);
   }
 
-  .insight-card {
+  .insight-card__face {
     gap: var(--m-gap-s);
     padding: var(--m-gap-l);
   }
