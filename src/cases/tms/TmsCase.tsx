@@ -41,6 +41,8 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
             className="problem-stage__bg"
             style={{ '--blur': stage.background.blur } as CSSProperties}
             src={stage.background.src}
+            width={stage.size.width}
+            height={stage.size.height}
             alt=""
             loading="lazy"
             decoding="async"

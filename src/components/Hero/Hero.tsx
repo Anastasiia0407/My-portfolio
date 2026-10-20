@@ -53,7 +53,16 @@ export default function Hero() {
           {owner.tagline.replaceAll(' ', '')}
         </span>
         <span className="hero__role" style={maskStyle(heroPhotoLayout, heroMask)} aria-hidden="true">
-          <img className="hero__photo" style={photoStyle(heroPhotoLayout)} src={heroPhoto} alt="" decoding="async" />
+          {/* width/height: the webp's intrinsic size (CSS sizes the box). */}
+          <img
+            className="hero__photo"
+            style={photoStyle(heroPhotoLayout)}
+            src={heroPhoto}
+            width={733}
+            height={237}
+            alt=""
+            decoding="async"
+          />
         </span>
         <span
           className="hero__role hero__role-m"
@@ -64,6 +73,8 @@ export default function Hero() {
             className="hero__photo"
             style={photoStyle(heroPhotoMobileLayout)}
             src={heroPhotoMobile}
+            width={742}
+            height={243}
             alt=""
             decoding="async"
           />

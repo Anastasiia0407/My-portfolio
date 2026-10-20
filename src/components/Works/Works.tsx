@@ -139,6 +139,8 @@ function ProjectVisual({
                   className="works__frame-image"
                   src={image.src1x}
                   srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+                  width={image.width}
+                  height={image.height}
                   alt={image.alt}
                   loading="lazy"
                   decoding="async"
@@ -151,6 +153,8 @@ function ProjectVisual({
                 style={imageStyle(image)}
                 src={image.src1x}
                 srcSet={`${image.src1x} 1x, ${image.src2x} 2x`}
+                width={image.width}
+                height={image.height}
                 alt={image.alt}
                 loading="lazy"
                 decoding="async"
@@ -261,7 +265,7 @@ export default function Works() {
               ) : (
                 <li key={project.id}>
                   <a
-                    className={`works__item works__label${index === activeIndex ? ' is-active' : ''}`}
+                    className={`works__item works__label touch-target${index === activeIndex ? ' is-active' : ''}`}
                     href={project.caseStudyUrl ?? `#${project.id}`}
                     aria-current={index === activeIndex ? 'step' : undefined}
                     onClick={project.caseStudyUrl ? undefined : goTo(index)}

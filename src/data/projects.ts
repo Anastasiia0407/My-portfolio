@@ -45,6 +45,9 @@ export interface Frame {
 export interface ProjectImage {
   src1x: string
   src2x: string
+  /** Intrinsic size of the 1x file (the img's width/height attributes; CSS sizes the box). */
+  width: number
+  height: number
   alt: string
   /** The unrotated image box. */
   placement: Placement
@@ -92,8 +95,8 @@ export const projects: Project[] = [
     number: '01',
     title: 'What to Eat - menu subscription web app',
     images: [
-      { src1x: work01a1x, src2x: work01a2x, alt: 'Weekly menu screen of the What to Eat app', placement: phoneA },
-      { src1x: work01b1x, src2x: work01b2x, alt: 'Shopping list screen of the What to Eat app', placement: phoneB },
+      { src1x: work01a1x, src2x: work01a2x, width: 260, height: 618, alt: 'Weekly menu screen of the What to Eat app', placement: phoneA },
+      { src1x: work01b1x, src2x: work01b2x, width: 260, height: 618, alt: 'Shopping list screen of the What to Eat app', placement: phoneB },
     ],
     status: 'coming-soon',
   },
@@ -105,6 +108,8 @@ export const projects: Project[] = [
       {
         src1x: work02a1x,
         src2x: work02a2x,
+        width: 1200,
+        height: 776,
         alt: 'Campaign discovery screen of the SocialTap marketplace',
         placement: work02Layout.a,
         frame: glassFrame,
@@ -112,6 +117,8 @@ export const projects: Project[] = [
       {
         src1x: work02b1x,
         src2x: work02b2x,
+        width: 1200,
+        height: 776,
         alt: 'Creator discovery screen of the SocialTap marketplace',
         placement: work02Layout.b,
         rotation: work02Layout.b.rotationDeg,
@@ -130,6 +137,8 @@ export const projects: Project[] = [
       {
         src1x: work031x,
         src2x: work032x,
+        width: 1200,
+        height: 780,
         alt: 'Dashboard of the TMS logistics platform: shipment counts, shipment status chart and tasks',
         placement: work03Layout.image,
         frame: { kind: 'solid', desktop: { stroke: 19.2, radius: 36 }, mobile: { stroke: 9.6, radius: 18 } },
