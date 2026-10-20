@@ -166,9 +166,57 @@
   gap: var(--gap-case-card);
 }
 
-/* 113:12886 */
-.case-insights {
-  margin-top: var(--gap-case-media);
+/* 03 113:12880: 80 below the header row, a 2 × 2 grid (113:12886), 24 apart: three insight cards and the
+   photo (157:13855). Rows are equal and at least the photo's Figma height (704 × 320 per column at
+   1512), so the photo keeps Figma's crop and the cards match it; longer text grows both rows. */
+.case-section--research {
+  container-type: inline-size;
+}
+
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(calc((100cqw - var(--gap-case-card)) * 160 / 704), 1fr);
+  gap: var(--gap-case-card);
+  margin-top: var(--gap-case-header);
+}
+
+.research-grid__insights {
+  display: contents;
+}
+
+/* 157:13744 / 157:13740: padding 56 top, 28 bottom, 32 sides (scaled with the stat cards' 32); label
+   Inter Medium 20/26 grey, 32 above the statement, Inter SemiBold 40/48. */
+.insight-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  padding: calc(var(--space-case-card) * 56 / 32) var(--space-case-card) calc(var(--space-case-card) * 28 / 32);
+  background: var(--color-panel);
+  color: var(--color-ink);
+}
+
+.insight-card--dark {
+  background: var(--color-ink);
+  color: var(--color-cream);
+}
+
+.insight-card__label {
+  color: var(--color-muted);
+  font-size: var(--fs-meta);
+  line-height: calc(26 / 20);
+}
+
+.insight-card__text {
+  font-size: var(--fs-display-m);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-display-m);
+}
+
+/* Fills its cell (width and height both set, so the inline aspect ratio doesn't widen it). */
+.research-grid .case-photo {
+  width: 100%;
+  height: 100%;
 }
 
 /* --- 02 scene 113:12853 (motion note 124:15) ---
@@ -522,8 +570,31 @@
     margin-top: var(--m-gap-m);
   }
 
-  .case-insights {
-    margin-top: var(--m-gap-l);
+  /* 03: one column — Insight 1, 2, 3, then the photo at Figma's 704:320. Cards size to their text. */
+  .research-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    gap: var(--m-gap-xs);
+    margin-top: var(--m-gap-m);
+  }
+
+  .insight-card {
+    gap: var(--m-gap-xs);
+    padding: var(--m-gap-m) var(--m-gap-s);
+  }
+
+  .insight-card__label {
+    font-size: var(--m-fs-label);
+    line-height: var(--m-lh-label);
+  }
+
+  .insight-card__text {
+    font-size: var(--m-fs-principle);
+    line-height: var(--m-lh-principle);
+  }
+
+  .research-grid .case-photo {
+    height: auto;
   }
 
   .case-result {

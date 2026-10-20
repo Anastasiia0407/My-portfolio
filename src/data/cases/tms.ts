@@ -88,6 +88,13 @@ export interface SectionCopy {
   body?: string
 }
 
+/** A research insight card (157:13744): label and statement; `dark` = ink card, `light` = #fafafa. */
+export interface InsightCard {
+  label: string
+  text: string
+  tone: 'dark' | 'light'
+}
+
 export interface Photo {
   src1x: string
   src2x: string
@@ -217,27 +224,28 @@ export const tmsCase = {
     ],
   },
 
-  /** 113:12880 */
+  /** 113:12880 "03 Approach": header row (157:13793), then a 2 × 2 grid (113:12886) of three insight cards and the photo. */
   research: {
     copy: {
       id: 'research',
       eyebrow: 'The research',
-      heading: 'Start from the work, not the screens',
+      heading: ['The work before', 'the screens'],
       body: 'Before drawing anything I mapped who touches a shipment and what each of them needs to get done in a day. I compared four tools teams already use (CargoWise, SAP TM, Magaya and Bitrix24) and read their user reviews on G2. The pattern: every feature exists, but the tools are slow to learn, overloaded, and the same for every role. That gave the design three rules.',
     } satisfies SectionCopy,
+    /** 157:13744 (dark), 157:13740, 157:13852. Figma's layer names say "Insignt"; the visible label is "Insight". */
+    insights: [
+      { label: 'Insight 1', text: 'Reviewers value having every shipment detail in one place', tone: 'dark' },
+      { label: 'Insight 2', text: 'The top complaint: long onboarding and overloaded screens', tone: 'light' },
+      { label: 'Insight 3', text: 'Every role is forced into the same rigid views', tone: 'light' },
+    ] satisfies InsightCard[],
+    /** 157:13855: the grid's fourth cell, 704 × 320 at 1512. */
     photo: {
       src1x: researchPhoto1x,
       src2x: researchPhoto2x,
       alt: 'Two CMA CGM containers on terminal trucks',
-      width: 612,
+      width: 704,
       height: 320,
     } satisfies Photo,
-    /** 113:12886 */
-    insights: [
-      { label: 'Insight 1', insight: 'Reviewers value having every shipment detail in one place', principle: 'One source of truth per shipment' },
-      { label: 'Insight 2', insight: 'The top complaint: long onboarding and overloaded screens', principle: 'A calm UI with onboarding tips' },
-      { label: 'Insight 3', insight: 'Every role is forced into the same rigid views', principle: 'A different starting point for each role' },
-    ],
   },
 
   stops: {
@@ -359,7 +367,7 @@ export const tmsCase = {
             src1x: stop04Shipment1x,
             src2x: stop04Shipment2x,
             alt: 'Shipment page, Financial terms tab: customer, payer, payment status, rate and the expenses table',
-            box: { x: 42.609, y: 201.169, width: 834.783, height: 542.167 },
+            box: { x: 80, y: 177.169, width: 834.783, height: 542.167 },
             radius: 24,
             stroke,
           },
@@ -367,14 +375,14 @@ export const tmsCase = {
             src1x: stop04Invoice1x,
             src2x: stop04Invoice2x,
             alt: 'Invoice FIFO-002 generated from the shipment data, open over the shipment page with Save and export buttons',
-            box: { x: 705.699, y: 405.471, width: 676.488, height: 439.359 },
+            box: { x: 706, y: 405.471, width: 676.488, height: 439.359 },
             radius: 24,
             stroke,
           },
         ],
         notes: [
           { text: 'Header stays put, tabs change below it', x: 80, y: 93, width: 355 },
-          { text: 'Invoice built from shipment data', x: 1050, y: 823, width: 302 },
+          { text: 'Invoice built from shipment data', x: 1080, y: 321, width: 302 },
         ],
       } satisfies StageData,
     },

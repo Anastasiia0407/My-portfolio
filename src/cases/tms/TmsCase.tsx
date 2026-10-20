@@ -7,7 +7,6 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader.tsx'
 import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
 import { placeIn } from '../../components/Stage/placeIn.ts'
 import StatCard from '../../components/StatCard/StatCard.tsx'
-import InsightRow from '../../components/InsightRow/InsightRow.tsx'
 import RevealText from '../../components/RevealText/RevealText.tsx'
 import { tmsCase } from '../../data/cases/tms.ts'
 import type { Photo, SectionCopy } from '../../data/cases/tms.ts'
@@ -124,7 +123,7 @@ export default function TmsCase() {
 
   useHeroStage(heroCanvasRef, dashboardRef, 0.85)
   useCountUp(statsRef, { after: problemTrackRef }) // only after the section 02 pin has released
-  useReveal(insightsRef, { selector: '.insight-row', batchStagger: 200 })
+  useReveal(insightsRef, { selector: '.insight-card', batchStagger: 200 })
   useScrollReveal(resultRef)
 
   // Tells the inline script in work/tms.html that motion is wired up (otherwise it drops .motion).
@@ -221,18 +220,29 @@ export default function TmsCase() {
           </ul>
         </section>
 
-        {/* 03 The research 113:12880 */}
-        <section id={research.copy.id} className="case-section" aria-labelledby={headingId(research.copy)}>
-          <SectionHeader id={headingId(research.copy)} eyebrow={research.copy.eyebrow} heading={research.copy.heading} />
-          <div className="case-media">
+        {/* 03 The research 113:12880: header row, then insight cards and the photo in a 2 × 2 grid */}
+        <section id={research.copy.id} className="case-section case-section--research" aria-labelledby={headingId(research.copy)}>
+          <SectionHeader
+            id={headingId(research.copy)}
+            eyebrow={research.copy.eyebrow}
+            heading={research.copy.heading}
+            body={research.copy.body}
+          />
+          <div className="research-grid">
+            <ol ref={insightsRef} className="research-grid__insights">
+              {research.insights.map((item) => (
+                <li key={item.label} className={`insight-card insight-card--${item.tone}`} data-enter>
+                  <p className="insight-card__label" data-reveal style={{ '--i': 0 } as CSSProperties}>
+                    {item.label}
+                  </p>
+                  <p className="insight-card__text" data-reveal style={{ '--i': 1 } as CSSProperties}>
+                    {item.text}
+                  </p>
+                </li>
+              ))}
+            </ol>
             <CasePhoto photo={research.photo} />
-            <p className="case-media__text">{research.copy.body}</p>
           </div>
-          <ol ref={insightsRef} className="case-insights">
-            {research.insights.map((item) => (
-              <InsightRow key={item.label} item={item} />
-            ))}
-          </ol>
         </section>
 
         <Stop01Scene />

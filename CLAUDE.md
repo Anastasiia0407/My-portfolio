@@ -14,7 +14,7 @@ Home page plus static case-study pages. Vite + React + TypeScript (multi-page), 
 ## Pages and config
 
 - **Home** `index.html` → `src/App.tsx`: **Hero → About → Works → Contact**. Anchors `#home` (not in the nav), `#about`, `#works`, `#contact`; nav About, Works, Get in touch.
-- **TMS case** `work/tms.html` → `src/cases/tms/` (`main.tsx`, `TmsCase.tsx`, `StopScenes.tsx`), served at `/work/tms`. Sections: Hero (tagline, h1, "(03)", meta, teal dashboard stage) → 01 The project → 02 The problem (tools → one window scene, stats) → 03 The research (insight rows) → Stops 01–05 → No dead ends → The result → "← Back to all work".
+- **TMS case** `work/tms.html` → `src/cases/tms/` (`main.tsx`, `TmsCase.tsx`, `StopScenes.tsx`), served at `/work/tms`. Sections: Hero (tagline, h1, "(03)", meta, teal dashboard stage) → 01 The project → 02 The problem (tools → one window scene, stats) → 03 The research (header row, then a 2 × 2 grid: three insight cards and the photo) → Stops 01–05 → No dead ends → The result → "← Back to all work".
 - One HTML entry per case (`vite.config.ts` inputs + `src/entry-server.tsx` pages); `/work/<slug>` resolves to `work/<slug>.html` (Vite) and via `cleanUrls` (`vercel.json`). No router.
 - **Site URL**: `site.config.ts` `SITE_URL` is the only place it is set. Vite fills `%SITE_URL%` in both HTML files (canonical, `og:url`, absolute `og:image`). Currently the Vercel production domain `https://anastasiia-cheban.vercel.app`; `public/robots.txt` and `public/sitemap.xml` repeat it by hand, so change all three together (e.g. for an own domain).
 - **Meta** lives in the HTML files: home title "Anastasiia Cheban — UX/UI & Product Designer" (og:type website); case "TMS platform for a logistics company — Anastasiia Cheban" (og:type article). Both: description, og:title/description/url/image (+ width/height/alt), `twitter:card` summary_large_image, `lang="en"`, icons and `site.webmanifest`.
@@ -34,7 +34,7 @@ Home page plus static case-study pages. Vite + React + TypeScript (multi-page), 
 
 ## Case components
 
-`CaseNav` / `CaseLink`, `SectionHeader` (eyebrow / h2 lines / body; side by side from 760), `Stage` (fixed-ratio canvas; Figma px → % via `placeIn`; `--u` = one Figma px of the stage via `cqw`; `StageShot`; `MarginNote` anchored to the nearer edge), `StatCard` (`<data value>` + aria-hidden count-up copy), `InsightRow`, `HandoffFlow` (dark copy per step for the travelling fill), `RevealText` (shared with home About).
+`CaseNav` / `CaseLink`, `SectionHeader` (eyebrow / h2 lines / body; side by side from 760), `Stage` (fixed-ratio canvas; Figma px → % via `placeIn`; `--u` = one Figma px of the stage via `cqw`; `StageShot`; `MarginNote` anchored to the nearer edge), `StatCard` (`<data value>` + aria-hidden count-up copy), `HandoffFlow` (dark copy per step for the travelling fill), `RevealText` (shared with home About).
 
 ## Styles and tokens
 
@@ -56,7 +56,7 @@ Native `position: sticky` inside a taller track; no scroll hijacking, scroll-sna
 - `src/hooks/`: `useMediaQuery` (+ `DESKTOP_QUERY` / `PINNED_QUERY` / `FINE_HOVER_QUERY` / `REDUCED_MOTION_QUERY`, matching the CSS), `useActiveProject`, `useCursorFollow`, `usePinProgress`.
 - `src/motion/` (case page, Figma motion notes 124:2):
   - `observeEnter` (IntersectionObserver, fires once; immediately for content already in view or above), `scrollLoop` (one passive scroll listener + rAF; geometry only on measure/resize).
-  - `hooks.ts`: `useReveal` (section headers, insight rows), `useCountUp` (stats, after the section 02 pin releases), `useParallax` (01/03 photos), `useHeroStage` (0.96 → 1 + 0.85× dashboard drift; final on restored loads), `useScrollReveal` (The result).
+  - `hooks.ts`: `useReveal` (section headers, insight cards), `useCountUp` (stats, after the section 02 pin releases), `useParallax` (01/03 photos), `useHeroStage` (0.96 → 1 + 0.85× dashboard drift; final on restored loads), `useScrollReveal` (The result).
   - `toolsScene.ts`: section 02 — desktop cards fly into the window; below 760 a "drop-in" (pills fall straight onto their rows, `drop` in `tms.ts`). Same timing: start 0.12 + i × 0.13, flight 0.2, rows at k > 0.9, settle p 0.8–0.95, label p > 0.9.
   - `stageScene.ts`: `useStageScene` (pinned stops, p from scroll), `useTimedScene` (unpinned mobile stops, p from a timeline on enter), `span()` to reuse layer functions. Layers are `[data-layer]` elements; the markup is the final state; `.scene-only` layers exist only while a scene runs.
   - Start states live in `motion.css` under `html.motion`, set before first paint by the inline script in `work/tms.html` (dropped after 4 s without `data-motion-ready`). Hero title/tagline/meta are CSS keyframes.

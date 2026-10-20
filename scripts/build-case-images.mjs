@@ -19,7 +19,7 @@ await mkdir(outDir, { recursive: true })
 const images = [
   { name: 'project-photo', file: 'project-photo.png', width: 756, height: 480 }, // 117:13235
   { name: 'problem-bg', file: 'problem-bg.png', width: 1432, height: 720, fit: 'fill', quality: 60, scales: [1] }, // 117:13298, blurred
-  { name: 'research-photo', file: 'research-photo.png', width: 612, height: 320 }, // 117:13257
+  { name: 'research-photo', file: 'research-photo-157-13855.png', width: 704, height: 320 }, // 157:13855, Figma's crop and B&W adjustment (node render at source resolution)
   { name: 'stop-01-form', file: 'image-27.png', width: 760, height: 735.879 }, // 117:13312
   { name: 'stop-01-list', file: 'image-32.png', width: 600, height: 412.698 }, // 120:13377
   { name: 'stop-02-notifications', file: 'image-31.png', width: 907, height: 589.019 }, // 120:13403

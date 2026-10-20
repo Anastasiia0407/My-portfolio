@@ -12,25 +12,12 @@
     transform: translateY(var(--reveal-distance));
   }
 
-  .motion [data-enter] [data-reveal='fade'] {
-    transform: none;
-  }
-
-  /* Draw: a left → right wipe (insight arrows). */
-  .motion [data-enter] [data-reveal='draw'] {
-    opacity: 1;
-    transform: none;
-    clip-path: inset(0 100% 0 0);
-  }
-
   .motion [data-enter][data-entered] [data-reveal] {
     opacity: 1;
     transform: none;
-    clip-path: inset(0);
     transition:
       opacity var(--dur-reveal) var(--ease-out),
-      transform var(--dur-reveal) var(--ease-out),
-      clip-path var(--dur-draw) var(--ease-out);
+      transform var(--dur-reveal) var(--ease-out);
     transition-delay: calc(var(--enter-delay, 0ms) + var(--i, 0) * var(--stagger, var(--stagger-reveal)));
   }
 
