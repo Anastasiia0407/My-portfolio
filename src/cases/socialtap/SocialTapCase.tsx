@@ -13,20 +13,14 @@ import FlipGrid from '../shared/FlipGrid.tsx'
 import CaseStatement from '../shared/CaseStatement.tsx'
 import { MobileGroup, MobileShot, SceneStop } from '../shared/SceneStop.tsx'
 import {
-  drawer,
   MOBILE_DURATION,
   mobileBack,
   mobileFront,
   mobileSingle,
-  mobileSingleScreen,
-  mobileTwoScreens,
-  ONE_SCREEN_LENGTH,
-  singleScreen,
+  sceneKinds,
   STAGE_DURATION,
   tile as tileScene,
   TILE_DURATION,
-  TWO_SCREENS_LENGTH,
-  twoScreens,
 } from './scenes.ts'
 import './SocialTapCase.css'
 
@@ -36,9 +30,6 @@ const headingId = (copy: SectionCopy) => `${copy.id}-title`
 
 /** A screenshot as a scene layer, on its stage or in its own full-width mini stage below 760. */
 const piece = (layer: string) => (shot: Shot, size: { width: number; height: number }) => <StageShot shot={shot} size={size} layer={layer} />
-
-/** 03's stage is the drawer; 04 and 05 have one screen; the rest a back and a front screen. */
-const sceneOf = (id: string, shots: number) => (id === 'profile-drawer' ? drawer : shots === 1 ? singleScreen : twoScreens)
 
 /**
  * SocialTap case study (Figma 177:279; mobile 187:81): the shared case layout, no pinned scenes. Motion
@@ -82,7 +73,7 @@ export default function SocialTapCase() {
         />
         <FlipGrid
           items={worked.cards}
-          pin={{ length: TWO_SCREENS_LENGTH, mediaScene: tileScene, mediaDuration: TILE_DURATION }}
+          pin={{ length: worked.pinLength, mediaScene: tileScene, mediaDuration: TILE_DURATION }}
           media={
             <div className="flip-tile">
               <Stage size={tile.size} className="stage--bare">
@@ -101,9 +92,9 @@ export default function SocialTapCase() {
           <SceneStop
             key={copy.id}
             copy={copy}
-            scene={{ ...scene, length: second ? TWO_SCREENS_LENGTH : ONE_SCREEN_LENGTH }}
-            spec={sceneOf(copy.id, stage.shots.length)}
-            mobileSpec={second ? mobileTwoScreens : mobileSingleScreen}
+            scene={scene}
+            spec={sceneKinds[scene.kind].desktop}
+            mobileSpec={sceneKinds[scene.kind].mobile}
             size={stage.size}
             notes={notes}
             mobile={

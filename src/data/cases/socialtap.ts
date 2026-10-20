@@ -42,9 +42,19 @@ const back = { x: 80, y: 90, width: 760, height: 491.3 }
 const front = { x: 600, y: 300, width: 760, height: 491.3 }
 const single = { x: 166, y: 84.3, width: 1100, height: 711.1 }
 
+/**
+ * A stage's scene (scenes.ts builds the motion for each kind): `two-screens` = back screen, then the
+ * front screen slides in, then the notes; `drawer` = the same, the front sliding in from the stage edge;
+ * `one-screen` = the screen, then the notes. `length` = viewports of pinned scroll.
+ */
+export interface SocialTapScene extends SceneData {
+  kind: 'two-screens' | 'drawer' | 'one-screen'
+  length: number
+}
+
 interface Stop {
   copy: SectionCopy
-  scene: SceneData
+  scene: SocialTapScene
   stage: StageData
 }
 
@@ -109,6 +119,8 @@ export const socialtapCase = {
       { label: 'Problem 3', text: 'Brands don’t know which of twenty filters matter', backLabel: 'Rule 3', backText: 'Describe the creator, let AI search' },
     ] satisfies FlipCardData[],
     /** 177:363: dark tile (704 × 320 at 1512; 361 × 194 at 393) with image 42 (181:13928) at (72, 72.26), 560 wide, clipped. */
+    /** The pinned grid: image 42 slides in, then the three cards turn (viewports of pinned scroll). */
+    pinLength: 1.2,
     tile: {
       size: { width: 704, height: 320 },
       shot: { src1x: workedProfileDrawer1x, src2x: workedProfileDrawer2x, alt: 'Discovery with the creator profile drawer open: stats, audience and portfolio', box: { x: 72, y: 72.26, width: 560, height: 362.03 }, stroke, ring } satisfies StageShot,
@@ -124,7 +136,7 @@ export const socialtapCase = {
         heading: ['Describe it,', 'don’t filter it'],
         body: 'Brands rarely know which of twenty filters matter. In AI search, a brand describes the creator they need in plain words or by voice, and the results come back with a short reason for each match. Creators find campaigns the same way. When nothing fits, the empty state offers to edit the prompt or clear filters instead of a dead end.',
       },
-      scene: {},
+      scene: { kind: 'two-screens', length: 1.2 },
       stage: {
         size: stageSize,
         shots: [
@@ -145,7 +157,7 @@ export const socialtapCase = {
         heading: ['One card, every', 'status'],
         body: 'A campaign lives for weeks: draft, hiring, active, in dispute, completed. I defined which statuses a card can have, grouped them into tabs, and decided what the card shows at each stage. While hiring, it shows budget and proposals; once live, performance and pending approvals. The same rules apply to the cards creators see.',
       },
-      scene: {},
+      scene: { kind: 'two-screens', length: 1.2 },
       stage: {
         size: stageSize,
         shots: [
@@ -166,7 +178,7 @@ export const socialtapCase = {
         heading: ['One drawer,', 'used everywhere'],
         body: 'Brands review a creator without leaving the search: stats, audience and content open in a side drawer. I built it as a component on the existing design system tokens and reused the same shell for the brand profile, an open campaign seen by a creator, and a creator’s proposal seen by a brand. One pattern to learn, four places to use it.',
       },
-      scene: {},
+      scene: { kind: 'drawer', length: 1.2 },
       stage: {
         size: stageSize,
         shots: [
@@ -187,7 +199,7 @@ export const socialtapCase = {
         heading: ['Steps, not a wall', 'of fields'],
         body: 'A creator’s service has details, pricing, payment setup, examples and requirements for the brand. I split it into collapsible steps with one topic each and marked which are optional. A checklist at the bottom shows what is left before the service can be published, and a draft can be saved at any point.',
       },
-      scene: {},
+      scene: { kind: 'one-screen', length: 1 },
       stage: {
         size: stageSize,
         shots: [
@@ -207,7 +219,7 @@ export const socialtapCase = {
         heading: 'Show only what starts the work',
         body: 'The product has a lot of features, but a new user needs one result first. The tour for brands points to finding creators and launching the first campaign; for creators, to finishing the profile and adding a service. It can be skipped at any step, and a brand that has already launched a campaign gets a shorter path.',
       },
-      scene: {},
+      scene: { kind: 'one-screen', length: 1 },
       stage: {
         size: stageSize,
         shots: [
@@ -227,7 +239,7 @@ export const socialtapCase = {
         heading: 'Built once, used in four products',
         body: 'Academy & Help and Community were mine end to end: lessons with progress, support tickets, a feed with posts, comments and member profiles. The client uses them across four other products, so every screen had to work for any role and any brand. A switcher shows how the same flow serves brands and creators.',
       },
-      scene: {},
+      scene: { kind: 'two-screens', length: 1.2 },
       stage: {
         size: stageSize,
         shots: [
