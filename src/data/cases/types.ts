@@ -42,15 +42,13 @@ export interface StageData {
 }
 
 /**
- * A stage's scene. `label` = what the scene shows, for assistive tech (role="img"). Pinned scenes
- * (SceneStop trigger "pin"): `length` = viewports of scroll the pin lasts (track = 100svh + length ×
- * 100svh). Centre-triggered scenes (trigger "centre"): `duration` = ms the timeline plays once.
+ * A stage's scene (SceneStop, pinned). `label` = what the scene shows, for assistive tech
+ * (role="img"); `length` = viewports of scroll the pin lasts (track = 100svh + length × 100svh).
  */
 export interface SceneData {
   /** Omitted: no single label; the screenshots' alts and the notes are read one by one. */
   label?: string
   length?: number
-  duration?: number
 }
 
 export interface SectionCopy {

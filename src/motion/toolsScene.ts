@@ -17,10 +17,10 @@ export const toolsScene = {
   settleBump: 0.04,
   labelAt: 0.9,
   // Below 760 (162:25, no cards): row i shows at mobileRowFirst + i × mobileRowStep, the note at
-  // mobileLabelAt (evenly spaced, the same step), then the pin holds until release.
-  mobileRowFirst: 0.1,
+  // mobileLabelAt — six evenly spaced steps, the last at 0.9 — then a 0.1 hold until release.
+  mobileRowFirst: 0.15,
   mobileRowStep: 0.15,
-  mobileLabelAt: 0.85,
+  mobileLabelAt: 0.9,
 }
 
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2)
