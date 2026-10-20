@@ -212,7 +212,7 @@ export default function Works() {
   const activeIndex = focus && focus.at === scrollIndex ? focus.index : scrollIndex
   const keyboardFocus = focus !== null && focus.at === scrollIndex
 
-  useCursorFollow(panelRef, pinned && fineHover)
+  useCursorFollow(panelRef, desktop && fineHover, { pinned, instant: reducedMotion })
 
   const goTo = (index: number) => (event: MouseEvent<HTMLAnchorElement>) => {
     const section = sectionRef.current

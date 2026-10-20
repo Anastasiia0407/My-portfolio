@@ -445,12 +445,19 @@
     filter: none;
   }
 
-  .works__visual:hover .works__cta {
-    opacity: 1;
-    transform: none;
+  /* The CTA attached to the mouse (useCursorFollow): its project visual gets is-following (the
+     translate from the static position, set at the pointer before it shows; no transform easing)
+     and data-cta-shown (the fade in). */
+  .works__visual.is-following .works__cta {
+    transform: translate3d(var(--fx, 0), var(--fy, 0), 0);
+    transition: opacity var(--dur-color) var(--ease-out);
   }
 
-  .works__visual:hover a.works__cta {
+  .works__visual[data-cta-shown] .works__cta {
+    opacity: 1;
+  }
+
+  .works__visual[data-cta-shown] a.works__cta {
     pointer-events: auto;
   }
 }
@@ -536,23 +543,9 @@
 }
 
 @media (min-width: 760px) and (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
-  /* Hovering anywhere on the panel colours the active project and shows the CTA. */
+  /* Hovering anywhere on the panel colours the active project (the CTA: useCursorFollow, above). */
   .works__panel:hover .works__visual[data-state='active']:not([data-status]) .works__image {
     filter: none;
   }
 
-  .works__panel:hover .works__visual[data-state='active'] .works__cta {
-    opacity: 1;
-    transform: none;
-  }
-
-  .works__panel:hover .works__visual[data-state='active'] a.works__cta {
-    pointer-events: auto;
-  }
-
-  /* Cursor-follow (useCursorFollow): translate from the static position, no transform easing. */
-  .works__panel.is-following .works__visual[data-state] .works__cta {
-    transform: translate3d(var(--fx, 0), var(--fy, 0), 0);
-    transition: opacity var(--dur-color) var(--ease-out);
-  }
 }
