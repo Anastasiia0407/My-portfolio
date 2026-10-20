@@ -92,6 +92,9 @@
   --dur-label: 400ms; /* "One shipment, one place" */
   --dur-flip: 600ms; /* 03 flip cards, rotateY 0 → 180° (motion note 184:81; 150 ms stagger in TmsCase.tsx) */
   --perspective-card: 1200px;
+  --dur-flip-user: 500ms; /* flip by hover, focus or tap (after a 150 ms hover intent, TmsCase.tsx) */
+  --ease-flip-user: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-flip-fade: 300ms; /* reduced motion: the face cross-fade on hover, focus or tap */
 
   /*
    * Case studies (TMS, Figma 113:12821, 1512 wide). Same fluid rule: max = Figma value at 1512.

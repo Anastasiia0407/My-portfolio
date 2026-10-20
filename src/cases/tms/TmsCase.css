@@ -210,6 +210,12 @@
   transform: rotateY(180deg);
 }
 
+/* Turned by hand (hover, focus, tap): slower and symmetric, so it eases out of and into rest. A
+   change mid-turn re-targets the running transition, so it reverses from the current angle. */
+.insight-card__flip[data-flip='user'] {
+  transition: transform var(--dur-flip-user) var(--ease-flip-user);
+}
+
 /* Front 157:13744 / back 184:87: padding 56 top, 28 bottom, 32 sides (scaled with the stat cards' 32);
    label Inter Medium 20/26, 32 above the statement, Inter SemiBold 40/48. */
 .insight-card__face {
@@ -266,6 +272,10 @@
 
   .insight-card__flip[data-side='back'] .insight-card__face--back {
     opacity: 1;
+  }
+
+  .insight-card__flip[data-flip='user'] .insight-card__face--back {
+    transition-duration: var(--dur-flip-fade);
   }
 }
 
