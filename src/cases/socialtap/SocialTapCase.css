@@ -1,0 +1,25 @@
+/* SocialTap-only layout (shared case layout: src/cases/shared/case.css). */
+
+/* How I worked, 177:363: the dark tile in the flip grid. Image 42 sits at (72, 72.26) of a 704-wide
+   composition laid out by width from the top-left, so it bleeds past the tile's bottom; the tile clips
+   it. It fills its grid cell (704 × 320 at 1512); 361 × 194 below 760 (187:136). */
+.flip-tile {
+  overflow: hidden;
+  background: linear-gradient(var(--color-ink), var(--color-plum));
+}
+
+@media (max-width: 759px) {
+  /* 01 (187:96): the text, 32 below it the screen; the header sits 24 above the text, as its body. */
+  .case-media--text-first {
+    gap: var(--m-gap-l);
+    margin-top: var(--m-gap-m);
+  }
+
+  .case-media--text-first .case-media__text {
+    order: 0;
+  }
+
+  .flip-tile {
+    aspect-ratio: 361 / 194;
+  }
+}

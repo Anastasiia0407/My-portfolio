@@ -23,6 +23,8 @@ export interface StageShot {
   alt: string
   box: Box
   stroke: number
+  /** The ring's paint: the shared grey (TMS, default) or Figma's pink → near-black gradient (SocialTap). */
+  ring?: 'solid' | 'gradient'
 }
 
 /** Dark pill with a pink dot (e.g. 117:13315). x/y/width are the pill's Figma box. */
@@ -45,7 +47,8 @@ export interface StageData {
  * 100svh). Centre-triggered scenes (trigger "centre"): `duration` = ms the timeline plays once.
  */
 export interface SceneData {
-  label: string
+  /** Omitted: no single label; the screenshots' alts and the notes are read one by one. */
+  label?: string
   length?: number
   duration?: number
 }

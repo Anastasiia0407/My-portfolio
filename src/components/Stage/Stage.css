@@ -20,6 +20,16 @@
   background: linear-gradient(var(--color-teal-from), var(--color-teal-to));
 }
 
+/* SocialTap hero stage 177:304: ink → plum. */
+.stage--plum .stage__canvas {
+  background: linear-gradient(var(--color-ink), var(--color-plum));
+}
+
+/* A stage with no paint and no clip of its own (a single framed screenshot; a tile that clips it). */
+.stage--bare .stage__canvas {
+  overflow: visible;
+}
+
 .stage__item {
   position: absolute;
   left: var(--x);
@@ -31,10 +41,23 @@
 /* Figma draws these frames as OUTSIDE strokes: the image fills its box, the ring sits around it (a
    box-shadow spread, so its outer corners stay concentric with the fixed radius). */
 .stage-shot {
+  --ring: calc(var(--s) * var(--u));
   max-width: none;
   object-fit: cover;
   border-radius: var(--radius-shot);
-  box-shadow: 0 0 0 calc(var(--s) * var(--u)) var(--color-band-border);
+  box-shadow: 0 0 0 var(--ring) var(--color-band-border);
+}
+
+/* SocialTap's ring is a gradient (Figma: pink at 12% on the right → #18181b on the left). A box-shadow
+   can't take a gradient, so the ring is a transparent border painted by the background, laid outside
+   the image box (content-box sizing, negative margin); the inner corners stay concentric. */
+.stage-shot--gradient {
+  box-sizing: content-box;
+  margin: calc(-1 * var(--ring));
+  border: var(--ring) solid transparent;
+  border-radius: calc(var(--radius-shot) + var(--ring));
+  background: linear-gradient(to left, var(--color-ring-pink) -8%, var(--color-ring-dark) 118%) border-box;
+  box-shadow: none;
 }
 
 .margin-note {
@@ -93,6 +116,10 @@
 @media (max-width: 759px) {
   .stage-shot {
     border-radius: var(--m-radius-shot);
+  }
+
+  .stage-shot--gradient {
+    border-radius: calc(var(--m-radius-shot) + var(--ring));
   }
 
   /* 160:30: 12/16, padding 8/12, 8px dot 8 from the text; may wrap, balanced so no lone last word. */

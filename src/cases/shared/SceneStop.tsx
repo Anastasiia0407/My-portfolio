@@ -115,6 +115,7 @@ export function MobileGroup({
   spec,
   duration,
   notes = [],
+  notesBefore = [],
   pair,
   center,
   children,
@@ -122,27 +123,30 @@ export function MobileGroup({
   spec: SceneSpec
   duration: number
   notes?: Pick<MarginNoteData, 'text'>[]
+  /** Notes above the screenshot (SocialTap 04 and 05, 187:342). */
+  notesBefore?: Pick<MarginNoteData, 'text'>[]
   pair?: boolean
-  /** Centre the note under the screenshot (Stop 02). */
+  /** Centre the note under the screenshot (TMS Stop 02). */
   center?: boolean
   children: ReactNode
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const desktop = useMediaQuery(DESKTOP_QUERY)
   useTimedScene(ref, spec, duration, !desktop)
+  const note = (text: string) => (
+    <p key={text} className="margin-note" data-pop>
+      <span className="margin-note__dot" aria-hidden="true" />
+      {text}
+    </p>
+  )
   return (
     <div ref={ref} className={`mgroup${pair ? ' mgroup--pair' : ''}${center ? ' mgroup--center' : ''}`}>
+      {notesBefore.map(({ text }) => note(text))}
       {children}
-      {notes.map((note) => (
-        <p key={note.text} className="margin-note" data-pop>
-          <span className="margin-note__dot" aria-hidden="true" />
-          {note.text}
-        </p>
-      ))}
+      {notes.map(({ text }) => note(text))}
     </div>
   )
 }
-
 
 /** A framed screenshot whose image is built from layers (the first child is the static screenshot). */
 export function SceneFrame({ shot, size, layer, children }: { shot: Shot; size: Size; layer?: string; children: ReactNode }) {

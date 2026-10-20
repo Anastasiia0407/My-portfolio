@@ -1,5 +1,5 @@
-// Case study images: raw Figma fills in design-src/figma/case-tms/ (gitignored) → WebP in
-// src/assets/cases/tms/. Each screenshot is exported at its Figma box size (1x) and double (2x);
+// Case study images: raw Figma fills in design-src/figma/case-<slug>/ (gitignored) → WebP in
+// src/assets/cases/<slug>/ (TMS, SocialTap). Each screenshot is exported at its Figma box size (1x) and double (2x);
 // photos stop at their source resolution. Originals are downloaded through Figma MCP; this script
 // never fetches anything. Run: npm run images
 import { mkdir } from 'node:fs/promises'
@@ -58,5 +58,40 @@ for (const { name, file, width, height, fit = 'cover', quality = 82, scales = [1
       .resize(w, h, { fit })
     const info = await pipeline.webp({ quality, effort: 6 }).toFile(join(outDir, `${name}@${scale}x.webp`))
     console.log(`${`${name}@${scale}x.webp`.padEnd(32)} ${`${info.width}×${info.height}`.padEnd(10)} ${(info.size / 1024).toFixed(0)} KB`)
+  }
+}
+
+/**
+ * SocialTap (Figma 177:279): every screenshot is a 4096 × 2648 raw fill, exported at its Figma box
+ * size (1x) and double (2x). Same encoder settings as TMS.
+ */
+const socialtapSrc = (name) => join(root, 'design-src/figma/case-socialtap', name)
+const socialtapOut = join(root, 'src/assets/cases/socialtap')
+await mkdir(socialtapOut, { recursive: true })
+const socialtap = [
+  { name: 'hero-discovery', width: 1200, height: 775.78 }, // 181:13895 image 38
+  { name: 'project-campaigns', width: 756, height: 488.74 }, // 181:13912 image 41
+  { name: 'worked-profile-drawer', width: 560, height: 362.03 }, // 181:13928 image 42
+  { name: 'stop-01-brand-search', width: 760, height: 491.3 }, // 181:13939 image 43
+  { name: 'stop-01-creator-search', width: 760, height: 491.3 }, // 181:13944 image 44
+  { name: 'stop-02-campaigns', width: 760, height: 491.3 }, // 181:13955 image 45
+  { name: 'stop-02-campaign-card', width: 760, height: 491.3 }, // 181:13960 image 46
+  { name: 'stop-03-creator-profile', width: 760, height: 491.3 }, // 181:13970 image 47
+  { name: 'stop-03-campaign-drawer', width: 760, height: 491.3 }, // 181:13975 image 48
+  { name: 'stop-04-add-service', width: 1100, height: 711.1 }, // 181:13983 image 49
+  { name: 'stop-05-onboarding', width: 1100, height: 711.1 }, // 181:13993 image 50
+  { name: 'stop-06-academy', width: 760, height: 491.3 }, // 181:14003 image 51
+  { name: 'stop-06-community', width: 760, height: 491.3 }, // 181:14008 image 52
+]
+for (const { name, width, height } of socialtap) {
+  const input = sharp(socialtapSrc(`${name}.png`))
+  for (const scale of [1, 2]) {
+    const info = await input
+      .clone()
+      .flatten({ background: '#f6f4f2' })
+      .resize(Math.round(width * scale), Math.round(height * scale), { fit: 'cover' })
+      .webp({ quality: 82, effort: 6 })
+      .toFile(join(socialtapOut, `${name}@${scale}x.webp`))
+    console.log(`socialtap/${name}@${scale}x.webp`.padEnd(42) + ` ${`${info.width}×${info.height}`.padEnd(10)} ${(info.size / 1024).toFixed(0)} KB`)
   }
 }

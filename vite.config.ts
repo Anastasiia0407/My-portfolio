@@ -21,6 +21,7 @@ export default defineConfig({
       input: {
         main: page('index.html'),
         tms: page('work/tms.html'),
+        socialtap: page('work/socialtap.html'),
       },
     },
   },

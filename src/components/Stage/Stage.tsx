@@ -70,7 +70,7 @@ export function StageShot({
     <img
       ref={ref}
       data-layer={layer}
-      className="stage__item stage-shot"
+      className={`stage__item stage-shot${shot.ring === 'gradient' ? ' stage-shot--gradient' : ''}`}
       style={{ ...placeIn(shot.box, size), '--s': shot.stroke } as CSSProperties}
       src={shot.src1x}
       srcSet={`${shot.src1x} 1x, ${shot.src2x} 2x`}

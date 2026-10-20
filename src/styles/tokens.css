@@ -15,6 +15,11 @@
   /* Project 03 visuals (72:857 / 66:341) */
   --color-teal-from: #023238;
   --color-teal-to: #00606b;
+
+  /* SocialTap (177:279): dark stage and tile (177:304, 177:363), and the screenshots' ring paint */
+  --color-plum: #4a2340; /* stage gradient: ink → plum, top to bottom */
+  --color-ring-pink: rgb(255 158 211 / 0.12);
+  --color-ring-dark: #18181b;
   --color-band-border: #d5d7da; /* Figma "Grey/grey 300" */
   --color-band-shadow: rgb(24 29 39 / 0.08);
   /* Frame stroke as rendered by Figma (its export says rgb(221 228 227 / 0.12) but the stroke has a

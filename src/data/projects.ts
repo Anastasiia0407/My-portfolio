@@ -107,6 +107,7 @@ export const projects: Project[] = [
         frame: glassFrame,
       },
     ],
+    caseStudyUrl: '/work/socialtap',
   },
   {
     id: 'project-03',
