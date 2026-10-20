@@ -88,9 +88,10 @@
     transform: translateX(-8px);
   }
 
+  /* Below 760 the rows rise into place instead (162:31). */
   @media (max-width: 759px) {
     .motion .tms-row:not([data-shown]) {
-      transform: translateY(-8px);
+      transform: translateY(8px);
     }
   }
 

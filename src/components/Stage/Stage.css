@@ -95,12 +95,12 @@
     border-radius: max(var(--m-radius-min), calc(var(--r) * var(--u)));
   }
 
-  /* 14/20, padding 10/16/10/14, 8px dot; may wrap, balanced so no lone last word. */
+  /* 160:30: 12/16, padding 8/12, 8px dot 8 from the text; may wrap, balanced so no lone last word. */
   .margin-note {
     gap: 8px;
-    padding: 10px 16px 10px 14px;
-    font-size: var(--m-fs-small);
-    line-height: var(--m-lh-label);
+    padding: 8px 12px;
+    font-size: var(--m-fs-note);
+    line-height: var(--m-lh-note);
     text-wrap: balance;
   }
 

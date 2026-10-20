@@ -221,8 +221,8 @@
   }
 }
 
-/* Below 760: no pin; screenshots stack at full width (phones at half), each note under its
-   screenshot. Each screenshot is its own stage: --u = one Figma px of it, so radii, strokes and
+/* Below 760: no pin; on a #fafafa panel the screenshots stack at full width (phones 240 tall), each
+   note under its screenshot. Each screenshot is its own stage: --u = one Figma px of it, so radii, strokes and
    overlays scale with it (radii never below --m-radius-min). */
 @media (max-width: 759px) {
   .case-section--scene {
@@ -233,18 +233,30 @@
     display: none;
   }
 
+  /* The #fafafa panel (164:49): 32 below the header, padding 32; steps 32 apart (64 in Stop 01). */
   .scene-mobile {
     display: flex;
     flex-direction: column;
-    gap: var(--m-gap-m);
-    margin-top: var(--m-gap-m);
+    gap: var(--m-gap-l);
+    margin-top: var(--m-gap-l);
+    padding: var(--m-gap-l);
+    background: var(--color-panel);
   }
 
+  .scene-mobile--loose {
+    gap: calc(2 * var(--m-gap-l));
+  }
+
+  /* A step: its screenshot(s), then its note 16 below. */
   .mgroup {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--m-gap-xs);
+    gap: var(--m-gap-s);
+  }
+
+  .mgroup--center {
+    align-items: center;
   }
 
   .mgroup > .mshot,
@@ -252,8 +264,9 @@
     align-self: stretch;
   }
 
-  .mgroup--pair {
-    gap: var(--m-gap-s);
+  /* Edge cases: the two empty states 32 apart, the note 16 below them. */
+  .mgroup--pair > .mshot + .mshot {
+    margin-top: calc(var(--m-gap-l) - var(--m-gap-s));
   }
 
   .mshot {
@@ -264,8 +277,9 @@
     container-type: inline-size;
   }
 
+  /* Phones: 240 tall, centred. */
   .mshot--narrow {
-    width: 50%;
+    width: calc(var(--m-phone-h) * var(--stage-w) / var(--stage-h));
     align-self: center;
     margin-inline: auto;
   }

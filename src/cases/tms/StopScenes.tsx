@@ -53,6 +53,7 @@ function PinnedStop({
   notes,
   overlay,
   mobile,
+  mobileLoose,
   children,
 }: {
   copy: SectionCopy
@@ -61,8 +62,10 @@ function PinnedStop({
   size: Size
   notes?: MarginNoteData[]
   overlay?: ReactNode
-  /** The restacked version below 760 (MobileGroup / MobileShot). */
+  /** The restacked version below 760 (MobileGroup / MobileShot), on a #fafafa panel. */
   mobile: ReactNode
+  /** Steps 64 apart on that panel instead of 32 (Stop 01). */
+  mobileLoose?: boolean
   children: ReactNode
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -88,14 +91,14 @@ function PinnedStop({
         </div>
       </div>
       {/* Below 760: a figure (not role="img") so its screenshots' alts and its notes are read, once. */}
-      <figure className="scene-mobile" aria-label={scene.label}>
+      <figure className={`scene-mobile${mobileLoose ? ' scene-mobile--loose' : ''}`} aria-label={scene.label}>
         {mobile}
       </figure>
     </section>
   )
 }
 
-/** A screenshot as its own stage at full width (or half, `narrow`), for the restacked mobile stops. */
+/** A screenshot as its own stage at full width (or a 240-tall phone, `narrow`), for the restacked mobile stops. */
 function MobileShot({
   shot,
   narrow,
@@ -120,19 +123,22 @@ function MobileGroup({
   duration,
   notes = [],
   pair,
+  center,
   children,
 }: {
   spec: SceneSpec
   duration: number
-  notes?: MarginNoteData[]
+  notes?: Pick<MarginNoteData, 'text'>[]
   pair?: boolean
+  /** Centre the note under the screenshot (Stop 02). */
+  center?: boolean
   children: ReactNode
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const desktop = useMediaQuery(DESKTOP_QUERY)
   useTimedScene(ref, spec, duration, !desktop)
   return (
-    <div ref={ref} className={`mgroup${pair ? ' mgroup--pair' : ''}`}>
+    <div ref={ref} className={`mgroup${pair ? ' mgroup--pair' : ''}${center ? ' mgroup--center' : ''}`}>
       {children}
       {notes.map((note) => (
         <p key={note.text} className="margin-note" data-pop>
@@ -225,6 +231,7 @@ export function Stop01Scene() {
   )
   return (
     <PinnedStop
+      mobileLoose
       copy={copy}
       scene={scene}
       spec={stop01}
@@ -324,7 +331,7 @@ export function Stop02Scene() {
           <MobileGroup spec={m02Flow} duration={2400}>
             <HandoffFlow steps={flow.steps} />
           </MobileGroup>
-          <MobileGroup spec={m02Panel} duration={1400} notes={stage.notes}>
+          <MobileGroup spec={m02Panel} duration={1400} notes={stage.notes} center>
             <MobileShot shot={shot}>{notificationsPiece}</MobileShot>
           </MobileGroup>
         </>
@@ -361,7 +368,7 @@ const stop03: SceneSpec = {
 const m03Desk: SceneSpec = { layers: { hl: span(stop03.layers.hl, 0.18, 1) }, notesAt: [1] }
 
 export function Stop03Scene() {
-  const { copy, stage, scene } = stops.tasks
+  const { copy, stage, scene, mobileNotes } = stops.tasks
   const [desk, phone] = stage.shots
   const deskPiece = (shot: Shot, size: Size) => (
     <>
@@ -393,12 +400,14 @@ export function Stop03Scene() {
       notes={stage.notes}
       mobile={
         <>
-          <MobileGroup spec={m03Desk} duration={2600} notes={stage.notes}>
+          <MobileGroup spec={m03Desk} duration={2600} notes={[mobileNotes[0]]}>
             <MobileShot shot={desk}>{deskPiece}</MobileShot>
           </MobileGroup>
-          <MobileShot shot={phone} narrow>
-            {phonePiece}
-          </MobileShot>
+          <MobileGroup spec={noteOnly} duration={500} notes={[mobileNotes[1]]}>
+            <MobileShot shot={phone} narrow>
+              {phonePiece}
+            </MobileShot>
+          </MobileGroup>
         </>
       }
     >

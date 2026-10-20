@@ -44,13 +44,15 @@ a.stat-card__source:focus-visible {
   }
 }
 
+/* 160:38 at 393: padding 32, 16 apart; number Onest 40/48 (scaled), text 16/24, source 14/20. */
 @media (max-width: 759px) {
   .stat-card {
-    padding: var(--m-gap-m) var(--m-gap-s);
+    padding: var(--m-gap-l);
   }
 
   .stat-card__value {
     font-size: var(--m-fs-stat);
+    line-height: var(--m-lh-stat);
   }
 
   .stat-card__text {

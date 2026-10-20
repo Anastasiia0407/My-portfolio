@@ -93,8 +93,6 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
                   {
                     '--cx': percent(tool.cx, stage.size.width),
                     '--cy': percent(tool.cy, stage.size.height),
-                    '--dx': `${tool.drop.x}%`,
-                    '--dy': `${tool.drop.y}px`,
                     '--rot': `${tool.rotation}deg`,
                   } as CSSProperties
                 }
@@ -104,6 +102,7 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
             ))}
           </ul>
           <p className="problem-stage__label" data-scene-label aria-hidden="true">
+            <span className="margin-note__dot" />
             {stage.endLabel}
           </p>
         </Stage>

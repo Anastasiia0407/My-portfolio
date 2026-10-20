@@ -62,7 +62,8 @@
   line-height: 1;
 }
 
-/* No mobile design yet: the steps stack, arrows point down. */
+/* Below 760 (164:66): the steps stack 4 apart with down arrows; padding 16, 4 between title and
+   text, centred. */
 @media (max-width: 759px) {
   .handoff {
     flex-direction: column;
@@ -71,7 +72,9 @@
   }
 
   .handoff__step {
+    gap: var(--m-gap-xxs);
     padding: var(--m-gap-s);
+    text-align: center;
   }
 
   .handoff__title,

@@ -171,14 +171,13 @@ export const tmsCase = {
     /**
      * 113:12853: blurred photo (117:13298, 6px blur, stretched to fill), one window, five tilted tool
      * cards. Scroll scene (motion note 124:15): in this order each card flies into the window and adds
-     * its row; then the window settles and the label shows. Below 760 a "drop-in" version: the cards
-     * start in a tilted stack above the window (`drop`: centre, x in % of the stage, y in px) and fall
-     * straight into their rows.
+     * its row; then the window settles and the label shows. Below 760 (162:25) there are no cards: the
+     * window's rows appear one by one, then the label as a margin note.
      */
     stage: {
       size: { width: 1432, height: 720 },
       ariaLabel:
-        'Five tool cards — Excel tracker, email threads, carrier portal, CRM and PDF documents — fly into one TMS window as you scroll.',
+        'Five separate tools — Excel tracker, email threads, carrier portal, CRM and PDF documents — become rows in one TMS window as you scroll.',
       background: { src: problemBg, blur: 6 },
       window: {
         box: { x: 436, y: 180, width: 560, height: 360 },
@@ -187,16 +186,16 @@ export const tmsCase = {
       },
       endLabel: 'One shipment, one place',
       /**
-       * Centre of each card's rotated bounding box (Figma), rotation in degrees (clockwise); `drop`
-       * the mobile start centre; `row` is what the card adds to the window.
+       * Centre of each card's rotated bounding box (Figma), rotation in degrees (clockwise); `row` is
+       * what the card adds to the window.
        */
       tools: [
-        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, drop: { x: 30, y: 30 }, row: { label: 'Shipments & status', value: 'Booking' } },
-        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, drop: { x: 66, y: 48 }, row: { label: 'Tasks & comments', value: '3 open' } },
-        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, drop: { x: 28, y: 76 }, row: { label: 'ETA & tracking', value: '26.08' } },
-        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, drop: { x: 72, y: 96 }, row: { label: 'Client: AgroFood Export' } },
-        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, drop: { x: 46, y: 124 }, row: { label: 'Documents & invoices', value: '4 files' } },
-      ] as { id: string; label: string; cx: number; cy: number; rotation: number; drop: { x: number; y: number }; row: { label: string; value?: string } }[],
+        { id: 'excel', label: 'Excel tracker', cx: 217.2, cy: 146.05, rotation: 8, row: { label: 'Shipments & status', value: 'Booking' } },
+        { id: 'email', label: 'Email threads', cx: 1170.18, cy: 104.41, rotation: -6, row: { label: 'Tasks & comments', value: '3 open' } },
+        { id: 'carrier', label: 'Carrier portal', cx: 188.73, cy: 546.45, rotation: -5, row: { label: 'ETA & tracking', value: '26.08' } },
+        { id: 'crm', label: 'CRM', cx: 1171.72, cy: 541.66, rotation: 6, row: { label: 'Client: AgroFood Export' } },
+        { id: 'pdf', label: 'PDF documents', cx: 707.85, cy: 642.23, rotation: 3, row: { label: 'Documents & invoices', value: '4 files' } },
+      ] as { id: string; label: string; cx: number; cy: number; rotation: number; row: { label: string; value?: string } }[],
     },
     /** 113:12867. Sources are linked in Figma. */
     stats: [
@@ -348,6 +347,8 @@ export const tmsCase = {
         ],
         notes: [{ text: 'Tasks sorted by priority, each opens its shipment', x: 80, y: 850, width: 432 }],
       } satisfies StageData,
+      /** Below 760 (164:89) the note splits: one under the dashboard, one under the phone. */
+      mobileNotes: [{ text: 'Tasks sorted by priority' }, { text: 'Each task opens its shipment' }],
     },
     /** 120:13520 */
     shipment: {

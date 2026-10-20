@@ -16,6 +16,11 @@ export const toolsScene = {
   settleSpan: 0.15,
   settleBump: 0.04,
   labelAt: 0.9,
+  // Below 760 (162:25, no cards): row i shows at mobileRowFirst + i × mobileRowStep, the note at
+  // mobileLabelAt (evenly spaced, the same step), then the pin holds until release.
+  mobileRowFirst: 0.1,
+  mobileRowStep: 0.15,
+  mobileLabelAt: 0.85,
 }
 
 const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2)
@@ -24,8 +29,8 @@ const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) *
  * "Tools → one window" (113:12853): scroll through the pinned track drives each tool card into the
  * TMS window (translate to the window centre, straighten, scale to 40%, fade), shows its row in the
  * window, then settles the window and shows the end label. Reverses on the way up.
- * Below 760 ("drop-in"): the same timing, but each card falls straight down onto its own row
- * (no horizontal move, no shrink), straightens, and is gone once its row shows.
+ * Below 760 there are no cards (CSS hides them): the rows show one by one, evenly spaced through the
+ * pin, then the label; the window doesn't settle.
  * Card and window centres are layout offsets (no transforms), measured on resize only; each frame
  * writes transforms, opacity and data-shown attributes.
  */
@@ -53,8 +58,7 @@ export function useToolsScene({
     let top = 0
     let length = 1
     let deltas = cards.map(() => ({ x: 0, y: 0 }))
-    let drop = false
-    const rowEls = rows
+    let mobile = false
     const last = { cards: cards.map(() => ''), rows: rows.map(() => false), win: '', label: false }
 
     // Cards drop their static CSS rotate; their transform (written below in the same task) carries it.
@@ -66,23 +70,32 @@ export function useToolsScene({
       measure() {
         top = pageTop(trackEl)
         length = trackEl.offsetHeight - pinEl.offsetHeight
-        drop = window.matchMedia('(max-width: 759px)').matches
+        mobile = window.matchMedia('(max-width: 759px)').matches
         const wx = win.offsetLeft + win.offsetWidth / 2
         const wy = win.offsetTop + win.offsetHeight / 2
         // Card centre in layout: left/top sit at the centre and the card is translated −50%.
-        deltas = cards.map((card, i) => {
-          if (!drop) return { x: wx - card.offsetLeft, y: wy - card.offsetTop }
-          const row = rowEls[i]
-          const rowY = win.offsetTop + (row ? row.offsetTop + row.offsetHeight / 2 : win.offsetHeight / 2)
-          return { x: 0, y: rowY - card.offsetTop }
-        })
+        deltas = cards.map((card) => ({ x: wx - card.offsetLeft, y: wy - card.offsetTop }))
       },
       update(y) {
         const p = length > 0 ? clamp01((y - top) / length) : 1
+        if (mobile) {
+          rows.forEach((row, i) => {
+            const shown = p >= t.mobileRowFirst + i * t.mobileRowStep
+            if (shown !== last.rows[i]) setShown(row, (last.rows[i] = shown))
+          })
+          if (last.win !== '') {
+            last.win = ''
+            win.style.transform = ''
+            win.style.removeProperty('--settle')
+          }
+          const noteShown = p >= t.mobileLabelAt
+          if (noteShown !== last.label) setShown(label, (last.label = noteShown))
+          return
+        }
         cards.forEach((card, i) => {
           const k = easeInOutCubic(clamp01((p - (t.firstStart + i * t.startStep)) / t.flight))
           const rotate = rotations[i] * (1 - Math.min(1, k * t.straightenBy))
-          const scale = drop ? 1 : 1 - (1 - t.endScale) * k
+          const scale = 1 - (1 - t.endScale) * k
           const opacity = k <= t.fadeFrom ? 1 : 1 - (k - t.fadeFrom) / (1 - t.fadeFrom)
           const key = `translate(${(deltas[i].x * k).toFixed(2)}px, ${(deltas[i].y * k).toFixed(2)}px) rotate(${rotate.toFixed(3)}deg) scale(${scale.toFixed(4)})|${opacity.toFixed(3)}`
           if (key !== last.cards[i]) {
