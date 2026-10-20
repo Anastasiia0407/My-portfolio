@@ -99,6 +99,13 @@
   text-transform: uppercase;
 }
 
+/* The panel takes focus when opened by pointer or touch (MobileMenu.tsx): no ring on it. */
+.menu:focus,
+.menu:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .menu__link:hover {
     color: var(--color-accent);

@@ -166,10 +166,10 @@ export function useHeroStage(stage: RefObject<HTMLElement | null>, image: RefObj
  * Scroll-linked RevealText without a pin: `--progress` 0 → 1 from the paragraph's top at 95% of the
  * viewport to 40% — or to the end of the page if that comes first, so the reveal always completes.
  */
-export function useScrollReveal(target: RefObject<HTMLElement | null>) {
+export function useScrollReveal(target: RefObject<HTMLElement | null>, enabled = true) {
   useEffect(() => {
     const el = target.current
-    if (!el || !motionEnabled()) return
+    if (!el || !enabled || !motionEnabled()) return
     let start = 0
     let end = 1
     let last = -1
@@ -191,7 +191,48 @@ export function useScrollReveal(target: RefObject<HTMLElement | null>) {
       el.removeAttribute('data-progress-active')
       el.style.removeProperty('--progress')
     }
-  }, [target])
+  }, [target, enabled])
+}
+
+/**
+ * The per-character reveal below 760 (no pin), driven by the paragraph's own position: `--progress`
+ * runs `from` → 1 from its top at 85% of the viewport to its bottom at 45% (or the end of the page,
+ * if that comes first), both ways as you scroll. Measured in svh, so the iOS toolbar showing and
+ * hiding doesn't move the range. Opacity only (RevealText.css). Reduced motion: off (full ink).
+ */
+export function useParagraphReveal(target: RefObject<HTMLElement | null>, enabled = true, from = 0) {
+  useEffect(() => {
+    const el = target.current
+    if (!el || !enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // The small viewport height (100svh), read from a probe: steady while the toolbar moves.
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none'
+    document.body.appendChild(probe)
+    let start = 0
+    let end = 1
+    let last = -1
+    el.setAttribute('data-progress-active', '')
+    const stop = addScrollJob({
+      measure() {
+        const svh = probe.offsetHeight || window.innerHeight
+        const top = pageTop(el)
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+        start = top - svh * 0.85
+        end = Math.max(start + 1, Math.min(top + el.offsetHeight - svh * 0.45, maxScroll))
+      },
+      update(y) {
+        const p = clamp01((y - start) / (end - start))
+        const progress = Math.round((from + p * (1 - from)) * 10000) / 10000
+        if (progress !== last) el.style.setProperty('--progress', String((last = progress)))
+      },
+    })
+    return () => {
+      stop()
+      probe.remove()
+      el.removeAttribute('data-progress-active')
+      el.style.removeProperty('--progress')
+    }
+  }, [target, enabled, from])
 }
 
 /**

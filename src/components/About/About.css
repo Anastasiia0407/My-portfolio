@@ -1,6 +1,7 @@
 /* Figma 62:245 (desktop) / 66:278 (mobile). The section is a scroll track; its inner block is
    pinned (sticky, one viewport tall, content at the bottom) while the reveal runs, the same native
-   approach as Works. Track = one viewport + --about-pin-length viewports of reveal scroll. */
+   approach as Works. Track = one viewport + --about-pin-length viewports of reveal scroll. From 760
+   only; below it the section is one screen tall and not pinned. */
 .about {
   position: relative;
   height: calc((1 + var(--about-pin-length)) * 100svh);
@@ -43,6 +44,17 @@
 }
 
 @media (max-width: 759px) {
+  /* No track, no pin: the paragraph reveals as it scrolls through (useParagraphReveal). */
+  .about {
+    height: auto;
+  }
+
+  .about__pin {
+    position: static;
+    height: auto;
+    min-height: 100svh;
+  }
+
   .about__pin {
     gap: var(--m-gap-xs);
     padding: var(--m-section) var(--m-gutter);

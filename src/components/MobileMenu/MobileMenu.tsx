@@ -8,9 +8,12 @@ import './MobileMenu.css'
  * Mobile menu (Figma 66:362), below 760px only. The button's two lines morph into an "X";
  * the overlay fades in. While open: page scroll is locked, the rest of the page is inert,
  * focus is trapped in [button + links], and Escape closes and returns focus to the button.
+ * Opened from the keyboard, focus goes to the first link (with its ring); opened by pointer or
+ * touch, to the menu panel itself (tabindex −1, no ring), so no link shows a focus ring.
  */
 export default function MobileMenu() {
   const [open, setOpen] = useState(false)
+  const openedByKeyboard = useRef(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +28,8 @@ export default function MobileMenu() {
     outside.forEach((el) => el?.setAttribute('inert', ''))
 
     const focusables = () => [buttonRef.current, ...(menuRef.current?.querySelectorAll<HTMLElement>('a') ?? [])]
-    focusables()[1]?.focus()
+    if (openedByKeyboard.current) focusables()[1]?.focus()
+    else menuRef.current?.focus()
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -37,7 +41,8 @@ export default function MobileMenu() {
       if (event.key !== 'Tab') return
       const items = focusables().filter((el): el is HTMLElement => el !== null)
       const index = items.indexOf(document.activeElement as HTMLElement)
-      const next = event.shiftKey ? index - 1 : index + 1
+      // From the panel itself (pointer open): Tab goes to the first link, Shift+Tab to the button.
+      const next = index === -1 ? (event.shiftKey ? 0 : 1) : event.shiftKey ? index - 1 : index + 1
       event.preventDefault()
       items[(next + items.length) % items.length]?.focus()
     }
@@ -54,9 +59,11 @@ export default function MobileMenu() {
     }
   }, [open])
 
-  const toggle = () => {
+  // A keyboard activation of the button is a click with detail 0.
+  const toggle = (event: MouseEvent<HTMLButtonElement>) => {
+    openedByKeyboard.current = event.detail === 0
     setOpen((value) => !value)
-    buttonRef.current?.focus()
+    buttonRef.current?.focus({ preventScroll: true })
   }
 
   const goTo = (href: string) => (event: MouseEvent<HTMLAnchorElement>) => {
@@ -97,6 +104,7 @@ export default function MobileMenu() {
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
+        tabIndex={-1}
         inert={!open}
       >
         <nav aria-label="Mobile">

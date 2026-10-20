@@ -146,7 +146,7 @@
   --gap-case-card: clamp(16px, 1.587vw, 24px); /* meta columns, stat cards */
   --gap-case-stat: 16px; /* inside a stat card */
 
-  /* About pin: viewports of scroll for the full text reveal (desktop; mobile below). Tune the pace here. */
+  /* About pin (760 and up): viewports of scroll for the full text reveal. Tune the pace here. */
   --about-pin-length: 1.5;
 
   /*
@@ -202,12 +202,6 @@
   --m-tools-stage-h: 408px; /* section 02 stage (162:25): window, then the note */
   --m-tools-window-top: 56px;
   --m-tools-note-bottom: 56px;
-}
-
-@media (max-width: 759px) {
-  :root {
-    --about-pin-length: 1.2;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
