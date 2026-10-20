@@ -87,7 +87,7 @@ export function StageShot({
  * Margin note (117:13315): dark pill, pink dot, 16/20 text. Anchored to the stage edge it is
  * closer to, so it stays inside when the type stops shrinking with the stage.
  */
-export function MarginNote({ note, size }: { note: MarginNoteData; size: Size }) {
+function MarginNote({ note, size }: { note: MarginNoteData; size: Size }) {
   const right = note.x + note.width / 2 > size.width / 2
   const y = pct(note.y, size.height)
   const style = right

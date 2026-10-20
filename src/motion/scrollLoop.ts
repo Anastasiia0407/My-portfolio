@@ -3,7 +3,7 @@
  * Geometry is read only in `measure` (on start, resize and document size changes); `update`
  * gets the scroll position and the cached viewport height and only writes styles.
  */
-export interface ScrollJob {
+interface ScrollJob {
   measure(viewportHeight: number): void
   update(scrollY: number, viewportHeight: number): void
 }

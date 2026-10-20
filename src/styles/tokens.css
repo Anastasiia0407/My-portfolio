@@ -86,8 +86,6 @@
   --dur-reveal: 600ms; /* fade up, fades */
   --reveal-distance: 24px;
   --stagger-reveal: 120ms; /* eyebrow → heading → body */
-  --dur-draw: 400ms; /* insight arrow wipe */
-  --stagger-insight: 300ms; /* insight → arrow → principle */
   --dur-pop: 400ms;
   --dur-rise: 900ms; /* hero title lines */
   --stagger-line: 100ms;
@@ -107,8 +105,6 @@
   --fs-display-h: clamp(32px, 4.233vw, 64px); /* section headings, Onest 64/68 */
   --lh-display-h: calc(68 / 64);
   --fs-stat: clamp(48px, 5.291vw, 80px); /* stat numbers 80/80 */
-  --fs-lead: clamp(20px, 1.852vw, 28px); /* insight 28/36 */
-  --lh-lead: calc(36 / 28);
   --fs-body-l: clamp(18px, 1.455vw, 22px); /* stat text 22/30 */
   --lh-body-l: calc(30 / 22);
   --fs-meta: clamp(16px, 1.323vw, 20px); /* meta row, insight label 20/24 */
@@ -121,7 +117,6 @@
   --color-ink-60: rgb(30 31 45 / 0.6);
   --color-ink-50: rgb(30 31 45 / 0.5);
   --color-cream-60: rgb(246 244 242 / 0.6);
-  --color-rule: rgb(30 31 45 / 0.12);
   --color-window-shadow: rgb(30 31 45 / 0.18); /* section 02 window, deepened by the settle */
   --color-highlight-tint: rgb(255 92 185 / 0.12); /* scene highlights over screenshots */
   /* Colours sampled from the TMS screenshots, for layers rebuilt over them (stage 3b scenes). */
@@ -142,7 +137,6 @@
   --space-case-card: clamp(20px, 2.116vw, 32px); /* stat card padding, insight row padding */
   --gap-case-header: clamp(48px, 5.291vw, 80px); /* section header → stage */
   --gap-case-media: clamp(64px, 7.937vw, 120px); /* header → photo row, footer bottom */
-  --gap-case-col: clamp(16px, 2.646vw, 40px); /* insight columns */
   --gap-case-card: clamp(16px, 1.587vw, 24px); /* meta columns, stat cards */
   --gap-case-stat: 16px; /* inside a stat card */
 

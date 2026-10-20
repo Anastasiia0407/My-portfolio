@@ -21,7 +21,7 @@ export interface SceneSpec {
 
 /** 0 → 1 as p goes from a to b. */
 export const ramp = (p: number, a: number, b: number) => clamp01((p - a) / (b - a))
-export const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2)
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2)
 /** ramp() eased in-out. */
 export const eased = (p: number, a: number, b: number) => easeInOut(ramp(p, a, b))
 

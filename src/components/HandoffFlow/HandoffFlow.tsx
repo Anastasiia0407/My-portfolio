@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import './HandoffFlow.css'
 
-export interface HandoffStep {
+interface HandoffStep {
   title: string
   text: string
   tone: 'light' | 'dark'

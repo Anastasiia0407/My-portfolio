@@ -8,19 +8,21 @@ Home page plus static case-study pages. Vite + React + TypeScript (multi-page), 
 - `npm run build` — typecheck → client build → SSR build → `scripts/prerender.mjs` (injects HTML into every page in `src/entry-server.tsx`) → `check:assets`
 - `npm run preview` — serve `dist/`
 - `npm run lint` — ESLint
-- `npm run images` — rebuild optimised assets from local Figma renders in `design-src/` (gitignored): `scripts/build-images.mjs` (home → `src/assets/`, `src/data/figma-layout.generated.ts`), `scripts/build-case-images.mjs` (TMS → `src/assets/cases/tms/`), `scripts/build-brand.mjs` (OG image and icons → `public/`)
+- `npm run images` — rebuild optimised assets from local Figma renders in `design-src/` (gitignored): `scripts/build-images.mjs` (home → `src/assets/`, `src/data/figma-layout.generated.ts`), `scripts/build-case-images.mjs` (TMS → `src/assets/cases/tms/`, SocialTap → `src/assets/cases/socialtap/`), `scripts/build-brand.mjs` (OG image and icons → `public/`)
 - `npm run check:assets` — fails if any file in `src/assets/` or `public/` is over 500 KB
 
 ## Pages and config
 
 - **Home** `index.html` → `src/App.tsx`: **Hero → About → Works → Contact**. Anchors `#home` (not in the nav), `#about`, `#works`, `#contact`; nav About, Works, Get in touch.
-- **TMS case** `work/tms.html` → `src/cases/tms/` (`main.tsx`, `TmsCase.tsx`, `StopScenes.tsx`), served at `/work/tms`. Sections: Hero (tagline, h1, "(03)", meta, teal dashboard stage) → 01 The project → 02 The problem (tools → one window scene, stats) → 03 The research (header row, then a 2 × 2 grid: three insight cards and the photo) → Stops 01–05 → No dead ends → The result → "← Back to all work".
+- **TMS case** `work/tms.html` → `src/cases/tms/` (`main.tsx`, `TmsCase.tsx`, `StopScenes.tsx`), served at `/work/tms`. Sections: Hero (tagline, h1, "(03)", meta, teal dashboard stage) → 01 The project → 02 The problem (tools → one window scene, stats) → 03 The research (header row, then a 2 × 2 flip grid: three insight cards and the photo) → Stops 01–05 → No dead ends → The result → "← Back to all work".
+- **SocialTap case** `work/socialtap.html` → `src/cases/socialtap/` (`main.tsx`, `SocialTapCase.tsx`, `scenes.ts`), served at `/work/socialtap` (Figma 177:279 desktop, 187:81 mobile, motion notes 177:541). Sections: Hero (tagline, h1 "Social Tap - AI SaaS marketplace", "(02)", meta, dark plum stage) → 01 The project (text, campaign screen) → What was my part (reveal statement) → How I worked (header row, 2 × 2 flip grid: Problem → Rule cards and the dark screenshot tile) → stages 01–06 (1432 × 880: a back and a front screen, or one screen, plus two notes) → The result → "← Back to all work". Screenshots have Figma's gradient ring (`StageShot` `ring: 'gradient'`).
 - One HTML entry per case (`vite.config.ts` inputs + `src/entry-server.tsx` pages); `/work/<slug>` resolves to `work/<slug>.html` (Vite) and via `cleanUrls` (`vercel.json`). No router.
-- **Site URL**: `site.config.ts` `SITE_URL` is the only place it is set. Vite fills `%SITE_URL%` in both HTML files (canonical, `og:url`, absolute `og:image`). Currently the Vercel production domain `https://anastasiia-cheban.vercel.app`; `public/robots.txt` and `public/sitemap.xml` repeat it by hand, so change all three together (e.g. for an own domain).
-- **Meta** lives in the HTML files: home title "Anastasiia Cheban — UX/UI & Product Designer" (og:type website); case "TMS platform for a logistics company — Anastasiia Cheban" (og:type article). Both: description, og:title/description/url/image (+ width/height/alt), `twitter:card` summary_large_image, `lang="en"`, icons and `site.webmanifest`.
+- **Site URL**: `site.config.ts` `SITE_URL` is the only place it is set. Vite fills `%SITE_URL%` in every HTML file (canonical, `og:url`, absolute `og:image`). Currently the Vercel production domain `https://anastasiia-cheban.vercel.app`; `public/robots.txt` and `public/sitemap.xml` repeat it by hand, so change all three together (e.g. for an own domain).
+- **Meta** lives in the HTML files: home title "Anastasiia Cheban — UX/UI & Product Designer" (og:type website); cases "TMS platform for a logistics company — Anastasiia Cheban" and "Social Tap - AI SaaS marketplace — Anastasiia Cheban" (og:type article). Each: description, canonical, og:title/description/url/image (+ width/height/alt), `twitter:card` summary_large_image, `lang="en"`, icons and `site.webmanifest`. A new case adds its URL to `public/sitemap.xml`.
 - **Content**:
-  - `src/data/projects.ts` — all Works content (data-only changes): `images[]` in paint order with `placement` (`desktop` box in the 756 × 982 panel, `mobile` box in the 361 × 490 card; Figma px, unrotated), optional `rotation`, `frame` (`solid` / `glass`), `band`, `counter` (`top` / `bottom`), `caseStudyUrl` (project 03 → `/work/tms`; a case URL also makes the Works title a link).
-  - `src/data/cases/tms.ts` — every text, image, stage geometry, margin note, scene length and aria-label of the TMS case.
+  - `src/data/projects.ts` — all Works content (data-only changes): `images[]` in paint order with `placement` (`desktop` box in the 756 × 982 panel, `mobile` box in the 361 × 490 card; Figma px, unrotated), optional `rotation`, `frame` (`solid` / `glass`), `band`, `counter` (`top` / `bottom`), `caseStudyUrl` (project 02 → `/work/socialtap`, 03 → `/work/tms`; a case URL also makes the Works title a link), `status` (`'coming-soon'`, project 01: the project stays in the Works sequence but is inert — no link, no hover colour, no CTA, not focusable — and shows a "Coming soon" margin-note pill, 196:14173 / 196:14178; remove the field to switch the case on).
+  - `src/data/cases/types.ts` — the shared shapes of case content (hero, nav, section copy, stages, shots, notes, scenes, flip cards, statements).
+  - `src/data/cases/tms.ts`, `src/data/cases/socialtap.ts` — every text, image, stage geometry, margin note, scene (kind, length) and aria-label of each case. Copy is Figma's, verbatim.
   - `src/data/site.ts` — the links config: nav items, contact links (mailto / Telegram / LinkedIn; `external` adds `target="_blank" rel="noopener noreferrer"`), owner name/role/tagline.
   - `src/data/figma-layout.generated.ts` — generated by `npm run images`; never edit by hand.
 
@@ -34,7 +36,10 @@ Home page plus static case-study pages. Vite + React + TypeScript (multi-page), 
 
 ## Case components
 
-`CaseNav` / `CaseLink`, `SectionHeader` (eyebrow / h2 lines / body; side by side from 760), `Stage` (fixed-ratio canvas; Figma px → % via `placeIn`; `--u` = one Figma px of the stage via `cqw`; `StageShot`; `MarginNote` anchored to the nearer edge), `StatCard` (`<data value>` + aria-hidden count-up copy), `HandoffFlow` (dark copy per step for the travelling fill), `RevealText` (shared with home About).
+- Shared by every case (`src/cases/shared/`; layout in `case.css`, stages in `scene.css`): `CasePage` (skip link, case nav, `main`, footer link; sets `data-motion-ready`), `CaseHero` (tagline, h1 lines, number, meta, stage with drift; `stageClassName` sets the stage paint, e.g. `stage--teal`, `stage--plum`), `CasePhoto` (clipped photo with parallax, optional `zoom`), `FlipGrid` (flip cards + media tile; optional `pin`), `CaseStatement` (label + per-character reveal, pinned when it fits), `SceneStop` (section header + pinned stage + mobile restack; `MobileGroup` / `MobileShot` / `SceneFrame` / `FrameImage`), `stageGeometry.ts` (`u`, `inFrame`, `insetOf`, `onShot`, `noteOnly`, `sequenceSteps`).
+- Components in `src/components/`: `CaseNav` / `CaseLink`, `SectionHeader` (eyebrow / h2 lines / body; side by side from 760), `Stage` (fixed-ratio canvas; Figma px → % via `placeIn`; `--u` = one Figma px of the stage via `cqw`; `StageShot`; `MarginNote` anchored to the nearer edge), `StatCard` (`<data value>` + aria-hidden count-up copy), `HandoffFlow` (dark copy per step for the travelling fill), `RevealText` (shared with home About).
+- Case-only: TMS keeps its stop scenes, the section 02 tools scene, the hand-off flow and the stats in `src/cases/tms/`; SocialTap keeps its scene specs in `src/cases/socialtap/scenes.ts`.
+- Flip cards (`FlipGrid`): the light front (finding) turns to the dark back (decision), one way: hover (fine pointer, 150 ms intent) or the scroll trigger turns a card dark; a click, Enter/Space or a tap toggles. Each card is a toggle button (aria-pressed); the hidden face is aria-hidden. 700 ms ease-in-out (`--dur-flip`, `--ease-flip`); reduced motion cross-fades in 300 ms.
 
 ## Styles and tokens
 
@@ -59,20 +64,20 @@ One rule for the whole site: every **story** animation pins its block and is dri
 ## Motion
 
 - `src/hooks/`: `useMediaQuery` (+ `DESKTOP_QUERY` / `PINNED_QUERY` / `FINE_HOVER_QUERY` / `REDUCED_MOTION_QUERY`, matching the CSS), `useActiveProject`, `useCursorFollow`, `usePinProgress`.
-- `src/motion/` (case page, Figma motion notes 124:2):
+- `src/motion/` (case pages; motion notes TMS 124:2, SocialTap 177:541):
   - `observeEnter` (IntersectionObserver, fires once; immediately for content already in view or above), `scrollLoop` (one passive scroll listener + rAF; geometry only on measure/resize).
   - `hooks.ts`: `useReveal` (section headers, insight cards), `useCountUp` (stats, after the section 02 pin releases), `useParallax` (01/03 photos), `useHeroStage` (0.96 → 1 + 0.85× dashboard drift; final on restored loads), `useStatementReveal` (statements, pinned or by position), `useCentreReached` (flip-card fallback).
-  - `toolsScene.ts`: section 02 — desktop cards fly into the window; below 760 a "drop-in" (pills fall straight onto their rows, `drop` in `tms.ts`). Same timing: start 0.12 + i × 0.13, flight 0.2, rows at k > 0.9, settle p 0.8–0.95, label p > 0.9.
+  - `toolsScene.ts`: section 02 — desktop cards fly into the window (start 0.12 + i × 0.13, flight 0.2, rows at k > 0.9, settle p 0.8–0.95, label p > 0.9); below 760 no cards: the five rows and the note show one by one (0.15 … 0.9).
   - `stageScene.ts`: `useStageScene` (pinned stages, p from scroll), `useTimedScene` / `useCentreScene` (unpinned fallbacks: p from a timeline on enter or at the viewport centre), `span()` to reuse layer functions; `scrollLoop.ts` also has `smallViewportHeight` and `watchPinFit`. Layers are `[data-layer]` elements; the markup is the final state; `.scene-only` layers exist only while a scene runs.
-  - Start states live in `motion.css` under `html.motion`, set before first paint by the inline script in `work/tms.html` (dropped after 4 s without `data-motion-ready`). Hero title/tagline/meta are CSS keyframes.
+  - Start states live in `motion.css` under `html.motion`, set before first paint by the inline script in each `work/<slug>.html` (dropped after 4 s without `data-motion-ready`). Hero title/tagline/meta are CSS keyframes.
 - Only transform, opacity, clip-path (and existing filters); no layout writes on scroll. Hover effects only under `(hover: hover) and (pointer: fine)`. `prefers-reduced-motion`: no pins, parallax, count-ups, reveals or pop-ins; no cursor follow or menu morph; no smooth scroll.
 
 ## Mobile rules (below 760)
 
-- Home: Figma 66:263 (393 wide). Case: no Figma design — the same rules by analogy.
-- `--m = 100vw / 393`. Scaled: display headings only (home: SELECTED WORKS / menu 40/48, tagline 32/40; case: Hero title 36/40 in three fitted lines, section headings 32/36, stat numbers 56). Fixed: labels 16/20, body 16/24, meta, notes 14/20 (padding 10/16/10/14, 8px dot, balanced wrap), insight/principle, nav links, About and The result 28/32.
-- Spacing: 16px gutters, 32px section padding, gaps 12 / 16 / 24 / 32.
-- Case page: nav "← Back" + "(03)" (plain text, replaces Get in touch); meta in one column; 01/03 photo first; insight arrow points down; section 02 keeps its pin (rows one by one, 408px stage); Stops 01–05 and No dead ends restack on a #fafafa panel (`MobileShot` per screenshot, `MobileGroup` per step, note last) that pins when it fits (Pin rule).
+- Home: Figma 66:263 (393 wide). Cases: TMS 161:2, SocialTap 187:81 (393 wide), on the shared mobile components in 160:29.
+- `--m = 100vw / 393`. Scaled: display headings only (home: SELECTED WORKS / menu 40/48, tagline 32/40; case: Hero title 40/48 in fitted lines, section headings 32/36, stat numbers 40/48). Fixed: labels 16/20, body 16/24, meta, margin notes 12/16 (padding 8/12, 8px dot, balanced wrap), flip cards 16/24 + 24/28, nav links, About and the statements 28/32.
+- Spacing: 16px gutters; home sections 32 padding (`--m-section`), case sections 64 (`--m-case-section`) and 32 from a section header to its content; gaps 12 / 16 / 24 / 32.
+- Case page: nav "← Back" + the case number (plain text, replaces Get in touch); meta in one column; 01/03 photo first; insight arrow points down; section 02 keeps its pin (rows one by one, 408px stage); Stops 01–05 and No dead ends restack on a #fafafa panel (`MobileShot` per screenshot, `MobileGroup` per step, note last) that pins when it fits (Pin rule).
 - Touch: no hover effects; visuals always in colour; every link works on one tap.
 - Tap targets ≥ 44 × 44 without changing the look: text links via `.touch-target`, the home menu button via a 44px `::before` (icon still 40 × 40 at 16, 16; focus ring on the tap area). Exception by the owner's decision: the home footer's middle link (Telegram) keeps a 28px-tall target, because the links sit 28px apart (meets WCAG AA).
 
@@ -80,7 +85,7 @@ One rule for the whole site: every **story** animation pins its block and is dri
 
 - `design-src/` and `video-src/` are **gitignored**; only optimised outputs are committed (`src/assets/`, `public/`, ≤ 500 KB each). Never write temporary Figma asset URLs into code.
 - Screenshots are the real Figma fills, exported at their Figma box size (1x / 2x WebP). Several scene states are built from screenshots that line up exactly (image 31 = dashboard + panel, 35 = dashboard + open menus, 34 = image 28 under a 21% scrim + modal, image 27 rescaled = image 28's General tab). The hero / Stop 03 dashboard reuses `work-03@1x/2x.webp`.
-- OG image: Figma frame **146:2** "OG image — Home (1200×630)" → `public/og-image.jpg` (one image for both pages). Re-export the frame into `design-src/figma/brand/og-146-2.png` and run `npm run images` when it changes.
+- OG image: Figma frame **146:2** "OG image — Home (1200×630)" → `public/og-image.jpg` (one image for every page). Re-export the frame into `design-src/figma/brand/og-146-2.png` and run `npm run images` when it changes.
 - Favicon: Figma node **137:13721** "Vablicon" (512 × 512, "AC" masked with the hero photo on #1e1f2d) → icons in `public/` and `public/site.webmanifest` (`scripts/build-brand.mjs`). 180, 192 and 512 use the photo render; 16, 32 and `favicon.ico` are flat: solid "AC" on #1e1f2d in the average photo tone inside the letters at 512px, or #f6f4f2 when that tone is under 4.5:1 (it is: #8a6c6f, 3.46:1, so the fill is #f6f4f2).
 - Stop 05 is a coded scene (the video was cancelled; no video files in the repo).
 
@@ -90,7 +95,12 @@ One rule for the whole site: every **story** animation pins its block and is dri
 - No secrets, tokens or keys in the repo; the site needs no env vars.
 - Never add fake screenshots; a project without images shows an empty panel.
 - Stage commits with explicit paths (originals land in the project folder).
-- Commit and push only when the owner asks; never deploy.
+
+## Git
+
+- Never commit or push unless the owner says so; never deploy (Vercel deploys `main` on push).
+- Work on a preview branch (`preview/<topic>`), one local commit per agreed part; push only that branch so Vercel builds a preview for the owner to check on a phone.
+- Push `main` (fast-forward from the preview branch) only when the owner approves.
 
 ## Figma
 
@@ -107,5 +117,10 @@ fileKey `KrK3uJDPRwV4ogpCkaWoiS`. No Figma variables, no motion data (motion is 
 | 66:263 / 66:362 | Home mobile (393 wide) / mobile menu open |
 | 113:12821 | TMS case desktop (1512 × 15387): 113:12822 Hero, 117:13219 01, 113:12848 02 (stage 113:12853), 113:12880 03, 117:13300 / 120:13379 / 120:13449 / 120:13520 / 120:13588 Stops 01–05, 120:13647 No dead ends, 120:13690 The result, 113:12982 case nav |
 | 124:2 | Motion notes — TMS case |
+| 161:2 / 160:29 | TMS case mobile (393 wide) / shared mobile components (margin note, section header, stat card, meta item, hand-off step) |
+| 177:279 | SocialTap case desktop (1512 wide): 177:280 Hero, 177:306 01, 181:13921 My part, 177:347 How I worked (181:13928 image 42 tile), 177:364 / 177:379 / 177:402 / 177:414 / 177:429 / 177:440 stages 01–06, 177:453 Result, 177:456 case nav |
+| 187:81 | SocialTap case mobile (393 wide) |
+| 177:541 | Motion notes — SocialTap case (184:101 flip-card backs) |
+| 196:14173 / 196:14178 | Works project 01 "Coming soon" tag (desktop title row / mobile card) |
 | 137:13721 | Favicon "Vablicon" (512 × 512) |
 | 146:2 | OG image — Home (1200 × 630) |

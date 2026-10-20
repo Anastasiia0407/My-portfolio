@@ -1,6 +1,6 @@
 import './StatCard.css'
 
-export interface Stat {
+interface Stat {
   value: number
   suffix: string
   text: string

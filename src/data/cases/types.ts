@@ -76,7 +76,7 @@ export interface Photo {
   height: number
 }
 
-export interface CaseLinkData {
+interface CaseLinkData {
   label: string
   href: string
 }

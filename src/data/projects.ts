@@ -15,7 +15,7 @@ import work031x from '../assets/work-03@1x.webp'
 import work032x from '../assets/work-03@2x.webp'
 
 /** A box in Figma px. */
-export interface Rect {
+interface Rect {
   x: number
   y: number
   width: number
