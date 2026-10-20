@@ -66,6 +66,16 @@ export interface Project {
   images: ProjectImage[]
   /** Missing until the case study exists; then nothing links to it. */
   caseStudyUrl?: string
+  /**
+   * "coming-soon" (196:14173 / 196:14178): the project stays in the Works sequence but is inert —
+   * no link, no hover colour, no CTA — and shows a "Coming soon" tag. Remove it to switch the case on.
+   */
+  status?: 'coming-soon'
+}
+
+/** Tag text per project status. */
+export const projectStatusLabel: Record<NonNullable<Project['status']>, string> = {
+  'coming-soon': 'Coming soon',
 }
 
 const [phoneA, phoneB] = work01Phones
@@ -85,6 +95,7 @@ export const projects: Project[] = [
       { src1x: work01a1x, src2x: work01a2x, alt: 'Weekly menu screen of the What to Eat app', placement: phoneA },
       { src1x: work01b1x, src2x: work01b2x, alt: 'Shopping list screen of the What to Eat app', placement: phoneB },
     ],
+    status: 'coming-soon',
   },
   {
     id: 'project-02',

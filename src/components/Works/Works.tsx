@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import type { CSSProperties, FocusEvent, MouseEvent } from 'react'
-import { projects } from '../../data/projects.ts'
+import { projects, projectStatusLabel } from '../../data/projects.ts'
 import type { Placement, Project, ProjectImage } from '../../data/projects.ts'
 import { worksStages } from '../../data/figma-layout.generated.ts'
 import { useActiveProject, pinnedStepTop } from '../../hooks/useActiveProject.ts'
@@ -78,6 +78,17 @@ function ProjectCta({ project }: { project: Project }) {
   )
 }
 
+/** Status tag (196:14173 / 196:14178): the margin-note pill, e.g. "Coming soon". */
+function ProjectTag({ project, className }: { project: Project; className: string }) {
+  if (!project.status) return null
+  return (
+    <span className={`works__tag ${className}`}>
+      <span className="works__tag-dot" aria-hidden="true" />
+      {projectStatusLabel[project.status]}
+    </span>
+  )
+}
+
 /** "(01) Title" as two stacked copies (Medium + SemiBold) that cross-fade: opacity only, no reflow. */
 function ProjectLabel({ project }: { project: Project }) {
   const label = `(${project.number}) ${project.title}`
@@ -109,6 +120,7 @@ function ProjectVisual({
       className="works__visual"
       data-state={state}
       data-counter={project.counter ?? 'top'}
+      data-status={project.status}
       aria-hidden={hidden || undefined}
     >
       {/* The images' own clipping layer: the panel in pinned mode. The counter and CTA sit above it, unclipped. */}
@@ -146,11 +158,13 @@ function ProjectVisual({
             ),
           )}
         </div>
+        {/* Below 760 the tag sits over the card's image (196:14178); on desktop the title row has it. */}
+        <ProjectTag project={project} className="works__tag--card" />
       </div>
       <span className="works__number" aria-hidden="true">
         ({project.number})
       </span>
-      <ProjectCta project={project} />
+      {!project.status && <ProjectCta project={project} />}
       {/* Visible card title below 760px; visually hidden on desktop, where the list names the project. */}
       <figcaption className={`works__caption works__label${state === 'active' ? ' is-active' : ''}`}>
         <ProjectLabel project={project} />
@@ -232,20 +246,33 @@ export default function Works() {
             </h2>
           </div>
           <ol className="works__list">
-            {projects.map((project, index) => (
-              <li key={project.id}>
-                <a
-                  className={`works__item works__label${index === activeIndex ? ' is-active' : ''}`}
-                  href={project.caseStudyUrl ?? `#${project.id}`}
-                  aria-current={index === activeIndex ? 'step' : undefined}
-                  onClick={project.caseStudyUrl ? undefined : goTo(index)}
-                  onFocus={onTitleFocus(index)}
-                  onBlur={() => setFocus(null)}
-                >
-                  <ProjectLabel project={project} />
-                </a>
-              </li>
-            ))}
+            {projects.map((project, index) =>
+              project.status ? (
+                // Inert (coming soon): plain text and its tag, not a link and not focusable (196:14177).
+                <li key={project.id} className="works__row">
+                  <span
+                    className={`works__item works__item--inert works__label${index === activeIndex ? ' is-active' : ''}`}
+                    aria-current={index === activeIndex ? 'step' : undefined}
+                  >
+                    <ProjectLabel project={project} />
+                  </span>
+                  <ProjectTag project={project} className="works__tag--row" />
+                </li>
+              ) : (
+                <li key={project.id}>
+                  <a
+                    className={`works__item works__label${index === activeIndex ? ' is-active' : ''}`}
+                    href={project.caseStudyUrl ?? `#${project.id}`}
+                    aria-current={index === activeIndex ? 'step' : undefined}
+                    onClick={project.caseStudyUrl ? undefined : goTo(index)}
+                    onFocus={onTitleFocus(index)}
+                    onBlur={() => setFocus(null)}
+                  >
+                    <ProjectLabel project={project} />
+                  </a>
+                </li>
+              ),
+            )}
           </ol>
         </div>
 

@@ -33,6 +33,39 @@
   font-weight: var(--fw-semibold);
 }
 
+/* Status tag (196:14173 / 196:14178): the case margin-note pill — ink, Inter Medium 12/16, padding
+   8/12, an 8px pink dot 8 from the text. */
+.works__tag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-ink);
+  color: var(--color-cream);
+  font-size: var(--m-fs-note);
+  font-weight: var(--fw-medium);
+  line-height: var(--m-lh-note);
+  white-space: nowrap;
+}
+
+.works__tag-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+/* Over the card's image, 16 from its top and right (mobile; the card's stage is .works__clip). */
+.works__tag--card {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  right: 16px;
+}
+
 /* One project's stage: the Figma panel (756 × 982) at the panel's width. Placements are % of it;
    --su is one Figma px of it, for borders and shadows that scale with it (Figma "Scale").
    Cards and stacked mode: the stage clips what extends past it. Pinned mode: the stage starts at
@@ -254,6 +287,23 @@
     opacity: 1;
   }
 
+  /* An inert project's title row (196:14177): the title, then its tag at the row's end, 12 apart. */
+  .works__row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+  }
+
+  .works__row .works__item {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* The title row carries the tag on desktop. */
+  .works__tag--card {
+    display: none;
+  }
+
   /* 37:31 */
   .works__panel {
     position: relative;
@@ -386,11 +436,12 @@
 
 /* …and hover with a mouse (stacked: per project, no follow). Every hover effect is gated here. */
 @media (min-width: 760px) and (hover: hover) and (pointer: fine) {
-  .works__item:not(.is-active):hover .works__label-text {
+  .works__item:not(.is-active):not(.works__item--inert):hover .works__label-text {
     opacity: 1;
   }
 
-  .works__visual:hover .works__image {
+  /* An inert project (data-status, e.g. coming soon) keeps its default look on hover. */
+  .works__visual:not([data-status]):hover .works__image {
     filter: none;
   }
 
@@ -486,7 +537,7 @@
 
 @media (min-width: 760px) and (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
   /* Hovering anywhere on the panel colours the active project and shows the CTA. */
-  .works__panel:hover .works__visual[data-state='active'] .works__image {
+  .works__panel:hover .works__visual[data-state='active']:not([data-status]) .works__image {
     filter: none;
   }
 
