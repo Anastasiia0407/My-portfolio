@@ -140,7 +140,12 @@ export default function TmsCase() {
           heading={research.copy.heading}
           body={research.copy.body}
         />
-        <FlipGrid items={research.insights} media={<CasePhoto photo={research.photo} zoom={1.08} />} mobileMediaAt={2} />
+        <FlipGrid
+          items={research.insights}
+          media={<CasePhoto photo={research.photo} zoom={1.08} />}
+          mobileMediaAt={2}
+          pin={{ length: 1 }}
+        />
       </section>
 
       <Stop01Scene />

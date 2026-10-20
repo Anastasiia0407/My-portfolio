@@ -37,6 +37,7 @@ export function SceneStop({
   overlay,
   mobile,
   mobileSpec,
+  mobileLength,
   mobileLoose,
   children,
 }: {
@@ -50,6 +51,8 @@ export function SceneStop({
   mobile: ReactNode
   /** The pinned mobile scene over the whole panel: its layers and notes, in DOM order. */
   mobileSpec?: SceneSpec
+  /** Viewports of pinned scroll below 760 (default: scene.length). */
+  mobileLength?: number
   /** Steps 64 apart on that panel instead of 32 (TMS Stop 01). */
   mobileLoose?: boolean
   children: ReactNode
@@ -80,7 +83,14 @@ export function SceneStop({
       id={copy.id}
       className="case-section case-section--scene"
       aria-labelledby={titleId}
-      style={{ '--pin-w': size.width, '--pin-h': size.height, '--pin-length': scene.length } as CSSProperties}
+      style={
+        {
+          '--pin-w': size.width,
+          '--pin-h': size.height,
+          '--pin-length': scene.length,
+          '--mpin-length': mobileLength ?? scene.length,
+        } as CSSProperties
+      }
     >
       <SectionHeader id={titleId} eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />
       <div ref={trackRef} className="scene-track">

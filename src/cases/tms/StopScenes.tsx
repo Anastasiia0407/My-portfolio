@@ -13,7 +13,7 @@ import type { SceneSpec } from '../../motion/stageScene.ts'
 import { tmsCase } from '../../data/cases/tms.ts'
 import type { Box, Size, StageShot as Shot } from '../../data/cases/types.ts'
 import { FrameImage, MobileGroup, MobileShot, SceneFrame, SceneStop } from '../shared/SceneStop.tsx'
-import { inFrame, insetOf, noteOnly, onShot, px, u } from '../shared/stageGeometry.ts'
+import { inFrame, insetOf, noteOnly, onShot, px, sequenceSteps, u } from '../shared/stageGeometry.ts'
 import './StopScenes.css'
 
 const { stops, edgeCases, hero } = tmsCase
@@ -60,6 +60,8 @@ export function Stop01Scene() {
       copy={copy}
       scene={scene}
       spec={stop01}
+      mobileSpec={mobile01}
+      mobileLength={M_TWO}
       size={stage.size}
       notes={stage.notes}
       mobile={
@@ -144,6 +146,8 @@ export function Stop02Scene() {
       copy={copy}
       scene={scene}
       spec={stop02}
+      mobileSpec={mobile02}
+      mobileLength={M_TWO}
       size={stage.size}
       notes={stage.notes}
       overlay={
@@ -221,6 +225,8 @@ export function Stop03Scene() {
       copy={copy}
       scene={scene}
       spec={stop03}
+      mobileSpec={mobile03}
+      mobileLength={M_TWO}
       size={stage.size}
       notes={stage.notes}
       mobile={
@@ -312,6 +318,8 @@ export function Stop04Scene() {
       copy={copy}
       scene={scene}
       spec={stop04}
+      mobileSpec={mobile04}
+      mobileLength={M_TWO}
       size={stage.size}
       notes={stage.notes}
       mobile={
@@ -394,6 +402,8 @@ export function Stop05Scene() {
       copy={copy}
       scene={scene}
       spec={stop05}
+      mobileSpec={mobile05}
+      mobileLength={M_ONE}
       size={stage.size}
       notes={stage.notes}
       mobile={
@@ -457,6 +467,8 @@ export function EdgeCasesScene() {
       copy={copy}
       scene={scene}
       spec={edge}
+      mobileSpec={mobileEdge}
+      mobileLength={M_TWO}
       size={stage.size}
       notes={stage.notes}
       mobile={
@@ -479,3 +491,15 @@ export function EdgeCasesScene() {
     </SceneStop>
   )
 }
+
+/* Below 760, pinned (the site's pin rule; SceneStop pins the panel when it fits 100svh − 32): the
+   steps of each panel in sequence, evenly spaced, the last ending at 0.9. */
+const mobile01 = sequenceSteps([noteOnly, m01List])
+const mobile02 = sequenceSteps([m02Flow, m02Panel])
+const mobile03 = sequenceSteps([m03Desk, noteOnly])
+const mobile04 = sequenceSteps([m04Page, m04Invoice])
+const mobile05 = sequenceSteps([m05])
+const mobileEdge = sequenceSteps([mEdgeEmpty, mEdgePhone])
+/** Viewports of pinned scroll below 760: two steps, one step. */
+const M_TWO = 1.2
+const M_ONE = 1

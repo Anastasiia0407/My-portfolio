@@ -196,11 +196,11 @@
 }
 
 /* Below 760, pinned (SceneStop sets data-pinned when the panel fits 100svh − 32): the panel pins in a
-   track of 100svh + --pin-length viewports, centred in the screen; the track's margins keep the 32
+   track of 100svh + --mpin-length viewports, centred in the screen; the track's margins keep the 32
    header → panel gap at the pin start and the panel → next section distance at the release. */
 @media (max-width: 759px) and (prefers-reduced-motion: no-preference) {
   .motion .scene-mtrack[data-pinned] {
-    height: calc((1 + var(--pin-length)) * 100svh);
+    height: calc((1 + var(--mpin-length)) * 100svh);
     margin-top: calc(var(--m-gap-l) - (100svh - var(--block-h)) / 2);
     margin-bottom: calc((var(--block-h) - 100svh) / 2);
   }
