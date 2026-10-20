@@ -57,3 +57,37 @@ export const clamp01 = (value: number) => Math.min(1, Math.max(0, value))
 
 /** Element top in page coordinates. Only for `measure`. */
 export const pageTop = (element: Element) => element.getBoundingClientRect().top + window.scrollY
+
+let probe: HTMLElement | null = null
+
+/**
+ * The small viewport height (100svh) in px, read from a hidden fixed probe: steady while the iOS
+ * toolbar shows and hides (innerHeight is not). Only for `measure`.
+ */
+export function smallViewportHeight(): number {
+  if (!probe) {
+    probe = document.createElement('div')
+    probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none'
+    document.body.appendChild(probe)
+  }
+  return probe.offsetHeight || window.innerHeight
+}
+
+/**
+ * Whether `block` fits the small viewport with `gutter` px to spare (a pinned block must), re-checked
+ * on every measure (resize, layout changes). Calls `onChange` when the answer changes and writes the
+ * block's height to `--block-h` on `host` (for the track's margins). Returns a stop function.
+ */
+export function watchPinFit(block: HTMLElement, host: HTMLElement, gutter: number, onChange: (fits: boolean) => void): () => void {
+  let fits: boolean | null = null
+  let lastH = -1
+  return addScrollJob({
+    measure(vh) {
+      const h = block.offsetHeight
+      if (h !== lastH) host.style.setProperty('--block-h', `${(lastH = h)}px`)
+      const next = h > 0 && h <= smallViewportHeight() - gutter && vh > 0
+      if (next !== fits) onChange((fits = next))
+    },
+    update() {},
+  })
+}

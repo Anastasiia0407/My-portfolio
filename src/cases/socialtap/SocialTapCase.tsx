@@ -7,7 +7,6 @@ import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
 import { socialtapCase } from '../../data/cases/socialtap.ts'
 import type { SectionCopy, StageShot as Shot } from '../../data/cases/types.ts'
 import { useReveal } from '../../motion/hooks.ts'
-import { useCentreScene } from '../../motion/stageScene.ts'
 import CasePage from '../shared/CasePage.tsx'
 import CaseHero from '../shared/CaseHero.tsx'
 import FlipGrid from '../shared/FlipGrid.tsx'
@@ -19,10 +18,14 @@ import {
   mobileBack,
   mobileFront,
   mobileSingle,
+  mobileSingleScreen,
+  mobileTwoScreens,
+  ONE_SCREEN_LENGTH,
   singleScreen,
   STAGE_DURATION,
   tile as tileScene,
   TILE_DURATION,
+  TWO_SCREENS_LENGTH,
   twoScreens,
 } from './scenes.ts'
 import './SocialTapCase.css'
@@ -41,16 +44,13 @@ const sceneOf = (id: string, shots: number) => (id === 'profile-drawer' ? drawer
  * SocialTap case study (Figma 177:279; mobile 187:81): the shared case layout, no pinned scenes. Motion
  * (177:541): hero title rise and meta fade, dashboard drift (CaseHero); section headers fade up
  * (SectionHeader); per-character reveals (CaseStatement); flip cards (FlipGrid); and the scenes in
- * scenes.ts, each played once at the viewport centre.
+ * scenes.ts, each pinned and driven by scroll.
  */
 export default function SocialTapCase() {
   const { tile } = worked
   const projectMediaRef = useRef<HTMLDivElement>(null)
-  const tileRef = useRef<HTMLDivElement>(null)
   // Project (177:550): the campaign screen slides up 40 and fades in as the row enters.
   useReveal(projectMediaRef)
-  // How I worked tile: once, when it reaches the viewport centre (desktop and mobile).
-  useCentreScene(tileRef, tileScene, TILE_DURATION)
   return (
     <CasePage nav={nav} number={socialtapCase.number}>
       {/* Hero 177:280 */}
@@ -82,8 +82,9 @@ export default function SocialTapCase() {
         />
         <FlipGrid
           items={worked.cards}
+          pin={{ length: TWO_SCREENS_LENGTH, mediaScene: tileScene, mediaDuration: TILE_DURATION }}
           media={
-            <div ref={tileRef} className="flip-tile">
+            <div className="flip-tile">
               <Stage size={tile.size} className="stage--bare">
                 <StageShot shot={tile.shot} size={tile.size} layer="tile" />
               </Stage>
@@ -99,10 +100,10 @@ export default function SocialTapCase() {
         return (
           <SceneStop
             key={copy.id}
-            trigger="centre"
             copy={copy}
-            scene={{ ...scene, duration: STAGE_DURATION }}
+            scene={{ ...scene, length: second ? TWO_SCREENS_LENGTH : ONE_SCREEN_LENGTH }}
             spec={sceneOf(copy.id, stage.shots.length)}
+            mobileSpec={second ? mobileTwoScreens : mobileSingleScreen}
             size={stage.size}
             notes={notes}
             mobile={

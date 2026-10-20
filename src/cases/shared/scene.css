@@ -1,8 +1,7 @@
 /*
  * Section stages with framed screenshots and margin notes (SceneStop). Static (reduced motion, no
  * JS): the stage sits a header gap below the header, final state, all notes shown.
- * trigger="centre": that static layout; the scene plays once on a timeline (useCentreScene).
- * trigger="pin" — with motion (motion.css gate): the panel pins in a
+ * With motion (motion.css gate): the panel pins in a
  * track of 100svh + --pin-length viewports. It is always the full content width; its height is
  * Figma's × (width / Figma width), capped at 100svh − 48px. The composition inside scales by
  * min(width fit, height fit), centred horizontally and anchored to the panel's top; only the panel
@@ -18,8 +17,7 @@
   container-type: inline-size;
 }
 
-.scene-track,
-.scene-static {
+.scene-track {
   margin-top: var(--pin-gap);
 }
 
@@ -119,8 +117,7 @@
     transform: scale(0.9);
   }
 
-  .motion .scene-static [data-pop],
-  .motion .mgroup [data-pop] {
+  .motion .scene-mpin [data-pop] {
     transition:
       opacity var(--dur-pop) var(--ease-out),
       transform var(--dur-pop) var(--ease-out);
@@ -135,8 +132,7 @@
     overflow-x: clip;
   }
 
-  .case-section--scene .scene-track,
-  .case-section--scene .scene-static {
+  .case-section--scene .scene-track {
     display: none;
   }
 
@@ -196,5 +192,29 @@
 
   .mshot .stage-frame {
     border-radius: var(--m-radius-shot);
+  }
+}
+
+/* Below 760, pinned (SceneStop sets data-pinned when the panel fits 100svh − 32): the panel pins in a
+   track of 100svh + --pin-length viewports, centred in the screen; the track's margins keep the 32
+   header → panel gap at the pin start and the panel → next section distance at the release. */
+@media (max-width: 759px) and (prefers-reduced-motion: no-preference) {
+  .motion .scene-mtrack[data-pinned] {
+    height: calc((1 + var(--pin-length)) * 100svh);
+    margin-top: calc(var(--m-gap-l) - (100svh - var(--block-h)) / 2);
+    margin-bottom: calc((var(--block-h) - 100svh) / 2);
+  }
+
+  .motion .scene-mtrack[data-pinned] .scene-mpin {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+  }
+
+  .motion .scene-mtrack[data-pinned] .scene-mobile {
+    margin-top: 0;
   }
 }

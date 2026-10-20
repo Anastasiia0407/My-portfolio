@@ -1,8 +1,9 @@
 /**
  * SocialTap scenes (motion notes 177:541), built from the exported screenshots only: each screen
- * enters (rise 40 + fade) or slides in from the right; the notes pop in last, 300 ms apart. Every
- * scene plays once on a timeline when its stage (desktop) or step (mobile) reaches the viewport
- * centre. Distances are in Figma px of the stage or screenshot (`u`), so they scale with it.
+ * enters (rise 40 + fade) or slides in from the right; the notes pop in last. Every scene is pinned
+ * and scroll-driven (the site's pin rule): steps are evenly spaced along p and the last ends at 0.9,
+ * then a 0.1 hold before the pin releases; scrolling back reverses them. Distances are in Figma px of
+ * the stage or screenshot (`u`), so they scale with it.
  */
 import { eased, ramp } from '../../motion/stageScene.ts'
 import type { LayerStyle, SceneSpec } from '../../motion/stageScene.ts'
@@ -20,35 +21,47 @@ const slideIn = (distance: number, a: number, b: number, opaque = false) => (p: 
   return { transform: `translate3d(${u(distance * (1 - k))}, 0, 0)`, opacity: opaque ? (p < a ? 0 : 1) : ramp(p, a, a + (b - a) * 0.4) }
 }
 
-/** Desktop stage scenes play over this many ms; notes 0.15 apart = 300 ms. */
-export const STAGE_DURATION = 2000
+/** Pin lengths (viewports of pinned scroll): two screens + two notes, one screen + two notes. */
+export const TWO_SCREENS_LENGTH = 1.2
+export const ONE_SCREEN_LENGTH = 1
 
-/** 01, 02, 06: the back screen enters, then the front screen slides in from the right, then the notes. */
+/** 01, 02, 06: back screen 0 → 0.225, front screen slides in 0.225 → 0.45, notes at 0.675 and 0.9. */
 export const twoScreens: SceneSpec = {
-  layers: { back: rise(0, 0.35), front: slideIn(160, 0.3, 0.65) },
-  notesAt: [0.75, 0.9],
+  layers: { back: rise(0, 0.225), front: slideIn(160, 0.225, 0.45) },
+  notesAt: [0.675, 0.9],
 }
 
-/** 03: the back screen enters, then the front screen slides in from the stage's right edge like a drawer (832 = 1432 − 600). */
+/** 03: the same steps; the front screen slides in from the stage's right edge like a drawer (832 = 1432 − 600). */
 export const drawer: SceneSpec = {
-  layers: { back: rise(0, 0.3), front: slideIn(832, 0.25, 0.7, true) },
-  notesAt: [0.78, 0.93],
+  layers: { back: rise(0, 0.225), front: slideIn(832, 0.225, 0.45, true) },
+  notesAt: [0.675, 0.9],
 }
 
-/** 04, 05: the single screen enters, then the notes in order. */
+/** 04, 05: the screen 0 → 0.3, notes at 0.6 and 0.9. */
 export const singleScreen: SceneSpec = {
-  layers: { back: rise(0, 0.4) },
-  notesAt: [0.6, 0.75],
+  layers: { back: rise(0, 0.3) },
+  notesAt: [0.6, 0.9],
 }
 
-/** Below 760, one step per screenshot (its own mini stage; small distances, no overflow). */
+/**
+ * Below 760, the same steps over the whole pinned panel (each screenshot is its own mini stage; small
+ * distances, no overflow). Notes in DOM order: under the first screen, under the second (04, 05: above
+ * the screen, below it).
+ */
+export const mobileTwoScreens: SceneSpec = {
+  layers: { back: rise(0, 0.225), front: slideIn(60, 0.225, 0.45) },
+  notesAt: [0.675, 0.9],
+}
+export const mobileSingleScreen: SceneSpec = { layers: { back: rise(0, 0.3) }, notesAt: [0.6, 0.9] }
+
+/** Not pinned (the panel doesn't fit the screen): each step plays once at the viewport centre. */
 export const MOBILE_DURATION = 1400
+export const STAGE_DURATION = 2000
 export const mobileBack: SceneSpec = { layers: { back: rise(0, 0.55) }, notesAt: [0.8] }
 export const mobileFront: SceneSpec = { layers: { front: slideIn(60, 0, 0.55) }, notesAt: [0.8] }
-/** 04, 05 on mobile: a note above, the screen, a note below (2000 ms: notes 300 ms apart). */
 export const mobileSingle: SceneSpec = { layers: { back: rise(0, 0.4) }, notesAt: [0.65, 0.8] }
 
-/** How I worked tile: image 42 slides in from the right and settles from a slight scale. */
+/** How I worked tile: image 42 slides in from the right and settles from a slight scale (p 0 → 1 of its own range). */
 export const TILE_DURATION = 1100
 export const tile: SceneSpec = {
   layers: {

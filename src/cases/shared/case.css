@@ -162,6 +162,7 @@
    tile (704 × 320 per column at 1512). Rows are equal and at least the tile's Figma height, so the
    tile keeps Figma's crop and the cards match it; longer text grows both rows. */
 .case-section--flip {
+  --flip-gap: var(--gap-case-header);
   container-type: inline-size;
 }
 
@@ -170,7 +171,31 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-rows: minmax(calc((100cqw - var(--gap-case-card)) * 160 / 704), 1fr);
   gap: var(--gap-case-card);
-  margin-top: var(--gap-case-header);
+  margin-top: var(--flip-gap);
+}
+
+/* Pinned (FlipGrid `pin`, when the grid fits 100svh − 32): the grid pins in a track of 100svh +
+   --flip-pin-length viewports, centred; the track's margins keep the header → grid gap at the pin
+   start and the grid → next section distance at the release. */
+@media (prefers-reduced-motion: no-preference) {
+  .flip-track[data-pinned] {
+    height: calc((1 + var(--flip-pin-length)) * 100svh);
+    margin-top: calc(var(--flip-gap) - (100svh - var(--block-h)) / 2);
+    margin-bottom: calc((var(--block-h) - 100svh) / 2);
+  }
+
+  .flip-track[data-pinned] .flip-pin {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100svh;
+  }
+
+  .flip-track[data-pinned] .flip-grid {
+    margin-top: 0;
+  }
 }
 
 .flip-grid__cards {
@@ -407,11 +432,14 @@
 
   /* Flip grid (TMS 157:13863): one column, 16 apart. Cards: padding 32, 16 between label (16/24) and
      text (24/28); height by content. */
+  .case-section--flip {
+    --flip-gap: var(--m-gap-l);
+  }
+
   .flip-grid {
     grid-template-columns: minmax(0, 1fr);
     grid-auto-rows: auto;
     gap: var(--m-gap-s);
-    margin-top: var(--m-gap-l);
   }
 
   .flip-card__face {

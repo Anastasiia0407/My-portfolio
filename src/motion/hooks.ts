@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import type { RefObject } from 'react'
 import { motionEnabled, observeEnter } from './observeEnter.ts'
 import type { EnterOptions } from './observeEnter.ts'
-import { addScrollJob, clamp01, pageTop } from './scrollLoop.ts'
+import { addScrollJob, clamp01, pageTop, smallViewportHeight } from './scrollLoop.ts'
 
 /**
  * Enter reveal: marks each trigger `data-entered` once it enters; CSS (motion.css) fades its
@@ -223,9 +223,6 @@ export function useStatementReveal({
     const pinEl = pin.current
     const el = target.current
     if (!trackEl || !pinEl || !el || !enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const probe = document.createElement('div')
-    probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none'
-    document.body.appendChild(probe)
     let pinned = false
     let start = 0
     let end = 1
@@ -233,7 +230,7 @@ export function useStatementReveal({
     el.setAttribute('data-progress-active', '')
     const stop = addScrollJob({
       measure() {
-        const svh = probe.offsetHeight || window.innerHeight
+        const svh = smallViewportHeight()
         // The block's own height (first child's top → last child's bottom + padding), whatever its pin state.
         const style = getComputedStyle(pinEl)
         const first = pinEl.firstElementChild?.getBoundingClientRect()
@@ -263,7 +260,6 @@ export function useStatementReveal({
     })
     return () => {
       stop()
-      probe.remove()
       trackEl.removeAttribute('data-pinned')
       el.removeAttribute('data-progress-active')
       el.style.removeProperty('--progress')
