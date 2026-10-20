@@ -90,11 +90,10 @@
   --problem-pin-length: 1.6; /* section 02: viewports of scroll the tools scene takes */
   --dur-row: 350ms; /* a row appearing in the TMS window */
   --dur-label: 400ms; /* "One shipment, one place" */
-  --dur-flip: 600ms; /* 03 flip cards, rotateY 0 → 180° (motion note 184:81; 150 ms stagger in TmsCase.tsx) */
+  --dur-flip: 700ms; /* flip cards: every turn, rotateY 0 ↔ 180° (FlipGrid; 150 ms hover intent, 1000 + 300 ms scroll fallback) */
   --perspective-card: 1200px;
-  --dur-flip-user: 500ms; /* flip by hover, focus or tap (after a 150 ms hover intent, TmsCase.tsx) */
-  --ease-flip-user: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-flip-fade: 300ms; /* reduced motion: the face cross-fade on hover, focus or tap */
+  --ease-flip: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-flip-fade: 300ms; /* reduced motion: the flip cards' face cross-fade */
 
   /*
    * Case studies (TMS, Figma 113:12821, 1512 wide). Same fluid rule: max = Figma value at 1512.
