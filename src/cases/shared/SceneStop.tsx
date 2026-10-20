@@ -5,7 +5,8 @@
  * - `trigger="centre"`: no pin; the scene plays once on a timeline when the stage's centre reaches the
  *   viewport centre (useCentreScene).
  * Below 760 the stage is restacked on a #fafafa panel, one screenshot after another with its note under
- * it (MobileGroup / MobileShot, no pin); each step plays once when it enters (useTimedScene).
+ * it (MobileGroup / MobileShot, no pin); each step plays once when it enters (useTimedScene) or, with
+ * MobileGroup trigger "centre", when its centre reaches the viewport centre (useCentreScene).
  * Each screenshot and its overlays are built once (a "piece") and placed either on the desktop stage or
  * in its own full-width mini stage, so overlay geometry (fractions of the screenshot) holds in both.
  * The markup's own state is the final one (reduced motion, no JS); `scene-only` layers exist only
@@ -118,6 +119,7 @@ export function MobileGroup({
   notesBefore = [],
   pair,
   center,
+  trigger = 'enter',
   children,
 }: {
   spec: SceneSpec
@@ -128,11 +130,14 @@ export function MobileGroup({
   pair?: boolean
   /** Centre the note under the screenshot (TMS Stop 02). */
   center?: boolean
+  /** When the step's timeline plays: on enter (40% visible, TMS) or when its centre reaches the viewport centre. */
+  trigger?: 'enter' | 'centre'
   children: ReactNode
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const desktop = useMediaQuery(DESKTOP_QUERY)
-  useTimedScene(ref, spec, duration, !desktop)
+  useTimedScene(ref, spec, duration, !desktop && trigger === 'enter')
+  useCentreScene(ref, spec, duration, !desktop && trigger === 'centre')
   const note = (text: string) => (
     <p key={text} className="margin-note" data-pop>
       <span className="margin-note__dot" aria-hidden="true" />

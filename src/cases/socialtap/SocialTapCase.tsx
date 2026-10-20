@@ -1,34 +1,56 @@
+import { useRef } from 'react'
+import type { CSSProperties } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
 import SectionHeader from '../../components/SectionHeader/SectionHeader.tsx'
 import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
 import { socialtapCase } from '../../data/cases/socialtap.ts'
 import type { SectionCopy, StageShot as Shot } from '../../data/cases/types.ts'
-import type { SceneSpec } from '../../motion/stageScene.ts'
+import { useReveal } from '../../motion/hooks.ts'
+import { useCentreScene } from '../../motion/stageScene.ts'
 import CasePage from '../shared/CasePage.tsx'
 import CaseHero from '../shared/CaseHero.tsx'
 import FlipGrid from '../shared/FlipGrid.tsx'
 import CaseStatement from '../shared/CaseStatement.tsx'
 import { MobileGroup, MobileShot, SceneStop } from '../shared/SceneStop.tsx'
-import { noteOnly } from '../shared/stageGeometry.ts'
+import {
+  drawer,
+  MOBILE_DURATION,
+  mobileBack,
+  mobileFront,
+  mobileSingle,
+  singleScreen,
+  STAGE_DURATION,
+  tile as tileScene,
+  TILE_DURATION,
+  twoScreens,
+} from './scenes.ts'
 import './SocialTapCase.css'
 
 const { hero, project, part, worked, stops, result, nav } = socialtapCase
 
 const headingId = (copy: SectionCopy) => `${copy.id}-title`
 
+/** A screenshot as a scene layer, on its stage or in its own full-width mini stage below 760. */
+const piece = (layer: string) => (shot: Shot, size: { width: number; height: number }) => <StageShot shot={shot} size={size} layer={layer} />
+
+/** 03's stage is the drawer; 04 and 05 have one screen; the rest a back and a front screen. */
+const sceneOf = (id: string, shots: number) => (id === 'profile-drawer' ? drawer : shots === 1 ? singleScreen : twoScreens)
+
 /**
- * Static stage 3: no layer motion yet. Each stage's notes show once its centre reaches the viewport
- * centre (trigger "centre"); the per-stage scenes come in stage 4.
+ * SocialTap case study (Figma 177:279; mobile 187:81): the shared case layout, no pinned scenes. Motion
+ * (177:541): hero title rise and meta fade, dashboard drift (CaseHero); section headers fade up
+ * (SectionHeader); per-character reveals (CaseStatement); flip cards (FlipGrid); and the scenes in
+ * scenes.ts, each played once at the viewport centre.
  */
-const notesOnly: SceneSpec = { layers: {}, notesAt: [0, 0] }
-
-/** A screenshot on its stage or in its own full-width mini stage below 760. */
-const piece = (shot: Shot, size: { width: number; height: number }) => <StageShot shot={shot} size={size} />
-
-/** SocialTap case study (Figma 177:279; mobile 187:81): the shared case layout, no pinned scenes. */
 export default function SocialTapCase() {
   const { tile } = worked
+  const projectMediaRef = useRef<HTMLDivElement>(null)
+  const tileRef = useRef<HTMLDivElement>(null)
+  // Project (177:550): the campaign screen slides up 40 and fades in as the row enters.
+  useReveal(projectMediaRef)
+  // How I worked tile: once, when it reaches the viewport centre (desktop and mobile).
+  useCentreScene(tileRef, tileScene, TILE_DURATION)
   return (
     <CasePage nav={nav} number={socialtapCase.number}>
       {/* Hero 177:280 */}
@@ -37,11 +59,13 @@ export default function SocialTapCase() {
       {/* 01 The project 177:306: text and the campaign screen side by side; below 760 the text comes first. */}
       <section id={project.copy.id} className="case-section" aria-labelledby={headingId(project.copy)}>
         <SectionHeader id={headingId(project.copy)} eyebrow={project.copy.eyebrow} heading={project.copy.heading} />
-        <div className="case-media case-media--text-first">
+        <div ref={projectMediaRef} className="case-media case-media--text-first" data-enter>
           <p className="case-media__text">{project.copy.body}</p>
-          <Stage size={{ width: project.shot.box.width, height: project.shot.box.height }} className="stage--bare">
-            <StageShot shot={project.shot} size={{ width: project.shot.box.width, height: project.shot.box.height }} />
-          </Stage>
+          <div data-reveal style={{ '--reveal-distance': '40px' } as CSSProperties}>
+            <Stage size={{ width: project.shot.box.width, height: project.shot.box.height }} className="stage--bare">
+              <StageShot shot={project.shot} size={{ width: project.shot.box.width, height: project.shot.box.height }} />
+            </Stage>
+          </div>
         </div>
       </section>
 
@@ -59,9 +83,9 @@ export default function SocialTapCase() {
         <FlipGrid
           items={worked.cards}
           media={
-            <div className="flip-tile">
+            <div ref={tileRef} className="flip-tile">
               <Stage size={tile.size} className="stage--bare">
-                <StageShot shot={tile.shot} size={tile.size} />
+                <StageShot shot={tile.shot} size={tile.size} layer="tile" />
               </Stage>
             </div>
           }
@@ -77,30 +101,36 @@ export default function SocialTapCase() {
             key={copy.id}
             trigger="centre"
             copy={copy}
-            scene={scene}
-            spec={notesOnly}
+            scene={{ ...scene, duration: STAGE_DURATION }}
+            spec={sceneOf(copy.id, stage.shots.length)}
             size={stage.size}
             notes={notes}
             mobile={
               second ? (
                 <>
-                  <MobileGroup spec={noteOnly} duration={500} notes={[notes[0]]}>
-                    <MobileShot shot={first}>{piece}</MobileShot>
+                  <MobileGroup trigger="centre" spec={mobileBack} duration={MOBILE_DURATION} notes={[notes[0]]}>
+                    <MobileShot shot={first}>{piece('back')}</MobileShot>
                   </MobileGroup>
-                  <MobileGroup spec={noteOnly} duration={500} notes={[notes[1]]}>
-                    <MobileShot shot={second}>{piece}</MobileShot>
+                  <MobileGroup trigger="centre" spec={mobileFront} duration={MOBILE_DURATION} notes={[notes[1]]}>
+                    <MobileShot shot={second}>{piece('front')}</MobileShot>
                   </MobileGroup>
                 </>
               ) : (
                 // One screen (04, 05; 187:342): a note above it, a note below.
-                <MobileGroup spec={noteOnly} duration={500} notesBefore={[notes[0]]} notes={[notes[1]]}>
-                  <MobileShot shot={first}>{piece}</MobileShot>
+                <MobileGroup
+                  trigger="centre"
+                  spec={mobileSingle}
+                  duration={STAGE_DURATION}
+                  notesBefore={[notes[0]]}
+                  notes={[notes[1]]}
+                >
+                  <MobileShot shot={first}>{piece('back')}</MobileShot>
                 </MobileGroup>
               )
             }
           >
-            {stage.shots.map((shot) => (
-              <StageShot key={shot.src1x} shot={shot} size={stage.size} />
+            {stage.shots.map((shot, i) => (
+              <StageShot key={shot.src1x} shot={shot} size={stage.size} layer={i === 0 ? 'back' : 'front'} />
             ))}
           </SceneStop>
         )
