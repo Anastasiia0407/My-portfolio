@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import type { Box, Size } from '../../data/cases/tms.ts'
+import type { Box, Size } from '../../data/cases/types.ts'
 
 export const pct = (value: number, of: number) => `${(value / of) * 100}%`
 

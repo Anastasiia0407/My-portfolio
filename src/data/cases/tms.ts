@@ -3,6 +3,7 @@
  * Every text, image, stage position and note lives here; TmsCase.tsx only lays it out.
  * Stage geometry is in Figma px of each stage (unrotated boxes); the Stage component turns it into %.
  */
+import type { CaseHeroData, CaseNavData, CaseStatementData, FlipCardData, Photo, SceneData, SectionCopy, StageData } from './types.ts'
 import dashboard1x from '../../assets/work-03@1x.webp'
 import dashboard2x from '../../assets/work-03@2x.webp'
 import projectPhoto1x from '../../assets/cases/tms/project-photo@1x.webp'
@@ -33,76 +34,6 @@ import edgeNoResults2x from '../../assets/cases/tms/edge-no-results@2x.webp'
 import edgeColumns1x from '../../assets/cases/tms/edge-columns@1x.webp'
 import edgeColumns2x from '../../assets/cases/tms/edge-columns@2x.webp'
 
-/** A box in Figma px. */
-export interface Box {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-export interface Size {
-  width: number
-  height: number
-}
-
-/** Framed screenshot on a stage: rounded image (fixed radius, --radius-shot) with Figma's OUTSIDE stroke (in stage px). */
-export interface StageShot {
-  src1x: string
-  src2x: string
-  alt: string
-  box: Box
-  stroke: number
-}
-
-/** Dark pill with a pink dot (e.g. 117:13315). x/y/width are the pill's Figma box. */
-export interface MarginNoteData {
-  text: string
-  x: number
-  y: number
-  width: number
-}
-
-export interface StageData {
-  size: Size
-  shots: StageShot[]
-  notes?: MarginNoteData[]
-}
-
-/**
- * Pinned scroll scene of a stop (stage 3b): `length` = viewports of scroll the pin lasts (track =
- * 100svh + length × 100svh); `label` = what the scene shows, for assistive tech (role="img").
- */
-export interface SceneData {
-  length: number
-  label: string
-}
-
-export interface SectionCopy {
-  /** Anchor and hook name, e.g. "stop-01". */
-  id: string
-  eyebrow: string
-  /** One string, or explicit lines where Figma breaks the heading by hand. */
-  heading: string | string[]
-  body?: string
-}
-
-/** A research flip card (157:13744, back 184:86): the insight on the light front, the principle on the dark back. */
-export interface InsightCard {
-  label: string
-  text: string
-  principleLabel: string
-  principle: string
-}
-
-export interface Photo {
-  src1x: string
-  src2x: string
-  alt: string
-  width: number
-  height: number
-}
-
 /** Frame colour around screenshots: the shared --color-band-border (Figma "Grey/grey 300", #d5d7da). */
 const stroke = 12
 
@@ -113,7 +44,7 @@ export const tmsCase = {
     back: { label: 'Back', href: '/#works' },
     contact: { label: 'Get in touch', href: '/#contact' },
     allWork: { label: 'Back to all work', href: '/#works' },
-  },
+  } satisfies CaseNavData,
 
   /** 113:12822 */
   hero: {
@@ -140,7 +71,7 @@ export const tmsCase = {
         },
       ],
     } satisfies StageData,
-  },
+  } satisfies CaseHeroData,
 
   /** 117:13219 */
   project: {
@@ -235,10 +166,10 @@ export const tmsCase = {
      * names say "Insignt"; the visible label is "Insight".
      */
     insights: [
-      { label: 'Insight 1', text: 'Reviewers value having every shipment detail in one place', principleLabel: 'Principle 1', principle: 'One source of truth per shipment' },
-      { label: 'Insight 2', text: 'The top complaint: long onboarding and overloaded screens', principleLabel: 'Principle 2', principle: 'A calm UI with onboarding tips' },
-      { label: 'Insight 3', text: 'Every role is forced into the same rigid views', principleLabel: 'Principle 3', principle: 'A different starting point for each role' },
-    ] satisfies InsightCard[],
+      { label: 'Insight 1', text: 'Reviewers value having every shipment detail in one place', backLabel: 'Principle 1', backText: 'One source of truth per shipment' },
+      { label: 'Insight 2', text: 'The top complaint: long onboarding and overloaded screens', backLabel: 'Principle 2', backText: 'A calm UI with onboarding tips' },
+      { label: 'Insight 3', text: 'Every role is forced into the same rigid views', backLabel: 'Principle 3', backText: 'A different starting point for each role' },
+    ] satisfies FlipCardData[],
     /** 157:13855: the grid's fourth cell, 704 × 320 at 1512. */
     photo: {
       src1x: researchPhoto1x,
@@ -449,5 +380,5 @@ export const tmsCase = {
   result: {
     eyebrow: 'The result',
     text: 'A single workspace where a container’s status, documents and invoices stop living in five places, and each role starts from its own day. This is a self-initiated concept, not a shipped product, so there are no usage numbers. What I would measure first: how long it takes to create a shipment and hand it to operations, compared with today’s spreadsheets and email.',
-  },
+  } satisfies CaseStatementData,
 }

@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode, Ref } from 'react'
-import type { MarginNoteData, Size, StageShot as StageShotData } from '../../data/cases/tms.ts'
+import type { MarginNoteData, Size, StageShot as StageShotData } from '../../data/cases/types.ts'
 import { pct, placeIn } from './placeIn.ts'
 import './Stage.css'
 

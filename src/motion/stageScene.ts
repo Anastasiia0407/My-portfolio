@@ -174,3 +174,43 @@ export function useTimedScene(root: RefObject<HTMLElement | null>, spec: SceneSp
     }
   }, [root, spec, duration, enabled])
 }
+
+/**
+ * The same scene played once on a timeline when `root`'s centre reaches the viewport centre (stages
+ * without a pin, desktop): p runs 0 → 1 over `duration` ms, notes at `spec.notesAt`. Below the fold
+ * on load it starts from p = 0 (off screen); already on screen (or scrolled past) it stays in its
+ * final state, so nothing flashes. Reduced motion / no JS: the markup's final state.
+ */
+export function useCentreScene(root: RefObject<HTMLElement | null>, spec: SceneSpec, duration: number, enabled = true) {
+  useEffect(() => {
+    const el = root.current
+    if (!el || !enabled || !motionEnabled()) return
+    if (el.getBoundingClientRect().top < window.innerHeight) return
+    const scene = bindScene(el, spec)
+    scene.set(0)
+    let frame = 0
+    let started = false
+    let centre = 0
+    const stop = addScrollJob({
+      measure() {
+        centre = pageTop(el) + el.offsetHeight / 2
+      },
+      update(y, vh) {
+        if (started || centre > y + vh / 2) return
+        started = true
+        const start = performance.now()
+        const step = (now: number) => {
+          const p = duration > 0 ? Math.min(1, (now - start) / duration) : 1
+          scene.set(p)
+          if (p < 1) frame = requestAnimationFrame(step)
+        }
+        frame = requestAnimationFrame(step)
+      },
+    })
+    return () => {
+      stop()
+      cancelAnimationFrame(frame)
+      scene.clear()
+    }
+  }, [root, spec, duration, enabled])
+}

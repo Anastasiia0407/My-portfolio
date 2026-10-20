@@ -1,50 +1,26 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import type { CSSProperties, RefObject } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
-import CaseNav, { CaseLink } from '../../components/CaseNav/CaseNav.tsx'
 import SectionHeader from '../../components/SectionHeader/SectionHeader.tsx'
-import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
+import Stage from '../../components/Stage/Stage.tsx'
 import { placeIn } from '../../components/Stage/placeIn.ts'
 import StatCard from '../../components/StatCard/StatCard.tsx'
-import RevealText from '../../components/RevealText/RevealText.tsx'
 import { tmsCase } from '../../data/cases/tms.ts'
-import type { InsightCard, Photo, SectionCopy } from '../../data/cases/tms.ts'
-import { DESKTOP_QUERY, FINE_HOVER_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
-import { useCentreReached, useCountUp, useHeroStage, useParallax, useReveal, useScrollReveal } from '../../motion/hooks.ts'
+import type { SectionCopy } from '../../data/cases/types.ts'
+import { useCountUp } from '../../motion/hooks.ts'
 import { useToolsScene } from '../../motion/toolsScene.ts'
-import '../../motion/motion.css'
+import CasePage from '../shared/CasePage.tsx'
+import CaseHero from '../shared/CaseHero.tsx'
+import CasePhoto from '../shared/CasePhoto.tsx'
+import FlipGrid from '../shared/FlipGrid.tsx'
+import CaseStatement from '../shared/CaseStatement.tsx'
 import { EdgeCasesScene, Stop01Scene, Stop02Scene, Stop03Scene, Stop04Scene, Stop05Scene } from './StopScenes.tsx'
 import './TmsCase.css'
 
 const { hero, project, problem, research, result, nav } = tmsCase
 
 const headingId = (copy: SectionCopy) => `${copy.id}-title`
-
-/**
- * Photo in a fixed-ratio frame that clips it (117:13235, 157:13855); slow parallax inside the frame,
- * plus an optional scale from `zoom` to 1 (the 03 tile).
- */
-function CasePhoto({ photo, zoom }: { photo: Photo; zoom?: number }) {
-  const frameRef = useRef<HTMLDivElement>(null)
-  const imageRef = useRef<HTMLImageElement>(null)
-  useParallax(frameRef, imageRef, 0.1, zoom)
-  return (
-    <div ref={frameRef} className="case-photo" style={{ aspectRatio: `${photo.width} / ${photo.height}` }}>
-      <img
-        ref={imageRef}
-        className="case-photo__image"
-        src={photo.src1x}
-        srcSet={`${photo.src1x} 1x, ${photo.src2x} 2x`}
-        width={photo.width}
-        height={photo.height}
-        alt={photo.alt}
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-  )
-}
 
 /**
  * 02's scene (113:12853, motion note 124:15): blurred photo, the TMS window and five tool cards, all
@@ -115,289 +91,67 @@ function ProblemScene({ trackRef }: { trackRef: RefObject<HTMLDivElement | null>
   )
 }
 
-/** Delay between the cards' first flips on desktop (motion note 184:81). */
-const FLIP_STAGGER = 150
-/** Hover intent: the pointer must stay this long before a card turns (or turns back on leave). */
-const HOVER_INTENT = 150
-
-/**
- * 03 flip cards (motion note 184:81): the insight on a light front, the principle on a dark back.
- * When the grid's centre (desktop) or each card's centre (mobile) reaches the viewport centre, the
- * cards turn to their backs, 1 → 2 → 3, 150 ms apart on desktop. Then: hover or keyboard focus
- * shows the front again (fine pointers, after a 150 ms hover intent), a tap or Enter / Space toggles.
- * Each card is a toggle button (aria-pressed = the principle shows); both faces stay in the
- * accessibility tree. CSS turns the card with rotateY, or cross-fades the faces with reduced motion;
- * once a card has been turned by hand (`data-flip="user"`) it uses the calmer interaction timing.
- */
-function InsightCards({
-  items,
-  listRef,
-  gridRef,
-}: {
-  items: InsightCard[]
-  listRef: RefObject<HTMLOListElement | null>
-  /** The 2 × 2 grid (the list itself is display: contents and has no box to measure). */
-  gridRef: RefObject<HTMLDivElement | null>
-}) {
-  const [back, setBack] = useState(() => items.map(() => false))
-  const [armed, setArmed] = useState(() => items.map(() => false))
-  const [byUser, setByUser] = useState(() => items.map(() => false))
-  const keyboardFocus = useRef(items.map(() => false))
-  const hoverTimers = useRef<number[]>(items.map(() => 0))
-  const turning = useRef(items.map(() => false)) // a turn (or, reduced motion, a fade) is running
-  const desktop = useMediaQuery(DESKTOP_QUERY)
-  const finePointer = useMediaQuery(FINE_HOVER_QUERY)
-  const timers = useRef<number[]>([])
-
-  const show = useCallback((index: number, showBack: boolean, user = false) => {
-    setBack((sides) => sides.map((side, i) => (i === index ? showBack : side)))
-    setArmed((flags) => (flags[index] ? flags : flags.map((flag, i) => flag || i === index)))
-    if (user) setByUser((flags) => (flags[index] ? flags : flags.map((flag, i) => flag || i === index)))
-  }, [])
-
-  /**
-   * Hover: turn after the intent delay (leaving before it fires cancels the turn). If the card is
-   * still turning, re-target it at once instead: the transition reverses from its current angle.
-   */
-  const hoverTo = (index: number, showBack: boolean) => {
-    window.clearTimeout(hoverTimers.current[index])
-    const turn = () => show(index, showBack, true)
-    if (turning.current[index]) turn()
-    else hoverTimers.current[index] = window.setTimeout(turn, HOVER_INTENT)
-  }
-
-  // Track running turns with native listeners (React doesn't dispatch transitionrun). A turn is the
-  // card's rotateY, or the back face's fade with reduced motion.
-  useEffect(() => {
-    const list = listRef.current
-    if (!list) return
-    const buttons = [...list.querySelectorAll<HTMLButtonElement>('.insight-card__flip')]
-    const isTurn = (button: HTMLButtonElement, event: TransitionEvent) =>
-      (event.target === button && event.propertyName === 'transform') ||
-      ((event.target as HTMLElement).classList.contains('insight-card__face--back') && event.propertyName === 'opacity')
-    const handlers = buttons.map((button, i) => {
-      const run = (event: TransitionEvent) => {
-        if (isTurn(button, event)) turning.current[i] = true
-      }
-      const end = (event: TransitionEvent) => {
-        if (isTurn(button, event)) turning.current[i] = false
-      }
-      button.addEventListener('transitionrun', run)
-      button.addEventListener('transitionend', end)
-      return () => {
-        button.removeEventListener('transitionrun', run)
-        button.removeEventListener('transitionend', end)
-      }
-    })
-    return () => handlers.forEach((remove) => remove())
-  }, [listRef])
-
-  const onReach = useCallback(
-    (index: number) => {
-      if (!desktop) return show(index, true)
-      items.forEach((_, i) => timers.current.push(window.setTimeout(() => show(i, true), i * FLIP_STAGGER)))
-    },
-    [desktop, items, show],
-  )
-  useCentreReached(gridRef, desktop ? null : '.insight-card', onReach)
-  useEffect(() => {
-    const scroll = timers.current
-    const hover = hoverTimers.current
-    return () => [...scroll, ...hover].forEach((timer) => window.clearTimeout(timer))
-  }, [])
-
-  return (
-    <ol ref={listRef} className="research-grid__insights">
-      {items.map((item, i) => (
-        <li key={item.label} className="insight-card" data-enter>
-          <button
-            type="button"
-            className="insight-card__flip"
-            aria-pressed={back[i]}
-            data-side={back[i] ? 'back' : 'front'}
-            data-flip={byUser[i] ? 'user' : undefined}
-            onPointerEnter={(event) => {
-              if (finePointer && event.pointerType === 'mouse' && armed[i]) hoverTo(i, false)
-            }}
-            onPointerLeave={(event) => {
-              if (finePointer && event.pointerType === 'mouse' && armed[i]) hoverTo(i, true)
-            }}
-            onFocus={(event) => {
-              keyboardFocus.current[i] = event.currentTarget.matches(':focus-visible')
-              if (keyboardFocus.current[i] && armed[i]) show(i, false, true)
-            }}
-            onBlur={() => {
-              if (keyboardFocus.current[i] && armed[i]) show(i, true, true)
-              keyboardFocus.current[i] = false
-            }}
-            onClick={(event) => {
-              // Mouse users flip by hovering; a keyboard click (detail 0) or a tap toggles.
-              if (event.detail === 0 || !finePointer) show(i, !back[i], true)
-            }}
-
-          >
-            <span className="insight-card__face insight-card__face--front">
-              <span className="insight-card__label" data-reveal style={{ '--i': 0 } as CSSProperties}>
-                {item.label}
-              </span>
-              <span className="insight-card__text" data-reveal style={{ '--i': 1 } as CSSProperties}>
-                {item.text}
-              </span>
-            </span>
-            <span className="insight-card__face insight-card__face--back">
-              <span className="insight-card__label">{item.principleLabel}</span>
-              <span className="insight-card__text">{item.principle}</span>
-            </span>
-          </button>
-        </li>
-      ))}
-    </ol>
-  )
-}
-
-/** TMS case study (Figma 113:12821). Static: no motion in this stage. */
+/** TMS case study (Figma 113:12821): the shared case layout plus the 02 tools scene and stats. */
 export default function TmsCase() {
-  const heroCanvasRef = useRef<HTMLDivElement>(null)
-  const dashboardRef = useRef<HTMLImageElement>(null)
   const statsRef = useRef<HTMLUListElement>(null)
   const problemTrackRef = useRef<HTMLDivElement>(null)
-  const insightsRef = useRef<HTMLOListElement>(null)
-  const researchGridRef = useRef<HTMLDivElement>(null)
-  const resultRef = useRef<HTMLParagraphElement>(null)
 
-  useHeroStage(heroCanvasRef, dashboardRef, 0.85)
   useCountUp(statsRef, { after: problemTrackRef }) // only after the section 02 pin has released
-  useReveal(insightsRef, { selector: '.insight-card', batchStagger: 200 })
-  useScrollReveal(resultRef)
-
-  // Tells the inline script in work/tms.html that motion is wired up (otherwise it drops .motion).
-  useEffect(() => {
-    document.documentElement.setAttribute('data-motion-ready', '')
-  }, [])
 
   return (
-    <div className="case on-light">
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
+    <CasePage nav={nav} number={tmsCase.number}>
+      {/* Hero 113:12822 */}
+      <CaseHero hero={hero} number={tmsCase.number} stageClassName="stage--teal" />
 
-      <header className="case-header">
-        <CaseNav back={nav.back} contact={nav.contact} number={`(${tmsCase.number})`} />
-      </header>
+      {/* 01 The project 117:13219 */}
+      <section id={project.copy.id} className="case-section" aria-labelledby={headingId(project.copy)}>
+        <SectionHeader id={headingId(project.copy)} eyebrow={project.copy.eyebrow} heading={project.copy.heading} />
+        <div className="case-media">
+          <p className="case-media__text">{project.copy.body}</p>
+          <CasePhoto photo={project.photo} />
+        </div>
+      </section>
 
-      <main id="main">
-        {/* Hero 113:12822 */}
-        <section className="case-hero" aria-labelledby="case-title">
-          <div className="case-hero__intro">
-            <div className="case-hero__titles">
-              <p className="case-hero__tagline">
-                {hero.tagline.map((line, index) => (
-                  <Fragment key={line}>
-                    {index > 0 && ' '}
-                    <span className="case-hero__tagline-line">{line}</span>
-                  </Fragment>
-                ))}
-              </p>
-              {/* Each line rises inside its own mask (motion.css). Figma's lines from 760px, three
-                  fitted lines below; screen readers get the title once. */}
-              <h1 id="case-title" className="case-hero__title">
-                <span className="sr-only">{hero.title.join(' ')}</span>
-                {(
-                  [
-                    ['desktop', hero.title],
-                    ['mobile', hero.titleMobile],
-                  ] as const
-                ).map(([variant, lines]) => (
-                  <span key={variant} className={`case-hero__lines case-hero__lines--${variant}`} aria-hidden="true">
-                    {lines.map((line, index) => (
-                      <span key={line} className="case-hero__mask">
-                        <span className="case-hero__line" style={{ '--line': index } as CSSProperties}>
-                          {line}{' '}
-                        </span>
-                      </span>
-                    ))}
-                  </span>
-                ))}
-              </h1>
-            </div>
-            <p className="case-hero__number" aria-hidden="true">
-              ({tmsCase.number})
-            </p>
-          </div>
-          <dl className="case-meta">
-            {hero.meta.map((item) => (
-              <div key={item.label} className="case-meta__item">
-                <dt className="case-meta__label">{item.label}</dt>
-                <dd className="case-meta__value">{item.value}</dd>
-              </div>
-            ))}
-          </dl>
-          <Stage size={hero.stage.size} className="stage--teal case-hero__stage" canvasRef={heroCanvasRef}>
-            {hero.stage.shots.map((shot) => (
-              <StageShot key={shot.src1x} ref={dashboardRef} shot={shot} size={hero.stage.size} eager />
-            ))}
-          </Stage>
-        </section>
+      {/* 02 The problem 113:12848 */}
+      <section id={problem.copy.id} className="case-section case-section--problem" aria-labelledby={headingId(problem.copy)}>
+        <SectionHeader
+          id={headingId(problem.copy)}
+          eyebrow={problem.copy.eyebrow}
+          heading={problem.copy.heading}
+          body={problem.copy.body}
+        />
+        <ProblemScene trackRef={problemTrackRef} />
+        <ul ref={statsRef} className="case-stats">
+          {problem.stats.map((stat) => (
+            <StatCard key={stat.source} stat={stat} />
+          ))}
+        </ul>
+      </section>
 
-        {/* 01 The project 117:13219 */}
-        <section id={project.copy.id} className="case-section" aria-labelledby={headingId(project.copy)}>
-          <SectionHeader id={headingId(project.copy)} eyebrow={project.copy.eyebrow} heading={project.copy.heading} />
-          <div className="case-media">
-            <p className="case-media__text">{project.copy.body}</p>
-            <CasePhoto photo={project.photo} />
-          </div>
-        </section>
+      {/* 03 The research 113:12880: header row, then flip cards and the photo in a 2 × 2 grid */}
+      <section
+        id={research.copy.id}
+        className="case-section case-section--flip case-section--research"
+        aria-labelledby={headingId(research.copy)}
+      >
+        <SectionHeader
+          id={headingId(research.copy)}
+          eyebrow={research.copy.eyebrow}
+          heading={research.copy.heading}
+          body={research.copy.body}
+        />
+        <FlipGrid items={research.insights} media={<CasePhoto photo={research.photo} zoom={1.08} />} mobileMediaAt={2} />
+      </section>
 
-        {/* 02 The problem 113:12848 */}
-        <section id={problem.copy.id} className="case-section case-section--problem" aria-labelledby={headingId(problem.copy)}>
-          <SectionHeader
-            id={headingId(problem.copy)}
-            eyebrow={problem.copy.eyebrow}
-            heading={problem.copy.heading}
-            body={problem.copy.body}
-          />
-          <ProblemScene trackRef={problemTrackRef} />
-          <ul ref={statsRef} className="case-stats">
-            {problem.stats.map((stat) => (
-              <StatCard key={stat.source} stat={stat} />
-            ))}
-          </ul>
-        </section>
+      <Stop01Scene />
+      <Stop02Scene />
+      <Stop03Scene />
+      <Stop04Scene />
+      <Stop05Scene />
+      <EdgeCasesScene />
 
-        {/* 03 The research 113:12880: header row, then insight cards and the photo in a 2 × 2 grid */}
-        <section id={research.copy.id} className="case-section case-section--research" aria-labelledby={headingId(research.copy)}>
-          <SectionHeader
-            id={headingId(research.copy)}
-            eyebrow={research.copy.eyebrow}
-            heading={research.copy.heading}
-            body={research.copy.body}
-          />
-          <div ref={researchGridRef} className="research-grid">
-            <InsightCards items={research.insights} listRef={insightsRef} gridRef={researchGridRef} />
-            <CasePhoto photo={research.photo} zoom={1.08} />
-          </div>
-        </section>
-
-        <Stop01Scene />
-        <Stop02Scene />
-        <Stop03Scene />
-        <Stop04Scene />
-        <Stop05Scene />
-        <EdgeCasesScene />
-
-        {/* The result 120:13690: the home About reveal, scroll-linked, no pin. */}
-        <section id="result" className="case-result" aria-labelledby="result-title">
-          <h2 id="result-title" className="case-result__label">
-            {result.eyebrow}
-          </h2>
-          <RevealText ref={resultRef} className="case-result__text" text={result.text} />
-        </section>
-      </main>
-
-      {/* Case nav 113:12982 */}
-      <footer className="case-footer">
-        <CaseLink link={nav.allWork} back />
-      </footer>
-    </div>
+      {/* The result 120:13690: the home About reveal, scroll-linked, no pin. */}
+      <CaseStatement id="result" statement={result} />
+    </CasePage>
   )
 }

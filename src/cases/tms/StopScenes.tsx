@@ -1,199 +1,24 @@
 /**
- * Stops 01–05 and No dead ends.
- * - 760px and up (stage 3b): each stage pins in a scroll track and progress p = 0 → 1 drives its
- *   scene, margin notes last (useStageScene).
- * - Below 760 (stage 4): the stage is restacked, one full-width screenshot after another with its
- *   note under it (`.scene-mobile`, no pin); each screenshot's steps play once on a timeline when it
- *   enters, then its note pops in (useTimedScene).
- * Each screenshot and its overlays are built once (`pieces`) and placed either on the desktop stage
- * or in their own full-width mini stage, so overlay geometry (fractions of the screenshot) holds in
- * both. The markup's own state is the final one (reduced motion, no JS); `scene-only` layers exist
- * only while a scene runs.
+ * TMS Stops 01–05 and No dead ends: each stop's scene (layer functions, note timings) and the pieces
+ * built over its screenshots. The section, pin and mobile restack are the shared SceneStop
+ * (src/cases/shared/SceneStop.tsx, trigger "pin"): 760px and up, p = 0 → 1 through the pin drives the
+ * scene; below 760 each step plays once on a timeline when it enters.
  */
-import { useRef } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
-import SectionHeader from '../../components/SectionHeader/SectionHeader.tsx'
-import Stage, { StageShot } from '../../components/Stage/Stage.tsx'
+import type { CSSProperties } from 'react'
+import { StageShot } from '../../components/Stage/Stage.tsx'
 import { placeIn } from '../../components/Stage/placeIn.ts'
 import HandoffFlow from '../../components/HandoffFlow/HandoffFlow.tsx'
-import { eased, ramp, span, sweep, useStageScene, useTimedScene } from '../../motion/stageScene.ts'
-import { DESKTOP_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
+import { eased, ramp, span, sweep } from '../../motion/stageScene.ts'
 import type { SceneSpec } from '../../motion/stageScene.ts'
 import { tmsCase } from '../../data/cases/tms.ts'
-import type { Box, MarginNoteData, SceneData, SectionCopy, Size, StageShot as Shot } from '../../data/cases/tms.ts'
+import type { Box, Size, StageShot as Shot } from '../../data/cases/types.ts'
+import { FrameImage, MobileGroup, MobileShot, SceneFrame, SceneStop } from '../shared/SceneStop.tsx'
+import { inFrame, insetOf, noteOnly, onShot, px, u } from '../shared/stageGeometry.ts'
 import './StopScenes.css'
 
 const { stops, edgeCases, hero } = tmsCase
 /** The plain dashboard (closed menus, no panel): images 31 and 35 are this screen plus a state. */
 const dashboard = hero.stage.shots[0]
-
-const px = (n: number) => n.toFixed(2)
-/** A transform length in Figma px of the stage (scales with it). */
-const u = (n: number) => `calc(var(--u) * ${px(n)})`
-/** A box in % of a frame, from fractions of the screenshot. */
-const inFrame = (x: number, y: number, w: number, h: number) =>
-  ({ '--bx': `${x * 100}%`, '--by': `${y * 100}%`, '--bw': `${w * 100}%`, '--bh': `${h * 100}%` }) as CSSProperties
-/** clip-path inset() for a fractional rect of the image. */
-const insetOf = (x: number, y: number, w: number, h: number, bottomOverride?: number) =>
-  `inset(${px(y * 100)}% ${px((1 - x - w) * 100)}% ${px(bottomOverride ?? (1 - y - h) * 100)}% ${px(x * 100)}%)`
-/** A fractional rect of a screenshot, in stage px. */
-const onShot = (shot: Shot, x: number, y: number, w: number, h: number): Box => ({
-  x: shot.box.x + x * shot.box.width,
-  y: shot.box.y + y * shot.box.height,
-  width: w * shot.box.width,
-  height: h * shot.box.height,
-})
-
-/** Section header + pinned stage. Track = 100svh + `scene.length` × 100svh (StopScenes.css). */
-function PinnedStop({
-  copy,
-  scene,
-  spec,
-  size,
-  notes,
-  overlay,
-  mobile,
-  mobileLoose,
-  children,
-}: {
-  copy: SectionCopy
-  scene: SceneData
-  spec: SceneSpec
-  size: Size
-  notes?: MarginNoteData[]
-  overlay?: ReactNode
-  /** The restacked version below 760 (MobileGroup / MobileShot), on a #fafafa panel. */
-  mobile: ReactNode
-  /** Steps 64 apart on that panel instead of 32 (Stop 01). */
-  mobileLoose?: boolean
-  children: ReactNode
-}) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const pinRef = useRef<HTMLDivElement>(null)
-  const desktop = useMediaQuery(DESKTOP_QUERY)
-  useStageScene(trackRef, pinRef, spec, desktop)
-  const titleId = `${copy.id}-title`
-  return (
-    <section
-      id={copy.id}
-      className="case-section case-section--scene"
-      aria-labelledby={titleId}
-      style={{ '--pin-w': size.width, '--pin-h': size.height, '--pin-length': scene.length } as CSSProperties}
-    >
-      <SectionHeader id={titleId} eyebrow={copy.eyebrow} heading={copy.heading} body={copy.body} />
-      <div ref={trackRef} className="scene-track">
-        <div ref={pinRef} className="scene-pin">
-          <div className="scene-panel">
-            <Stage size={size} className="stage--panel" notes={notes} overlay={overlay} label={scene.label}>
-              {children}
-            </Stage>
-          </div>
-        </div>
-      </div>
-      {/* Below 760: a figure (not role="img") so its screenshots' alts and its notes are read, once. */}
-      <figure className={`scene-mobile${mobileLoose ? ' scene-mobile--loose' : ''}`} aria-label={scene.label}>
-        {mobile}
-      </figure>
-    </section>
-  )
-}
-
-/** A screenshot as its own stage at full width (or a 240-tall phone, `narrow`), for the restacked mobile stops. */
-function MobileShot({
-  shot,
-  narrow,
-  children,
-}: {
-  shot: Shot
-  narrow?: boolean
-  children: (local: Shot, size: Size) => ReactNode
-}) {
-  const size = { width: shot.box.width, height: shot.box.height }
-  const local = { ...shot, box: { x: 0, y: 0, ...size } }
-  return (
-    <div className={`mshot${narrow ? ' mshot--narrow' : ''}`} style={{ '--stage-w': size.width, '--stage-h': size.height } as CSSProperties}>
-      {children(local, size)}
-    </div>
-  )
-}
-
-/** One step of a restacked stop: its screenshot(s), its timeline (played once on enter), its note. */
-function MobileGroup({
-  spec,
-  duration,
-  notes = [],
-  pair,
-  center,
-  children,
-}: {
-  spec: SceneSpec
-  duration: number
-  notes?: Pick<MarginNoteData, 'text'>[]
-  pair?: boolean
-  /** Centre the note under the screenshot (Stop 02). */
-  center?: boolean
-  children: ReactNode
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const desktop = useMediaQuery(DESKTOP_QUERY)
-  useTimedScene(ref, spec, duration, !desktop)
-  return (
-    <div ref={ref} className={`mgroup${pair ? ' mgroup--pair' : ''}${center ? ' mgroup--center' : ''}`}>
-      {children}
-      {notes.map((note) => (
-        <p key={note.text} className="margin-note" data-pop>
-          <span className="margin-note__dot" aria-hidden="true" />
-          {note.text}
-        </p>
-      ))}
-    </div>
-  )
-}
-
-/** A timeline with nothing to animate: the note pops in once the screenshot is in view. */
-const noteOnly: SceneSpec = { layers: {}, notesAt: [1] }
-
-/** A framed screenshot whose image is built from layers (the first child is the static screenshot). */
-function SceneFrame({ shot, size, layer, children }: { shot: Shot; size: Size; layer?: string; children: ReactNode }) {
-  return (
-    <div
-      className="stage__item stage-frame"
-      data-layer={layer}
-      style={{ ...placeIn(shot.box, size), '--s': shot.stroke } as CSSProperties}
-    >
-      {children}
-    </div>
-  )
-}
-
-function FrameImage({
-  src1x,
-  src2x,
-  alt = '',
-  className = '',
-  layer,
-  style,
-}: {
-  src1x: string
-  src2x: string
-  alt?: string
-  className?: string
-  layer?: string
-  style?: CSSProperties
-}) {
-  return (
-    <img
-      className={`stage-frame__img ${className}`}
-      data-layer={layer}
-      style={style}
-      src={src1x}
-      srcSet={`${src1x} 1x, ${src2x} 2x`}
-      alt={alt}
-      loading="lazy"
-      decoding="async"
-    />
-  )
-}
 
 /* --- Stop 01 (117:13311): list slides in over the form, its Booking row flashes pink, two notes --- */
 const stop01: SceneSpec = {
@@ -230,7 +55,7 @@ export function Stop01Scene() {
     </>
   )
   return (
-    <PinnedStop
+    <SceneStop
       mobileLoose
       copy={copy}
       scene={scene}
@@ -250,7 +75,7 @@ export function Stop01Scene() {
     >
       {formPiece(form, stage.size)}
       {listPiece(list, stage.size)}
-    </PinnedStop>
+    </SceneStop>
   )
 }
 
@@ -315,7 +140,7 @@ export function Stop02Scene() {
     </SceneFrame>
   )
   return (
-    <PinnedStop
+    <SceneStop
       copy={copy}
       scene={scene}
       spec={stop02}
@@ -338,7 +163,7 @@ export function Stop02Scene() {
       }
     >
       {notificationsPiece(shot, stage.size)}
-    </PinnedStop>
+    </SceneStop>
   )
 }
 
@@ -392,7 +217,7 @@ export function Stop03Scene() {
   )
   const phonePiece = (shot: Shot, size: Size) => <StageShot shot={shot} size={size} layer="phone" />
   return (
-    <PinnedStop
+    <SceneStop
       copy={copy}
       scene={scene}
       spec={stop03}
@@ -413,7 +238,7 @@ export function Stop03Scene() {
     >
       {deskPiece(desk, stage.size)}
       {phonePiece(phone, stage.size)}
-    </PinnedStop>
+    </SceneStop>
   )
 }
 
@@ -483,7 +308,7 @@ export function Stop04Scene() {
     </SceneFrame>
   )
   return (
-    <PinnedStop
+    <SceneStop
       copy={copy}
       scene={scene}
       spec={stop04}
@@ -502,7 +327,7 @@ export function Stop04Scene() {
     >
       {pagePiece(page, stage.size)}
       {invoicePiece(invoice, stage.size)}
-    </PinnedStop>
+    </SceneStop>
   )
 }
 
@@ -565,7 +390,7 @@ export function Stop05Scene() {
     </SceneFrame>
   )
   return (
-    <PinnedStop
+    <SceneStop
       copy={copy}
       scene={scene}
       spec={stop05}
@@ -578,7 +403,7 @@ export function Stop05Scene() {
       }
     >
       {dashboardPiece(shot, stage.size)}
-    </PinnedStop>
+    </SceneStop>
   )
 }
 
@@ -628,7 +453,7 @@ export function EdgeCasesScene() {
     </>
   )
   return (
-    <PinnedStop
+    <SceneStop
       copy={copy}
       scene={scene}
       spec={edge}
@@ -651,6 +476,6 @@ export function EdgeCasesScene() {
       {emptyPiece(empty, stage.size)}
       {emptyPiece(noResults, stage.size)}
       {phonePiece(phone, stage.size)}
-    </PinnedStop>
+    </SceneStop>
   )
 }
