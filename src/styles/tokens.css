@@ -148,6 +148,9 @@
 
   /* About pin (760 and up): viewports of scroll for the full text reveal. Tune the pace here. */
   --about-pin-length: 1.5;
+  /* Reveal statements (case results, SocialTap "What was my part"; home About below 760): viewports of
+     pinned scroll. The reveal completes at 0.9 of it, then a 0.1 hold. */
+  --statement-pin-length: 1;
 
   /*
    * Mobile (below 760px, Figma 66:263 at 393 wide). --m is one Figma px at 393: the hero type,

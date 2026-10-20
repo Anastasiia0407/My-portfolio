@@ -3,7 +3,7 @@ import RevealText from '../RevealText/RevealText.tsx'
 import { revealLength } from '../RevealText/revealLength.ts'
 import { usePinProgress } from '../../hooks/usePinProgress.ts'
 import { DESKTOP_QUERY, REDUCED_MOTION_QUERY, useMediaQuery } from '../../hooks/useMediaQuery.ts'
-import { useParagraphReveal } from '../../motion/hooks.ts'
+import { useStatementReveal } from '../../motion/hooks.ts'
 import './About.css'
 
 // Figma 62:247 (desktop) / 66:280 (mobile). The frames show a mid-reveal state: the first clause dark, the rest grey.
@@ -25,9 +25,9 @@ export default function About() {
 
   // From 760: the section pins (sticky inside a taller track, see About.css) and the scroll through
   // the pinned range drives the reveal: the lead clause dark at the pin start, every character dark
-  // at release. Below 760: no pin; the paragraph's own position drives it, from the same lead clause.
+  // at release. Below 760: the same, via useStatementReveal (pins only if the block fits the screen).
   usePinProgress({ track: trackRef, pin: pinRef, target: textRef, from: leadLength / aboutLength, enabled: !reducedMotion && desktop })
-  useParagraphReveal(textRef, !desktop, leadLength / aboutLength)
+  useStatementReveal({ track: trackRef, pin: pinRef, target: textRef, from: leadLength / aboutLength, enabled: !desktop })
 
   return (
     <section ref={trackRef} id="about" className="about on-light" aria-labelledby="about-title">

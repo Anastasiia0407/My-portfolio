@@ -272,14 +272,27 @@
   height: 100%;
 }
 
-/* --- The result 120:13690: home About layout, full viewport, content at the bottom --- */
-.case-result {
+/* --- The result 120:13690: home About layout, full viewport, content at the bottom. Pinned while the
+   reveal runs (useStatementReveal sets data-pinned when the block fits): track (1 + length) × 100svh. --- */
+.case-result__pin {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   gap: var(--gap-m);
   min-height: 100svh;
   padding-block: var(--space-gutter);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .case-result[data-pinned] {
+    height: calc((1 + var(--statement-pin-length)) * 100svh);
+  }
+
+  .case-result[data-pinned] .case-result__pin {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
 }
 
 .case-result__label {
@@ -421,7 +434,7 @@
     line-height: var(--m-lh-insight);
   }
 
-  .case-result {
+  .case-result__pin {
     gap: var(--m-gap-xs);
     padding-block: var(--m-case-section);
   }

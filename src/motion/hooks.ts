@@ -163,79 +163,6 @@ export function useHeroStage(stage: RefObject<HTMLElement | null>, image: RefObj
 }
 
 /**
- * Scroll-linked RevealText without a pin: `--progress` 0 → 1 from the paragraph's top at 95% of the
- * viewport to 40% — or to the end of the page if that comes first, so the reveal always completes.
- */
-export function useScrollReveal(target: RefObject<HTMLElement | null>, enabled = true) {
-  useEffect(() => {
-    const el = target.current
-    if (!el || !enabled || !motionEnabled()) return
-    let start = 0
-    let end = 1
-    let last = -1
-    el.setAttribute('data-progress-active', '')
-    const stop = addScrollJob({
-      measure(vh) {
-        const top = pageTop(el)
-        const maxScroll = document.documentElement.scrollHeight - vh
-        start = top - vh * 0.95
-        end = Math.max(start + 1, Math.min(top - vh * 0.4, maxScroll))
-      },
-      update(y) {
-        const progress = Math.round(clamp01((y - start) / (end - start)) * 10000) / 10000
-        if (progress !== last) el.style.setProperty('--progress', String((last = progress)))
-      },
-    })
-    return () => {
-      stop()
-      el.removeAttribute('data-progress-active')
-      el.style.removeProperty('--progress')
-    }
-  }, [target, enabled])
-}
-
-/**
- * The per-character reveal below 760 (no pin), driven by the paragraph's own position: `--progress`
- * runs `from` → 1 from its top at 85% of the viewport to its bottom at 45% (or the end of the page,
- * if that comes first), both ways as you scroll. Measured in svh, so the iOS toolbar showing and
- * hiding doesn't move the range. Opacity only (RevealText.css). Reduced motion: off (full ink).
- */
-export function useParagraphReveal(target: RefObject<HTMLElement | null>, enabled = true, from = 0) {
-  useEffect(() => {
-    const el = target.current
-    if (!el || !enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    // The small viewport height (100svh), read from a probe: steady while the toolbar moves.
-    const probe = document.createElement('div')
-    probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none'
-    document.body.appendChild(probe)
-    let start = 0
-    let end = 1
-    let last = -1
-    el.setAttribute('data-progress-active', '')
-    const stop = addScrollJob({
-      measure() {
-        const svh = probe.offsetHeight || window.innerHeight
-        const top = pageTop(el)
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight
-        start = top - svh * 0.85
-        end = Math.max(start + 1, Math.min(top + el.offsetHeight - svh * 0.45, maxScroll))
-      },
-      update(y) {
-        const p = clamp01((y - start) / (end - start))
-        const progress = Math.round((from + p * (1 - from)) * 10000) / 10000
-        if (progress !== last) el.style.setProperty('--progress', String((last = progress)))
-      },
-    })
-    return () => {
-      stop()
-      probe.remove()
-      el.removeAttribute('data-progress-active')
-      el.style.removeProperty('--progress')
-    }
-  }, [target, enabled, from])
-}
-
-/**
  * Calls `onReach(index)` once per element when its vertical centre reaches the viewport centre (or
  * straight away if it is already past on load). Elements: `root`, or its `selector` matches. A plain
  * scroll job, so it also runs with reduced motion. Keep `onReach` stable (useCallback).
@@ -264,4 +191,82 @@ export function useCentreReached(root: RefObject<Element | null>, selector: stri
     })
     return stop
   }, [root, selector, onReach])
+}
+
+/** Reveal statements (CaseStatement, home About below 760): the reveal completes at this p of the pin; then the hold. */
+const STATEMENT_DONE_AT = 0.9
+
+/**
+ * Pinned per-character reveal ("story" rule): `track` is the section, `pin` its one-screen block (label
+ * + paragraph, bottom-anchored). When the block fits in 100svh, `data-pinned` on the track turns on the
+ * scroll track and sticky pin (CSS: (1 + length) × 100svh) and `--progress` runs `from` → 1 over the
+ * first 90% of the pinned range, then holds. When it doesn't fit (short screens), there is no pin and
+ * the paragraph's own position drives it: its top at 85% of the viewport → its bottom at 45%. Both
+ * follow the scroll both ways. Measured in svh (a probe), so the iOS toolbar doesn't move anything.
+ * Opacity only (RevealText.css). Reduced motion: off (full ink, no pin).
+ */
+export function useStatementReveal({
+  track,
+  pin,
+  target,
+  from = 0,
+  enabled = true,
+}: {
+  track: RefObject<HTMLElement | null>
+  pin: RefObject<HTMLElement | null>
+  target: RefObject<HTMLElement | null>
+  from?: number
+  enabled?: boolean
+}) {
+  useEffect(() => {
+    const trackEl = track.current
+    const pinEl = pin.current
+    const el = target.current
+    if (!trackEl || !pinEl || !el || !enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none'
+    document.body.appendChild(probe)
+    let pinned = false
+    let start = 0
+    let end = 1
+    let last = -1
+    el.setAttribute('data-progress-active', '')
+    const stop = addScrollJob({
+      measure() {
+        const svh = probe.offsetHeight || window.innerHeight
+        // The block's own height (first child's top → last child's bottom + padding), whatever its pin state.
+        const style = getComputedStyle(pinEl)
+        const first = pinEl.firstElementChild?.getBoundingClientRect()
+        const lastChild = pinEl.lastElementChild?.getBoundingClientRect()
+        const block = first && lastChild ? lastChild.bottom - first.top + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) : Infinity
+        const fits = block <= svh
+        if (fits !== pinned) {
+          pinned = fits
+          if (fits) trackEl.setAttribute('data-pinned', '')
+          else trackEl.removeAttribute('data-pinned')
+        }
+        if (pinned) {
+          start = pageTop(trackEl)
+          end = start + Math.max(1, trackEl.offsetHeight - svh) * STATEMENT_DONE_AT
+        } else {
+          const top = pageTop(el)
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+          start = top - svh * 0.85
+          end = Math.max(start + 1, Math.min(top + el.offsetHeight - svh * 0.45, maxScroll))
+        }
+      },
+      update(y) {
+        const p = clamp01((y - start) / (end - start))
+        const progress = Math.round((from + p * (1 - from)) * 10000) / 10000
+        if (progress !== last) el.style.setProperty('--progress', String((last = progress)))
+      },
+    })
+    return () => {
+      stop()
+      probe.remove()
+      trackEl.removeAttribute('data-pinned')
+      el.removeAttribute('data-progress-active')
+      el.style.removeProperty('--progress')
+    }
+  }, [track, pin, target, from, enabled])
 }

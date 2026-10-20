@@ -44,7 +44,8 @@
 }
 
 @media (max-width: 759px) {
-  /* No track, no pin: the paragraph reveals as it scrolls through (useParagraphReveal). */
+  /* Pinned only when the block fits (useStatementReveal sets data-pinned): track (1 + length) × 100svh.
+     Otherwise one screen tall, not pinned, revealed by the paragraph's own position. */
   .about {
     height: auto;
   }
@@ -53,6 +54,15 @@
     position: static;
     height: auto;
     min-height: 100svh;
+  }
+
+  .about[data-pinned] {
+    height: calc((1 + var(--statement-pin-length)) * 100svh);
+  }
+
+  .about[data-pinned] .about__pin {
+    position: sticky;
+    height: 100svh;
   }
 
   .about__pin {

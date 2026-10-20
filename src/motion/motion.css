@@ -100,7 +100,7 @@
     transform: translateY(10px);
   }
 
-  /* The result: muted until useScrollReveal takes over (it then sets data-progress-active). */
+  /* Statements: muted until useStatementReveal takes over (it then sets data-progress-active). */
   .motion .case-result__text:not([data-progress-active]) .reveal-text__char {
     opacity: var(--opacity-muted);
   }
