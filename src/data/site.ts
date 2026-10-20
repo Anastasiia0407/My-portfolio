@@ -17,8 +17,8 @@ export const nav: NavItem[] = [
 
 export const contactLinks = {
   email: {
-    label: 'Reach out: a.cheban@gmail.com',
-    href: 'mailto:a.cheban@gmail.com',
+    label: 'Reach out: A.cheban2025@gmail.com',
+    href: 'mailto:a.cheban2025@gmail.com',
     external: false,
   },
   telegram: {
