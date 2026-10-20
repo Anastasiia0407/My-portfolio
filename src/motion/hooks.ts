@@ -167,7 +167,13 @@ export function useHeroStage(stage: RefObject<HTMLElement | null>, image: RefObj
  * straight away if it is already past on load). Elements: `root`, or its `selector` matches. A plain
  * scroll job, so it also runs with reduced motion. Keep `onReach` stable (useCallback).
  */
-export function useCentreReached(root: RefObject<Element | null>, selector: string | null, onReach: (index: number) => void) {
+export function useCentreReached(
+  root: RefObject<Element | null>,
+  selector: string | null,
+  onReach: (index: number) => void,
+  /** Starts over (no element reached) when this changes, e.g. a flip grid's pin state. */
+  resetKey?: unknown,
+) {
   useEffect(() => {
     const el = root.current
     if (!el) return
@@ -190,15 +196,17 @@ export function useCentreReached(root: RefObject<Element | null>, selector: stri
       },
     })
     return stop
-  }, [root, selector, onReach])
+  }, [root, selector, onReach, resetKey])
 }
 
 /** Reveal statements (CaseStatement, home About below 760): the reveal completes at this p of the pin; then the hold. */
 const STATEMENT_DONE_AT = 0.9
+/** A pinned block must fit 100svh minus this (the same rule as stages and flip grids, watchPinFit). */
+const PIN_GUTTER = 32
 
 /**
  * Pinned per-character reveal ("story" rule): `track` is the section, `pin` its one-screen block (label
- * + paragraph, bottom-anchored). When the block fits in 100svh, `data-pinned` on the track turns on the
+ * + paragraph, bottom-anchored). When the block fits in 100svh − 32, `data-pinned` on the track turns on the
  * scroll track and sticky pin (CSS: (1 + length) × 100svh) and `--progress` runs `from` → 1 over the
  * first 90% of the pinned range, then holds. When it doesn't fit (short screens), there is no pin and
  * the paragraph's own position drives it: its top at 85% of the viewport → its bottom at 45%. Both
@@ -236,7 +244,7 @@ export function useStatementReveal({
         const first = pinEl.firstElementChild?.getBoundingClientRect()
         const lastChild = pinEl.lastElementChild?.getBoundingClientRect()
         const block = first && lastChild ? lastChild.bottom - first.top + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) : Infinity
-        const fits = block <= svh
+        const fits = block <= svh - PIN_GUTTER
         if (fits !== pinned) {
           pinned = fits
           if (fits) trackEl.setAttribute('data-pinned', '')

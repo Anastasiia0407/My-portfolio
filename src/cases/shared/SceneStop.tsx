@@ -24,8 +24,12 @@ import type { SceneSpec } from '../../motion/stageScene.ts'
 import type { MarginNoteData, SceneData, SectionCopy, Size, StageShot as Shot } from '../../data/cases/types.ts'
 import './scene.css'
 
-/** True while the mobile panel is pinned: its steps then follow the pin, not their own timelines. */
-const MobilePinned = createContext(false)
+/**
+ * Whether the mobile panel is pinned: true → its steps follow the pin; false → each step plays its own
+ * timeline; null → not measured yet (a panel with a mobileSpec, before the first fit check), so
+ * neither runs and nothing binds twice on the first frame.
+ */
+const MobilePinned = createContext<boolean | null>(false)
 
 /** Section header + stage + the mobile restack (see above). */
 export function SceneStop({
@@ -63,7 +67,7 @@ export function SceneStop({
   const mPinRef = useRef<HTMLDivElement>(null)
   const figureRef = useRef<HTMLElement>(null)
   const desktop = useMediaQuery(DESKTOP_QUERY)
-  const [mobilePinned, setMobilePinned] = useState(false)
+  const [mobilePinned, setMobilePinned] = useState<boolean | null>(mobileSpec ? null : false)
   useStageScene(trackRef, pinRef, spec, desktop)
   // Below 760: pin the panel when it fits (and motion is on); then p drives mobileSpec.
   useEffect(() => {
@@ -73,10 +77,10 @@ export function SceneStop({
     const stop = watchPinFit(figure, host, 32, setMobilePinned)
     return () => {
       stop()
-      setMobilePinned(false)
+      setMobilePinned(null)
     }
   }, [desktop, mobileSpec])
-  useStageScene(mTrackRef, mPinRef, mobileSpec ?? { layers: {}, notesAt: [] }, !desktop && mobilePinned && !!mobileSpec)
+  useStageScene(mTrackRef, mPinRef, mobileSpec ?? { layers: {}, notesAt: [] }, !desktop && mobilePinned === true && !!mobileSpec)
   const titleId = `${copy.id}-title`
   return (
     <section
@@ -159,8 +163,8 @@ export function MobileGroup({
   const ref = useRef<HTMLDivElement>(null)
   const desktop = useMediaQuery(DESKTOP_QUERY)
   const pinned = useContext(MobilePinned)
-  useTimedScene(ref, spec, duration, !desktop && !pinned && trigger === 'enter')
-  useCentreScene(ref, spec, duration, !desktop && !pinned && trigger === 'centre')
+  useTimedScene(ref, spec, duration, !desktop && pinned === false && trigger === 'enter')
+  useCentreScene(ref, spec, duration, !desktop && pinned === false && trigger === 'centre')
   const note = (text: string) => (
     <p key={text} className="margin-note" data-pop>
       <span className="margin-note__dot" aria-hidden="true" />

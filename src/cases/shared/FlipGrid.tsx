@@ -146,7 +146,7 @@ export default function FlipGrid({
     },
     [desktop, items, show],
   )
-  useCentreReached(gridRef, desktop ? null : '.flip-card', onReach)
+  useCentreReached(gridRef, desktop ? null : '.flip-card', onReach, pinned)
   useEffect(() => {
     const scroll = timers.current
     const hover = hoverTimers.current
