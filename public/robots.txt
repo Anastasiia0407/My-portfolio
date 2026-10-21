@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anastasiia-cheban.vercel.app/sitemap.xml
+Sitemap: https://anastasiia-cheban.com.ua/sitemap.xml
