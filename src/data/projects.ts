@@ -130,7 +130,7 @@ export const projects: Project[] = [
   {
     id: 'project-03',
     number: '03',
-    title: 'TMS - logistics platform (concept)',
+    title: 'TMS - logistics platform',
     counter: 'bottom',
     band: work03Layout.band,
     images: [
