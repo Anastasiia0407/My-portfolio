@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { trackBackToWork } from '../../analytics.ts'
 import './CaseNav.css'
 
 interface Link {
@@ -12,14 +13,16 @@ export function CaseLink({
   back,
   srSuffix,
   className,
+  onClick,
 }: {
   link: Link
   back?: boolean
   srSuffix?: ReactNode
   className?: string
+  onClick?: () => void
 }) {
   return (
-    <a className={`case-link touch-target${className ? ` ${className}` : ''}`} href={link.href}>
+    <a className={`case-link touch-target${className ? ` ${className}` : ''}`} href={link.href} onClick={onClick}>
       {back && <span aria-hidden="true">← </span>}
       {link.label}
       {srSuffix && <span className="sr-only">{srSuffix}</span>}
@@ -34,7 +37,7 @@ export function CaseLink({
 export default function CaseNav({ back, contact, number }: { back: Link; contact: Link; number: string }) {
   return (
     <nav className="case-nav" aria-label="Case study">
-      <CaseLink link={back} back srSuffix=" to all work" />
+      <CaseLink link={back} back srSuffix=" to all work" onClick={() => trackBackToWork('nav')} />
       <CaseLink link={contact} className="case-nav__contact" />
       <span className="case-link case-nav__number" aria-hidden="true">
         {number}

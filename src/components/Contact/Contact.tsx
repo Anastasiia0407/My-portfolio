@@ -1,13 +1,16 @@
 import { contactLinks, owner } from '../../data/site.ts'
 import type { ContactLink } from '../../data/site.ts'
+import { trackContactClick } from '../../analytics.ts'
+import type { ContactChannel } from '../../analytics.ts'
 import getInTouch from '../../assets/get-in-touch.svg'
 import './Contact.css'
 
-function FooterLink({ link }: { link: ContactLink }) {
+function FooterLink({ link, channel }: { link: ContactLink; channel: ContactChannel }) {
   return (
     <a
       className="contact__link touch-target"
       href={link.href}
+      onClick={() => trackContactClick(channel)}
       {...(link.external && { target: '_blank', rel: 'noopener noreferrer' })}
     >
       {link.label}
@@ -25,9 +28,9 @@ export default function Contact() {
       </h2>
       <div className="contact__row">
         <p className="contact__copyright">© {owner.name}</p>
-        <FooterLink link={contactLinks.email} />
-        <FooterLink link={contactLinks.telegram} />
-        <FooterLink link={contactLinks.linkedin} />
+        <FooterLink link={contactLinks.email} channel="email" />
+        <FooterLink link={contactLinks.telegram} channel="telegram" />
+        <FooterLink link={contactLinks.linkedin} channel="linkedin" />
       </div>
     </footer>
   )

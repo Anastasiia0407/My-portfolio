@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import '../../styles/tokens.css'
 import '../../styles/base.css'
 import CaseNav, { CaseLink } from '../../components/CaseNav/CaseNav.tsx'
+import { trackBackToWork } from '../../analytics.ts'
 import type { CaseNavData } from '../../data/cases/types.ts'
 import '../../motion/motion.css'
 import './case.css'
@@ -31,7 +32,7 @@ export default function CasePage({ nav, number, children }: { nav: CaseNavData; 
 
       {/* Case nav 113:12982 */}
       <footer className="case-footer">
-        <CaseLink link={nav.allWork} back />
+        <CaseLink link={nav.allWork} back onClick={() => trackBackToWork('footer')} />
       </footer>
     </div>
   )

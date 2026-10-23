@@ -12,6 +12,7 @@ import {
   REDUCED_MOTION_QUERY,
   useMediaQuery,
 } from '../../hooks/useMediaQuery.ts'
+import { trackCaseOpen } from '../../analytics.ts'
 import arrow from '../../assets/arrow-up-right.svg'
 import './Works.css'
 
@@ -72,7 +73,12 @@ function ProjectCta({ project }: { project: Project }) {
     )
   }
   return (
-    <a className="works__cta" style={ctaStyle} href={project.caseStudyUrl} aria-label={`Open case study: ${project.title}`}>
+    <a
+      className="works__cta"
+      style={ctaStyle}
+      href={project.caseStudyUrl}
+      onClick={() => trackCaseOpen(project.caseStudyUrl!)}
+      aria-label={`Open case study: ${project.title}`}>
       {icon}
     </a>
   )
@@ -174,7 +180,12 @@ function ProjectVisual({
         <ProjectLabel project={project} />
       </figcaption>
       {project.caseStudyUrl && (
-        <a className="works__card-link" href={project.caseStudyUrl} aria-label={`Open case study: ${project.title}`} />
+        <a
+          className="works__card-link"
+          href={project.caseStudyUrl}
+          onClick={() => trackCaseOpen(project.caseStudyUrl!)}
+          aria-label={`Open case study: ${project.title}`}
+        />
       )}
     </figure>
   )
@@ -268,7 +279,7 @@ export default function Works() {
                     className={`works__item works__label touch-target${index === activeIndex ? ' is-active' : ''}`}
                     href={project.caseStudyUrl ?? `#${project.id}`}
                     aria-current={index === activeIndex ? 'step' : undefined}
-                    onClick={project.caseStudyUrl ? undefined : goTo(index)}
+                    onClick={project.caseStudyUrl ? () => trackCaseOpen(project.caseStudyUrl!) : goTo(index)}
                     onFocus={onTitleFocus(index)}
                     onBlur={() => setFocus(null)}
                   >
